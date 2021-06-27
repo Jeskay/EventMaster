@@ -7,6 +7,8 @@ import {Config} from '../Config';
 import { DataBaseManager } from '../Managers/database';
 import { HelperManager } from '../Managers/helper';
 import { RoomManger } from '../Managers/room';
+import {VoteManager} from "../Managers/vote";
+import { ChannelController } from '../Controllers/channel';
 
 class ExtendedClient extends Client {
     public commands: Collection<string, Command> = new Collection();
@@ -15,7 +17,9 @@ class ExtendedClient extends Client {
     public config: Config = new Config();
     public database: DataBaseManager;
     public helper: HelperManager = new HelperManager();
-    public room: RoomManger = new RoomManger(); 
+    public room: RoomManger = new RoomManger();
+    public vote: VoteManager = new VoteManager(); 
+    public channelController: ChannelController = new ChannelController();
 
     public async init() {
         this.login(this.config.token);

@@ -1,3 +1,4 @@
+import { GuildMember } from "discord.js";
 import { User, CategoryChannel, VoiceState, VoiceChannel, Guild, TextChannel } from "discord.js";
 
 export enum OccasionState{
@@ -27,14 +28,23 @@ export class RoomManger {
         });
         return {voice: voiceChnl, text: textChnl};
     }
-    public async givePermissions(guild: Guild, text: string, voice: string, user: User){
+    /**
+     * Gives a user administrator permissions in provided text and voice channels
+     * @param guild guild where channels are located
+     * @param text text channel id
+     * @param voice voice channel id
+     * @param user user, to give permissions
+     */
+    public async givePermissions(guild: Guild, text: string, voice: string, user: GuildMember){
         const {voiceChannel, textChannel} = this.channels(guild, text, voice);
         await voiceChannel.updateOverwrite(user, {
-            ADMINISTRATOR: true
-        })
-        await textChannel.updateOverwrite(user, {
-            ADMINISTRATOR: true
+            MANAGE_CHANNELS:true
         });
+        await textChannel.updateOverwrite(user, {
+            MANAGE_CHANNELS: true
+        });
+        const permissions = voiceChannel.permissionsFor(user);
+        console.log(`user permissions are ${permissions?.toJSON}`);
     }
     public async delete(guild: Guild, voice: string, text: string){
         const {voiceChannel, textChannel} = this.channels(guild, text, voice);

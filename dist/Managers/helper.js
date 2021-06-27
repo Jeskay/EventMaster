@@ -8,5 +8,14 @@ class HelperManager {
         console.log(extracted);
         return extracted;
     }
+    checkChannel(member1, member2, channel) {
+        if (channel.type != "voice")
+            return false;
+        if (!channel.members.has(member1))
+            return false;
+        if (!channel.members.has(member2))
+            return false;
+        return true;
+    }
 }
 exports.HelperManager = HelperManager;

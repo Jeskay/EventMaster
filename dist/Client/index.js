@@ -39,6 +39,8 @@ const Config_1 = require("../Config");
 const database_1 = require("../Managers/database");
 const helper_1 = require("../Managers/helper");
 const room_1 = require("../Managers/room");
+const vote_1 = require("../Managers/vote");
+const channel_1 = require("../Controllers/channel");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);
@@ -48,6 +50,8 @@ class ExtendedClient extends discord_js_1.Client {
         this.config = new Config_1.Config();
         this.helper = new helper_1.HelperManager();
         this.room = new room_1.RoomManger();
+        this.vote = new vote_1.VoteManager();
+        this.channelController = new channel_1.ChannelController();
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {

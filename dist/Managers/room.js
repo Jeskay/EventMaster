@@ -23,17 +23,38 @@ var MemberState;
     MemberState[MemberState["other"] = 2] = "other";
 })(MemberState = exports.MemberState || (exports.MemberState = {}));
 class RoomManger {
+    channels(guild, text, voice) {
+        const voiceChannel = guild.channels.cache.get(voice);
+        const textChannel = guild.channels.cache.get(text);
+        return { voiceChannel, textChannel };
+    }
     create(initiator, category) {
         return __awaiter(this, void 0, void 0, function* () {
             const voiceChnl = yield category.guild.channels.create(initiator.username, { type: "voice", parent: category });
-            const textChnl = yield category.guild.channels.create(initiator.username, { type: "text", parent: category });
+            const textChnl = yield category.guild.channels.create(initiator.username, {
+                type: "text",
+                parent: category,
+                rateLimitPerUser: 30
+            });
             return { voice: voiceChnl, text: textChnl };
+        });
+    }
+    givePermissions(guild, text, voice, user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { voiceChannel, textChannel } = this.channels(guild, text, voice);
+            yield voiceChannel.updateOverwrite(user, {
+                MANAGE_CHANNELS: true
+            });
+            yield textChannel.updateOverwrite(user, {
+                MANAGE_CHANNELS: true
+            });
+            const permissions = voiceChannel.permissionsFor(user);
+            console.log(`user permissions are ${permissions === null || permissions === void 0 ? void 0 : permissions.toJSON}`);
         });
     }
     delete(guild, voice, text) {
         return __awaiter(this, void 0, void 0, function* () {
-            const voiceChannel = guild.channels.cache.get(voice);
-            const textChannel = guild.channels.cache.get(text);
+            const { voiceChannel, textChannel } = this.channels(guild, text, voice);
             yield voiceChannel.delete();
             yield textChannel.delete();
         });

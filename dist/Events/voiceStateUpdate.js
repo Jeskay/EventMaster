@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.event = void 0;
 const room_1 = require("../Managers/room");
-const room_2 = require("../Managers/room");
 exports.event = {
     name: 'voiceStateUpdate',
     run: (client, oldState, newState) => __awaiter(void 0, void 0, void 0, function* () {
@@ -21,24 +20,7 @@ exports.event = {
         if (state == room_1.MemberState.other)
             return;
         if (state == room_1.MemberState.joined) {
-            console.log("new member joined");
-            const server = yield client.database.getServer(newState.guild.id);
-            if (server == null || server.eventChannel != newState.channelID)
-                return;
-            const channel = newState.guild.channels.cache.get(server.eventCategory);
-            if (channel == undefined)
-                return;
-            const { voice, text } = yield client.room.create(newState.member.user, channel);
-            yield newState.member.voice.setChannel(voice);
-            const added = yield client.database.addOccasion(newState.guild.id, {
-                voiceChannel: voice.id,
-                textChannel: text.id,
-                host: newState.member.id,
-                state: room_2.OccasionState.waiting,
-                server: server
-            });
-            if (!added)
-                text.send("Database Error");
+            yield client.channelController.joinHandler(client, newState.member, newState.channel);
         }
         else {
             console.log("member left");
