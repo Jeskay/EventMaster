@@ -10,23 +10,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.event = void 0;
-const discord_js_1 = require("discord.js");
 exports.event = {
     name: 'guildDelete',
     run: (client, guild) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
         const owner = yield guild.members.fetch(guild.ownerID);
         if (owner == null)
             return;
-        const embed = new discord_js_1.MessageEmbed()
-            .setFooter("Information about guild will be removed from our database.")
-            .setDescription(`Thank you for using ${(_a = client.user) === null || _a === void 0 ? void 0 : _a.username} in ${guild.name}. Hope we will see you soon.`);
-        const removed = yield client.database.removeServer(guild.id);
-        if (removed) {
-            let dm = owner.user.dmChannel;
-            if (dm == null)
-                dm = yield owner.createDM();
-            dm.send(embed);
+        let dm = owner.user.dmChannel;
+        if (dm == null)
+            dm = yield owner.createDM();
+        try {
+            yield client.database.removeServer(guild.id);
+            yield dm.send(client.embeds.farawell(guild.name, owner.user.username));
+        }
+        catch (error) {
+            yield dm.send(client.embeds.errorInformation(error));
         }
     })
 };

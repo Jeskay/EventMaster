@@ -16,25 +16,21 @@ exports.event = {
     run: (client, oldState, newState) => __awaiter(void 0, void 0, void 0, function* () {
         if (newState.member == null || newState.member.user.bot)
             return;
-        const state = client.room.checkState(oldState, newState);
-        if (state == room_1.MemberState.other)
-            return;
-        if (state == room_1.MemberState.joined) {
-            yield client.channelController.joinHandler(client, newState.member, newState.channel);
-        }
-        else {
-            console.log("member left");
-            const server = yield client.database.getServerRelations(oldState.guild.id);
-            if (server == undefined)
-                return;
-            console.log(oldState.channelID);
-            const occasion = server.events.find(event => event.voiceChannel == oldState.channelID);
-            if (occasion == undefined)
-                return;
-            if (oldState.channel != null && oldState.channel.members.size == 0) {
-                yield client.database.removeOccasion(oldState.guild.id, occasion.voiceChannel);
-                yield client.room.delete(oldState.guild, occasion.voiceChannel, occasion.textChannel);
+        try {
+            const state = client.room.checkState(oldState, newState);
+            switch (state) {
+                case room_1.MemberState.other:
+                    break;
+                case room_1.MemberState.joined:
+                    yield client.channelController.joinHandler(client, newState.member, newState.channel);
+                    break;
+                case room_1.MemberState.left:
+                    yield client.channelController.leftHandler(client, oldState.channel);
+                    break;
             }
+        }
+        catch (error) {
+            console.log(error);
         }
     })
 };

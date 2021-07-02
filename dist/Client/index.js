@@ -41,6 +41,7 @@ const helper_1 = require("../Managers/helper");
 const room_1 = require("../Managers/room");
 const vote_1 = require("../Managers/vote");
 const channel_1 = require("../Controllers/channel");
+const embed_1 = require("../Managers/embed");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);
@@ -51,6 +52,7 @@ class ExtendedClient extends discord_js_1.Client {
         this.helper = new helper_1.HelperManager();
         this.room = new room_1.RoomManger();
         this.vote = new vote_1.VoteManager();
+        this.embeds = new embed_1.EmbedManager();
         this.channelController = new channel_1.ChannelController();
     }
     init() {

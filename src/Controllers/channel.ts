@@ -12,20 +12,19 @@ export class ChannelController {
         const {voice, text} = await room.create(member.user, channel);
         await member.voice.setChannel(voice);
         /*Add text channel greeting*/
-        const added = await database.addOccasion(member.guild.id, {
+        await database.addOccasion(member.guild.id, {
             voiceChannel: voice.id,
             textChannel: text.id,
             host: member.id,
             state: OccasionState.waiting,
             server: server
-        });
-        if(!added) text.send("Database Error");
+        }).catch();
     }
     /**
      * Should be called when a user joins a channel
      * @param member user, who has joined
      * @param joinedChannel channel, which has been joined
-     * @returns promise
+     * @returns Promise
      */
     public async joinHandler(client: ExtendedClient, member: GuildMember, joinedChannel: VoiceChannel){
         const server = await client.database.getServerRelations(member.guild.id);
@@ -40,8 +39,22 @@ export class ChannelController {
             const text = joinedChannel.guild.channels.cache.get(occasion.textChannel) as TextChannel;
             if(text == undefined || !text.isText) return;
             client.vote.start(occasion.voiceChannel, 1);//change to limit
-            text.send("The election for the event master has started!");
+            text.send(client.embeds.voting);
         }
-        console.log("new member joined event");
+    }
+    /**
+     * Should be called when a user lefts a channel
+     * @param leftChannel channel, which has been left
+     * @returns Promise
+     */
+    public async leftHandler(client: ExtendedClient, leftChannel: VoiceChannel) {
+        const server = await client.database.getServerRelations(leftChannel.guild.id);
+        if(!server) return;
+        const occasion = server.events.find(event => event.voiceChannel == leftChannel.id);
+        if(!occasion) return;
+        if(leftChannel != null && leftChannel.members.size == 0){
+            await client.database.removeOccasion(leftChannel.guild.id, occasion.voiceChannel);
+            await client.room.delete(leftChannel.guild, occasion.voiceChannel, occasion.textChannel);
+        }
     }
 }

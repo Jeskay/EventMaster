@@ -24,27 +24,26 @@ class Election {
         return false;
     }
     add(voter, candidate) {
-        return new Promise((resolve, reject) => {
+        return __awaiter(this, void 0, void 0, function* () {
             if (this.votes.has(voter))
-                reject();
+                throw Error("Person has already voted");
             if (this.score[candidate] == undefined)
                 this.score[candidate] = 1;
             else
                 this.score[candidate]++;
             this.votes[voter] = candidate;
             if (this.check(candidate))
-                resolve(true);
-            resolve(false);
+                return true;
+            return false;
         });
     }
     remove(voter) {
-        return new Promise((resolve, reject) => {
+        return __awaiter(this, void 0, void 0, function* () {
             if (!this.votes.has(voter))
-                reject();
+                throw Error("Person has not voted yet");
             const candidate = this.votes[voter];
             this.score[candidate]--;
             this.votes.delete(voter);
-            resolve();
         });
     }
 }
@@ -62,25 +61,19 @@ class VoteManager {
     }
     removeCandidate(user, occasion) {
         return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-                if (!this.elections.has(occasion))
-                    reject();
-                yield this.elections[occasion].remove(user).catch((err) => reject(err));
-                resolve();
-            }));
+            if (!this.elections.has(occasion))
+                throw Error("There is no current election in the channel.");
+            yield this.elections[occasion].remove(user);
         });
     }
     vote(occasion, voter, candidate) {
         return __awaiter(this, void 0, void 0, function* () {
-            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-                if (this.elections[occasion] == undefined)
-                    reject();
-                const elected = yield this.elections[occasion].add(voter, candidate).catch(err => reject(err));
-                if (elected) {
-                    resolve(this.elections[occasion].leader);
-                }
-                resolve(null);
-            }));
+            if (this.elections[occasion] == undefined)
+                throw Error("There is no current election in the channel.");
+            const elected = yield this.elections[occasion].add(voter, candidate);
+            if (elected)
+                return this.elections[occasion].leader;
+            return null;
         });
     }
 }

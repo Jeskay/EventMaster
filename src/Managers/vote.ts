@@ -15,25 +15,20 @@ export class Election {
         return false;
     }
 
-    public add(voter: string, candidate: string): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            if(this.votes.has(voter)) reject();
-            if(this.score[candidate] == undefined) this.score[candidate] = 1;
-            else this.score[candidate]++;
-            this.votes[voter] = candidate;
-            if(this.check(candidate)) resolve(true);
-            resolve(false); 
-        });
+    public async add(voter: string, candidate: string) {
+        if(this.votes.has(voter)) throw Error("Person has already voted");
+        if(this.score[candidate] == undefined) this.score[candidate] = 1;
+        else this.score[candidate]++;
+        this.votes[voter] = candidate;
+        if(this.check(candidate)) return true;
+        return false; 
     }
     
-    public remove(voter: string): Promise<void>{
-        return new Promise((resolve, reject) => {
-            if(!this.votes.has(voter)) reject();
-            const candidate = this.votes[voter] as string;
-            this.score[candidate]--;
-            this.votes.delete(voter);
-            resolve();
-        });
+    public async remove(voter: string) {
+        if(!this.votes.has(voter)) throw Error("Person has not voted yet");
+        const candidate = this.votes[voter] as string;
+        this.score[candidate]--;
+        this.votes.delete(voter);
     }
     
     constructor(goal: number){
@@ -62,26 +57,20 @@ export class VoteManager {
      * Removes candidate from elections list
     */
     public async removeCandidate(user: string, occasion: string) {
-        return new Promise<void>(async (resolve, reject) => {
-            if(!this.elections.has(occasion)) reject();
-            await this.elections[occasion].remove(user).catch((err) => reject(err));
-            resolve();
-        });
+        if(!this.elections.has(occasion)) throw Error("There is no current election in the channel.");
+        await this.elections[occasion].remove(user);
     }
     /**
      * Performs vote operation
      * @return winner id if election is over, otherwise returns null
      */
     public async vote(occasion: string, voter: string, candidate: string){
-        return new Promise<string | null>(async (resolve, reject) => {
-            if(this.elections[occasion] == undefined) reject();
-            const elected = await this.elections[occasion].add(voter, candidate).catch(err => reject(err));
-            if(elected){
-                resolve(this.elections[occasion].leader);
-            }
-            resolve(null);
-        });        
+        if(this.elections[occasion] == undefined) throw Error("There is no current election in the channel.");
+        const elected = await this.elections[occasion].add(voter, candidate);
+        if(elected) return this.elections[occasion].leader;
+        return null;
     }
+    
     constructor(){
         this.elections = new Map<string,Election>();
     }

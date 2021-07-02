@@ -23,23 +23,22 @@ exports.command = {
         const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidateID, channel));
         if (voiceChannel == undefined)
             return;
-        const winner = yield client.vote.vote(voiceChannel.id, author.id, candidateID);
-        console.log("vote performed");
-        if (winner != null) {
-            client.vote.finish(voiceChannel.id);
-            const server = yield client.database.getServerRelations(voiceChannel.guild.id);
-            if (server == undefined)
-                return;
-            console.log('server found');
-            const occasion = server.events.find(event => event.voiceChannel == voiceChannel.id);
-            if (occasion == undefined)
-                return;
-            console.log('occasion found');
-            const eventLeader = voiceChannel.members.get(winner);
-            if (eventLeader == undefined)
-                return;
-            console.log(`leader is ${eventLeader}`);
-            client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, eventLeader);
+        try {
+            const winner = yield client.vote.vote(voiceChannel.id, author.id, candidateID);
+            if (winner != null) {
+                client.vote.finish(voiceChannel.id);
+                const server = yield client.database.getServerRelations(voiceChannel.guild.id);
+                const occasion = server.events.find(event => event.voiceChannel == voiceChannel.id);
+                if (!occasion)
+                    return;
+                const eventLeader = voiceChannel.members.get(winner);
+                if (!eventLeader)
+                    return;
+                client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, eventLeader);
+            }
+        }
+        catch (error) {
+            message.channel.send(error);
         }
     })
 };

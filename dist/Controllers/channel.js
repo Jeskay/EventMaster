@@ -19,15 +19,13 @@ class ChannelController {
                 return;
             const { voice, text } = yield room.create(member.user, channel);
             yield member.voice.setChannel(voice);
-            const added = yield database.addOccasion(member.guild.id, {
+            yield database.addOccasion(member.guild.id, {
                 voiceChannel: voice.id,
                 textChannel: text.id,
                 host: member.id,
                 state: room_1.OccasionState.waiting,
                 server: server
-            });
-            if (!added)
-                text.send("Database Error");
+            }).catch();
         });
     }
     joinHandler(client, member, joinedChannel) {
@@ -47,9 +45,22 @@ class ChannelController {
                 if (text == undefined || !text.isText)
                     return;
                 client.vote.start(occasion.voiceChannel, 1);
-                text.send("The election for the event master has started!");
+                text.send(client.embeds.voting);
             }
-            console.log("new member joined event");
+        });
+    }
+    leftHandler(client, leftChannel) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const server = yield client.database.getServerRelations(leftChannel.guild.id);
+            if (!server)
+                return;
+            const occasion = server.events.find(event => event.voiceChannel == leftChannel.id);
+            if (!occasion)
+                return;
+            if (leftChannel != null && leftChannel.members.size == 0) {
+                yield client.database.removeOccasion(leftChannel.guild.id, occasion.voiceChannel);
+                yield client.room.delete(leftChannel.guild, occasion.voiceChannel, occasion.textChannel);
+            }
         });
     }
 }

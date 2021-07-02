@@ -10,18 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
-function validate_channel(channelID, guild) {
-    const channel = guild.channels.cache.get(channelID);
-    if (channel == undefined)
-        return "Cannot find the channel";
-    return channel;
-}
-function validate_category(categoryID, guild) {
-    const category = guild.channels.cache.get(categoryID);
-    if (category == undefined)
-        return "Cannot find the category";
-    return category;
-}
 exports.command = {
     name: 'setup',
     aliases: ['s'],
@@ -30,24 +18,19 @@ exports.command = {
         if (guild == null)
             return;
         if (args.length != 2)
-            message.channel.send("The format of request is **channelId sectionId**");
-        const channel = validate_channel(args[0], guild);
-        const category = validate_category(args[1], guild);
-        if (typeof channel == "string")
-            message.channel.send(channel);
-        else if (typeof category == "string")
-            message.channel.send(category);
-        else if (category.children.find(channel => channel.id == channel.id)) {
-            const result = yield client.database.updateServer(guild.id, {
-                eventChannel: channel.id,
-                eventCategory: category.id
+            return;
+        const channel = args[0];
+        const category = args[1];
+        try {
+            client.helper.validatePair(channel, category, guild);
+            yield client.database.updateServer(guild.id, {
+                eventChannel: channel,
+                eventCategory: category
             });
-            if (result)
-                yield message.channel.send("channel and category successfuly binded.");
-            else
-                yield message.channel.send("something went wrong");
+            yield message.channel.send("channel and category successfuly binded.");
         }
-        else
-            yield message.channel.send(`Channel ${channel.name} is not in ${category.name} category.`);
+        catch (error) {
+            yield message.channel.send(client.embeds.errorInformation(error));
+        }
     })
 };

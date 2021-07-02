@@ -9,6 +9,7 @@ import { HelperManager } from '../Managers/helper';
 import { RoomManger } from '../Managers/room';
 import {VoteManager} from "../Managers/vote";
 import { ChannelController } from '../Controllers/channel';
+import { EmbedManager } from '../Managers/embed';
 
 class ExtendedClient extends Client {
     public commands: Collection<string, Command> = new Collection();
@@ -19,6 +20,7 @@ class ExtendedClient extends Client {
     public helper: HelperManager = new HelperManager();
     public room: RoomManger = new RoomManger();
     public vote: VoteManager = new VoteManager(); 
+    public embeds: EmbedManager = new EmbedManager();
     public channelController: ChannelController = new ChannelController();
 
     public async init() {

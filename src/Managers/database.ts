@@ -2,64 +2,92 @@
 import { Connection, getConnection } from "typeorm";
 import { Server } from "../entities/server";
 import { Occasion } from "../entities/occasion";
-/* Wrap in promises */
+
 export class DataBaseManager{
-    private orm: Connection;
+    private connection: Connection;
 
-    public connect = async () => await this.orm.connect();
-
-    public getServer = async(serverID: string) => await this.orm.manager.findOne(Server, {guild: serverID});
-
+    public connect = async () => await this.connection.connect();
+    /** @returns server by guild id */
+    public getServer = async(serverID: string) => await this.connection.manager.findOne(Server, {guild: serverID});
+    /**
+     * 
+     * @param serverID 
+     * @returns server instance with occasions
+     */
     public async getServerRelations(serverID: string) {
-        return await this.orm.getRepository(Server)
-        .createQueryBuilder("server")
-        .leftJoinAndSelect("server.events", "occasion")
-        .where("server.guild = :guild", {guild: serverID})
-        .getOne()
+            const server = await this.connection.getRepository(Server)
+            .createQueryBuilder("server")
+            .leftJoinAndSelect("server.events", "occasion")
+            .where("server.guild = :guild", {guild: serverID})
+            .getOne()
+            .catch(err => { throw err });
+            if(!server) throw Error("Guild with followed id is not registered.");
+            return server;
     }
-
-    public occasion = (event: object) => this.orm.manager.create(Occasion, event);
-
+    /** Creates Occasion instance */
+    public occasion = (event: object) => this.connection.manager.create(Occasion, event);
+    /**
+     * Updates server instance
+     * @param guildID guild id
+     * @param params object with fields and values which need to be updated
+     * @returns Promise
+     */
     public async updateServer(guildID: string, params: object){
         const current = await this.getServer(guildID);
-        if(current == undefined) return false;
-        Object.keys(current).forEach(key => current[key] = key in params ? params[key] : current[key]);
-        await this.orm.manager.save(current);
-        return true;
+        if(!current) throw Error("Cannot find server.");
+        else Object.keys(current).forEach(key => current[key] = key in params ? params[key] : current[key]);
+        await this.connection.manager.save(current);
     }
+    /**
+     * Adds occasion instance to the server
+     * @param guildID guild id
+     * @param occasion object with fields and values which need to be added
+     * @returns Promise
+     */
     public async addOccasion(guildID: string, occasion: object){
         const post = this.occasion(occasion);
         const server = await this.getServer(guildID);
-        if(server == undefined) return false;
-        if(server.events != undefined && server.events.includes(post)) return false;
-        await this.orm.manager.save(post);
-        return true;
+        if(!server) throw Error("Guild with followed id is not registered.");
+        else if(server.events && server.events.includes(post)) throw Error("There is occasion's duplicate.");
+        await this.connection.manager.save(post);
     }
+    /**
+     * Removes occasion
+     * @param guildID guild id
+     * @param voiceChannel voice channel id
+     * @returns Promise
+     */
     public async removeOccasion(guildID: string, voiceChannel: string){
         const server = await this.getServerRelations(guildID);
-        if(server == undefined) throw Error;
+        if(!server) throw Error("Guild with followed id is not registered.");
         const occasion = server.events.find(event => event.voiceChannel == voiceChannel);
-        if(occasion == undefined) throw Error;
-        await this.orm.manager.remove(occasion);
+        if(!occasion) throw Error("Cannot find occasion with following voice channel");
+        await this.connection.manager.remove(occasion);
         return {voice: occasion.voiceChannel, text: occasion.textChannel};
     }
-
+    /**
+     * Adds server to the database
+     * @param server object with fields and values of Server
+     * @returns Promise
+     */
     public async addServer(server: object){
-        const post = this.orm.manager.create(Server, server);
+        const post = this.connection.manager.create(Server, server);
         const duplicate = await this.getServer(post.guild);
-        if(duplicate != undefined) return false;
-        await this.orm.manager.save(post);
-        return true;
+        if(duplicate) throw Error("Server with such id already exists.");
+        await this.connection.manager.save(post);
     }
-
+    /**
+     * Removes server instance
+     * @param serverID guild id
+     * @returns Promise
+     */
     public async removeServer(serverID: string){
         const server = await this.getServer(serverID);
-        if(server == undefined) return false;
-        this.orm.manager.remove(server);
-        return true;
+        if(server == undefined) throw Error("")
+        this.connection.manager.remove(server);
     }
 
     constructor (){
-        this.orm = getConnection();
+        this.connection = getConnection();
     }
 }
