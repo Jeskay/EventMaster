@@ -39,6 +39,17 @@ export class DataBaseManager{
         await this.connection.manager.save(current);
     }
     /**
+     * Updates server settings
+     * @param guildID guild id
+     * @param params object with settings which need to be updated
+     */
+    public async updateSettings(guildID: string, params: object){
+        const server = await this.getServer(guildID);
+        if(!server) throw Error("Cannot find server.");
+        Object.keys(server.settings).forEach(key => server.settings[key] = key in params ? params[key] : server.settings[key]);
+        await this.connection.manager.save(server);
+    }
+    /**
      * Adds occasion instance to the server
      * @param guildID guild id
      * @param occasion object with fields and values which need to be added

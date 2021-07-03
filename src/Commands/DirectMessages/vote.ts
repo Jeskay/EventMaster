@@ -7,7 +7,7 @@ export const command: Command = {
     run: async(client, message, args) => {
         const author = message.author;
         if(args.length != 1) return;
-        const candidateID = args[0];
+        const candidateID = client.helper.extractID(args[0]);
         if(author.id == candidateID) return;
         /*Discord bug with one member in several guilds should be processed */
         const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidateID, channel)) as VoiceChannel;
@@ -22,9 +22,10 @@ export const command: Command = {
                 const eventLeader = voiceChannel.members.get(winner);
                 if(!eventLeader) return;
                 client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, eventLeader);
-            }
+                await message.channel.send(client.embeds.electionFinished(eventLeader.user.username));
+            } else await message.channel.send(client.embeds.voteConfimation(args[0]));
         } catch(error) {
-            message.channel.send(error);
+            await message.channel.send(error);
         }
     }
 }; 

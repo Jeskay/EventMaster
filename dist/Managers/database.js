@@ -43,6 +43,15 @@ class DataBaseManager {
             yield this.connection.manager.save(current);
         });
     }
+    updateSettings(guildID, params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const server = yield this.getServer(guildID);
+            if (!server)
+                throw Error("Cannot find server.");
+            Object.keys(server.settings).forEach(key => server.settings[key] = key in params ? params[key] : server.settings[key]);
+            yield this.connection.manager.save(server);
+        });
+    }
     addOccasion(guildID, occasion) {
         return __awaiter(this, void 0, void 0, function* () {
             const post = this.occasion(occasion);

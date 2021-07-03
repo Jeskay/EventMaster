@@ -17,7 +17,7 @@ exports.command = {
         const author = message.author;
         if (args.length != 1)
             return;
-        const candidateID = args[0];
+        const candidateID = client.helper.extractID(args[0]);
         if (author.id == candidateID)
             return;
         const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidateID, channel));
@@ -35,10 +35,13 @@ exports.command = {
                 if (!eventLeader)
                     return;
                 client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, eventLeader);
+                yield message.channel.send(client.embeds.electionFinished(eventLeader.user.username));
             }
+            else
+                yield message.channel.send(client.embeds.voteConfimation(args[0]));
         }
         catch (error) {
-            message.channel.send(error);
+            yield message.channel.send(error);
         }
     })
 };

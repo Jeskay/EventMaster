@@ -12,6 +12,23 @@ export class EmbedManager{
     .setFooter("We let you know when the election will be finished.")
     .setColor("GREEN");
 
+    public electionFinished = (winner: string) => new MessageEmbed()
+    .setTitle("The election is over!")
+    .addField(`Welcome your new host - ${winner}`, "Since that moment he's responsible for **everything** that happens in this channel.")
+    .setFooter("Don't forget to rate your host after the game.")
+    .setColor("PURPLE");
+
+    public addedToBlackList = (user: string) => new MessageEmbed()
+    .setTitle("User added to event blacklist!")
+    .addField("Guild member was blacklisted in your server.", `Since that moment ${user} can't host or participate events in your server.`)
+    .addField("Special prescription", "Even though, host **can allow** users from blacklist join an occasion.\n Blacklisted users can't be hosts in any case.")
+    .setColor("RED");
+
+    public removedFromBlackList = (user: string) => new MessageEmbed()
+    .setTitle("User removed from blacklist!")
+    .addField("Congratulations!", `Since that moment ${user} can participate any events in this server and nomimated as host.`)
+    .setColor("GREEN");
+
     public errorInformation = (error: string) => new MessageEmbed()
     .addField("Error:", error)
     .setFooter("Use help command for detailes.")

@@ -18,7 +18,7 @@ export class HelperManager{
      */
     public extractID(input: string){
         console.log(input);
-        const extracted = input.substr(2, input.length - 3);
+        const extracted = input.substr(3, input.length - 4);
         console.log(extracted);
         return extracted;
     }
