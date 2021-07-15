@@ -12,7 +12,9 @@ exports.event = {
         if (!cmd)
             return;
         const command = client.commands.get(cmd) || client.aliases.get(cmd);
-        if (command)
+        if (command) {
             command.run(client, message, args);
+            message.delete();
+        }
     }
 };

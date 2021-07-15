@@ -1,5 +1,4 @@
-import { GuildMember } from "discord.js";
-import { User, CategoryChannel, VoiceState, VoiceChannel, Guild, TextChannel } from "discord.js";
+import {GuildMember, User, CategoryChannel, VoiceState, VoiceChannel, Guild, TextChannel } from "discord.js";
 
 export enum OccasionState{
     voting,
@@ -10,6 +9,7 @@ export enum OccasionState{
 export enum MemberState{
     joined,
     left,
+    moved,
     other
 }
 /*Wrap in promise */
@@ -63,9 +63,10 @@ export class RoomManger {
         await textChannel.delete();
     }
     
-    public checkState(oldState: VoiceState, newState: VoiceState){
+    public checkState( oldState: VoiceState, newState: VoiceState){
         if(oldState.channel == newState.channel) return MemberState.other;
+        if(newState.channel == null) return MemberState.left;
         if(oldState.channel == null) return MemberState.joined;
-        return MemberState.left;        
+        return MemberState.moved;        
     }
 }

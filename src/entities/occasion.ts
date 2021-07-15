@@ -20,9 +20,12 @@ export class Occasion {
     textChannel: string;
 
     @Column()
-    host!: string;
+    initiator!: string;
 
-    @Column({type: 'date', nullable: true})
+    @Column({nullable: true})
+    host: string;
+
+    @Column({type: 'timestamptz', nullable: true})  
     startedAt: Date;
     
     @CreateDateColumn()
@@ -30,4 +33,7 @@ export class Occasion {
 
     @Column({nullable: true})
     description: string;
+
+    @Column({nullable: true})
+    Title: string;
 }

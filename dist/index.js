@@ -6,4 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 require("reflect-metadata");
 const Client_1 = __importDefault(require("./Client"));
-new Client_1.default().init();
+const discord_buttons_1 = __importDefault(require("discord-buttons"));
+const client = new Client_1.default();
+discord_buttons_1.default(client);
+client.init();

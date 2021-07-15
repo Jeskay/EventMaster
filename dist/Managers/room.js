@@ -20,7 +20,8 @@ var MemberState;
 (function (MemberState) {
     MemberState[MemberState["joined"] = 0] = "joined";
     MemberState[MemberState["left"] = 1] = "left";
-    MemberState[MemberState["other"] = 2] = "other";
+    MemberState[MemberState["moved"] = 2] = "moved";
+    MemberState[MemberState["other"] = 3] = "other";
 })(MemberState = exports.MemberState || (exports.MemberState = {}));
 class RoomManger {
     channels(guild, text, voice) {
@@ -62,9 +63,11 @@ class RoomManger {
     checkState(oldState, newState) {
         if (oldState.channel == newState.channel)
             return MemberState.other;
+        if (newState.channel == null)
+            return MemberState.left;
         if (oldState.channel == null)
             return MemberState.joined;
-        return MemberState.left;
+        return MemberState.moved;
     }
 }
 exports.RoomManger = RoomManger;

@@ -608,10 +608,9 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-discord-buttons@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/discord-buttons/-/discord-buttons-3.2.1.tgz#568eebc322d36b010ea67e891b01208c897d8e66"
-  integrity sha512-UN5xOLG0TwTX6Qr/hjdSyP63HxOYxs5saxfdJ/vijSqjfa/yVPgxO2InKF0l8rpsDOVMsLWGDFLI3+Ax97/LOg==
+"discord-buttons@https://github.com/discord-buttons/discord-buttons.git#dev":
+  version "4.0.0"
+  resolved "https://github.com/discord-buttons/discord-buttons.git#a22e7660e97da0082928603bc33332ee94e7fe01"
 
 discord.js@^12.5.3:
   version "12.5.3"

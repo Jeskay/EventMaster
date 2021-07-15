@@ -38,9 +38,13 @@ __decorate([
 __decorate([
     typeorm_1.Column(),
     __metadata("design:type", String)
+], Occasion.prototype, "initiator", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", String)
 ], Occasion.prototype, "host", void 0);
 __decorate([
-    typeorm_1.Column({ type: 'date', nullable: true }),
+    typeorm_1.Column({ type: 'timestamptz', nullable: true }),
     __metadata("design:type", Date)
 ], Occasion.prototype, "startedAt", void 0);
 __decorate([
@@ -51,6 +55,10 @@ __decorate([
     typeorm_1.Column({ nullable: true }),
     __metadata("design:type", String)
 ], Occasion.prototype, "description", void 0);
+__decorate([
+    typeorm_1.Column({ nullable: true }),
+    __metadata("design:type", String)
+], Occasion.prototype, "Title", void 0);
 Occasion = __decorate([
     typeorm_1.Entity()
 ], Occasion);

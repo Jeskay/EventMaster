@@ -1,4 +1,5 @@
 import { VoiceChannel} from 'discord.js';
+import { OccasionState } from '../../Managers/room';
 import {Command} from '../../Interfaces';
 
 export const command: Command = {
@@ -22,6 +23,10 @@ export const command: Command = {
                 const eventLeader = voiceChannel.members.get(winner);
                 if(!eventLeader) return;
                 client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, eventLeader);
+                await client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
+                    state: OccasionState.playing,
+                    host: eventLeader.id
+                });
                 await message.channel.send(client.embeds.electionFinished(eventLeader.user.username));
             } else await message.channel.send(client.embeds.voteConfimation(args[0]));
         } catch(error) {

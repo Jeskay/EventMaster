@@ -27,6 +27,10 @@ exports.event = {
                 case room_1.MemberState.left:
                     yield client.channelController.leftHandler(client, oldState.channel);
                     break;
+                case room_1.MemberState.moved:
+                    yield client.channelController.joinHandler(client, newState.member, newState.channel);
+                    yield client.channelController.leftHandler(client, oldState.channel);
+                    break;
             }
         }
         catch (error) {

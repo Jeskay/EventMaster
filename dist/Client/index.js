@@ -36,34 +36,31 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = require("fs");
 const typeorm_1 = require("typeorm");
 const Config_1 = require("../Config");
-const database_1 = require("../Managers/database");
-const helper_1 = require("../Managers/helper");
-const room_1 = require("../Managers/room");
-const vote_1 = require("../Managers/vote");
-const channel_1 = require("../Controllers/channel");
-const embed_1 = require("../Managers/embed");
+const Managers_1 = require("../Managers");
+const Controllers_1 = require("../Controllers");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);
         this.commands = new discord_js_1.Collection();
         this.events = new discord_js_1.Collection();
         this.aliases = new discord_js_1.Collection();
+        this.buttons = new discord_js_1.Collection();
         this.config = new Config_1.Config();
-        this.helper = new helper_1.HelperManager();
-        this.room = new room_1.RoomManger();
-        this.vote = new vote_1.VoteManager();
-        this.embeds = new embed_1.EmbedManager();
-        this.channelController = new channel_1.ChannelController();
+        this.helper = new Managers_1.HelperManager();
+        this.room = new Managers_1.RoomManger();
+        this.vote = new Managers_1.VoteManager();
+        this.embeds = new Managers_1.EmbedManager();
+        this.channelController = new Controllers_1.ChannelController();
+        this.ratingController = new Controllers_1.RatingController();
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             this.login(this.config.token);
             yield typeorm_1.createConnection();
-            this.database = new database_1.DataBaseManager();
+            this.database = new Managers_1.DataBaseManager();
             const commandPath = path_1.default.join(__dirname, "..", "Commands");
+            const file_ending = (this.config.state == "dev") ? '.ts' : '.js';
             fs_1.readdirSync(commandPath).forEach((dir) => {
-                const file_ending = (this.config.state == "dev") ? '.ts' : '.js';
-                console.log(file_ending);
                 const commands = fs_1.readdirSync(`${commandPath}/${dir}`).filter((file) => file.endsWith(file_ending));
                 for (const file of commands) {
                     const { command } = require(`${commandPath}/${dir}/${file}`);
@@ -73,6 +70,14 @@ class ExtendedClient extends discord_js_1.Client {
                             this.aliases.set(alias, command);
                         });
                     }
+                }
+            });
+            const buttonPath = path_1.default.join(__dirname, "..", "Buttons");
+            fs_1.readdirSync(buttonPath).forEach(dir => {
+                const buttons = fs_1.readdirSync(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));
+                for (const file of buttons) {
+                    const { button } = require(`${buttonPath}/${dir}/${file}`);
+                    this.buttons.set(button.name, button);
                 }
             });
             const eventPath = path_1.default.join(__dirname, "..", "Events");

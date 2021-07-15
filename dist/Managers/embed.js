@@ -1,9 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmbedManager = void 0;
+const discord_buttons_1 = require("discord-buttons");
 const discord_js_1 = require("discord.js");
 class EmbedManager {
     constructor() {
+        this.LikeHost = (id) => new discord_buttons_1.MessageButton()
+            .setStyle(3)
+            .setID(id)
+            .setLabel('👍');
+        this.DislikeHost = (id) => new discord_buttons_1.MessageButton()
+            .setStyle(4)
+            .setID(id)
+            .setLabel('👎');
+        this.HostCommend = (likeId, dislikeId) => new discord_buttons_1.MessageActionRow()
+            .addComponents(this.LikeHost(likeId), this.DislikeHost(dislikeId));
+        this.startedOccasion = new discord_js_1.MessageEmbed()
+            .setTitle("Event started!")
+            .setFooter("Notification will be automatically posted to the notification channel.")
+            .setColor("WHITE");
+        this.finishedOccasion = new discord_js_1.MessageEmbed()
+            .setTitle("Event finished!")
+            .setFooter("Don't forget to commend host. The room will be deleted 5 seconds later.")
+            .setColor("WHITE");
         this.voting = new discord_js_1.MessageEmbed()
             .setTitle("Time for the election!")
             .setFooter("Use **.vote** command to vote for the host.")
@@ -17,6 +36,20 @@ class EmbedManager {
             .addField(`Welcome your new host - ${winner}`, "Since that moment he's responsible for **everything** that happens in this channel.")
             .setFooter("Don't forget to rate your host after the game.")
             .setColor("PURPLE");
+        this.playerInfo = (player, user) => new discord_js_1.MessageEmbed()
+            .setTitle(user.username)
+            .addField("Events played:", player.eventsPlayed)
+            .addField("Events hosted:", player.eventsHosted)
+            .addField("First event:", player.joinedAt.toLocaleString())
+            .setColor("PURPLE");
+        this.playerCommended = (user) => new discord_js_1.MessageEmbed()
+            .setTitle(`${user.username}'s rating changed`)
+            .setFooter("Thank you for improving our community.")
+            .setColor("GREEN");
+        this.hostCommended = () => new discord_js_1.MessageEmbed()
+            .setTitle("Host's rating changed")
+            .setFooter("Thank you for improving our community.")
+            .setColor("GREEN");
         this.addedToBlackList = (user) => new discord_js_1.MessageEmbed()
             .setTitle("User added to event blacklist!")
             .addField("Guild member was blacklisted in your server.", `Since that moment ${user} can't host or participate events in your server.`)

@@ -13,11 +13,18 @@ exports.DataBaseManager = void 0;
 const typeorm_1 = require("typeorm");
 const server_1 = require("../entities/server");
 const occasion_1 = require("../entities/occasion");
+const player_1 = require("../entities/player");
+const commend_1 = require("../entities/commend");
 class DataBaseManager {
     constructor() {
         this.connect = () => __awaiter(this, void 0, void 0, function* () { return yield this.connection.connect(); });
-        this.getServer = (serverID) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(server_1.Server, { guild: serverID }); });
         this.occasion = (event) => this.connection.manager.create(occasion_1.Occasion, event);
+        this.player = (player) => this.connection.manager.create(player_1.Player, player);
+        this.commend = (commend) => this.connection.manager.create(commend_1.Commend, commend);
+        this.server = (server) => this.connection.manager.create(server_1.Server, server);
+        this.getServer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(server_1.Server, { guild: id }); });
+        this.getPlayer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(player_1.Player, { id: id }); });
+        this.getCommend = (authorId, subjectId, hosting, cheer) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(commend_1.Commend, { authorId: authorId, subjectId: subjectId, host: hosting, cheer: cheer }); });
         this.connection = typeorm_1.getConnection();
     }
     getServerRelations(serverID) {
@@ -31,6 +38,77 @@ class DataBaseManager {
             if (!server)
                 throw Error("Guild with followed id is not registered.");
             return server;
+        });
+    }
+    getPlayerRelation(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield this.connection.getRepository(player_1.Player)
+                .createQueryBuilder("player")
+                .leftJoinAndSelect("player.commendsBy", "commend")
+                .leftJoinAndSelect("player.commendsAbout", "commend")
+                .where("player.id = :id", { id: userId })
+                .getOne()
+                .catch(err => { throw err; });
+            if (!user)
+                throw Error("Player with followed id is not registered.");
+            return user;
+        });
+    }
+    addServer(server) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = this.connection.manager.create(server_1.Server, server);
+            yield this.connection.manager.save(post);
+        });
+    }
+    addPlayer(player) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = this.player(player);
+            yield this.connection.manager.save(post);
+        });
+    }
+    addOccasion(guildID, occasion) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = this.occasion(occasion);
+            const server = yield this.getServer(guildID);
+            if (!server)
+                throw Error("Guild with followed id is not registered.");
+            else if (server.events && server.events.includes(post))
+                throw Error("There is occasion's duplicate.");
+            yield this.connection.manager.save(post);
+        });
+    }
+    addCommend(commend) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = this.commend(commend);
+            yield this.connection.manager.save(post);
+        });
+    }
+    removeServer(serverID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const server = yield this.getServer(serverID);
+            if (server == undefined)
+                throw Error("");
+            this.connection.manager.remove(server);
+        });
+    }
+    removeOccasion(guildID, voiceChannel) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const server = yield this.getServerRelations(guildID);
+            if (!server)
+                throw Error("Guild with followed id is not registered.");
+            const occasion = server.events.find(event => event.voiceChannel == voiceChannel);
+            if (!occasion)
+                throw Error("Cannot find occasion with following voice channel");
+            yield this.connection.manager.remove(occasion);
+            return { voice: occasion.voiceChannel, text: occasion.textChannel };
+        });
+    }
+    removePlayer(userID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const player = yield this.getPlayer(userID);
+            if (!player)
+                throw Error("Cannot find player");
+            yield this.connection.manager.remove(player);
         });
     }
     updateServer(guildID, params) {
@@ -52,18 +130,7 @@ class DataBaseManager {
             yield this.connection.manager.save(server);
         });
     }
-    addOccasion(guildID, occasion) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const post = this.occasion(occasion);
-            const server = yield this.getServer(guildID);
-            if (!server)
-                throw Error("Guild with followed id is not registered.");
-            else if (server.events && server.events.includes(post))
-                throw Error("There is occasion's duplicate.");
-            yield this.connection.manager.save(post);
-        });
-    }
-    removeOccasion(guildID, voiceChannel) {
+    updateOccasion(guildID, voiceChannel, params) {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield this.getServerRelations(guildID);
             if (!server)
@@ -71,25 +138,28 @@ class DataBaseManager {
             const occasion = server.events.find(event => event.voiceChannel == voiceChannel);
             if (!occasion)
                 throw Error("Cannot find occasion with following voice channel");
-            yield this.connection.manager.remove(occasion);
-            return { voice: occasion.voiceChannel, text: occasion.textChannel };
+            Object.keys(occasion).forEach(key => occasion[key] = key in params ? params[key] : occasion[key]);
+            yield this.connection.manager.save(occasion);
         });
     }
-    addServer(server) {
+    updatePlayer(userID, params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const post = this.connection.manager.create(server_1.Server, server);
-            const duplicate = yield this.getServer(post.guild);
-            if (duplicate)
-                throw Error("Server with such id already exists.");
-            yield this.connection.manager.save(post);
+            const player = yield this.getPlayer(userID);
+            if (!player)
+                throw Error("Cannot find the player.");
+            console.log(Object.keys(player));
+            Object.keys(player).forEach(key => player[key] = key in params ? params[key] : player[key]);
+            yield this.connection.manager.save(player);
         });
     }
-    removeServer(serverID) {
+    updateCommend(commend, params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const server = yield this.getServer(serverID);
-            if (server == undefined)
-                throw Error("");
-            this.connection.manager.remove(server);
+            yield this.connection.getRepository(commend_1.Commend).update({
+                authorId: commend.authorId,
+                subjectId: commend.subjectId,
+                host: commend.host,
+                cheer: commend.cheer
+            }, params);
         });
     }
 }

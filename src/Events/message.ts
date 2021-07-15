@@ -11,6 +11,9 @@ export const event: Event = {
         const cmd = args.shift()?.toLowerCase();
         if(!cmd) return;
         const command = client.commands.get(cmd) || client.aliases.get(cmd);
-        if(command) (command as Command).run(client, message, args);
+        if(command) {
+            (command as Command).run(client, message, args);
+            message.delete();
+        }
     }
 }

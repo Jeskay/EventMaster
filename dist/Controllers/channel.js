@@ -22,10 +22,10 @@ class ChannelController {
             yield database.addOccasion(member.guild.id, {
                 voiceChannel: voice.id,
                 textChannel: text.id,
-                host: member.id,
+                initiator: member.id,
                 state: room_1.OccasionState.waiting,
                 server: server
-            }).catch();
+            });
         });
     }
     joinHandler(client, member, joinedChannel) {
@@ -45,7 +45,10 @@ class ChannelController {
                 if (text == undefined || !text.isText)
                     return;
                 client.vote.start(occasion.voiceChannel, 1);
-                text.send(client.embeds.voting);
+                yield client.database.updateOccasion(joinedChannel.guild.id, joinedChannel.id, {
+                    state: room_1.OccasionState.voting
+                });
+                yield text.send(client.embeds.voting);
             }
         });
     }

@@ -7,12 +7,12 @@ interface Run {
 
 export interface Command {
     name: string;
-    describtion?: string;
+    description?: string;
     aliases?: string[];
     run: Run;
 }
 export interface Command {
     name: string;
-    description?: string[];
+    description?: string;
     run: Run;
 }

@@ -17,6 +17,10 @@ export const event: Event = {
                 case MemberState.left:
                     await client.channelController.leftHandler(client, oldState.channel as VoiceChannel);
                     break;
+                case MemberState.moved:
+                    await client.channelController.joinHandler(client, newState.member, newState.channel as VoiceChannel);
+                    await client.channelController.leftHandler(client, oldState.channel as VoiceChannel);
+                    break;
             }
         } catch(error) {
             console.log(error);

@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const room_1 = require("../../Managers/room");
 exports.command = {
     name: 'vote',
     aliases: ['v'],
@@ -35,6 +36,10 @@ exports.command = {
                 if (!eventLeader)
                     return;
                 client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, eventLeader);
+                yield client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
+                    state: room_1.OccasionState.playing,
+                    host: eventLeader.id
+                });
                 yield message.channel.send(client.embeds.electionFinished(eventLeader.user.username));
             }
             else

@@ -15,10 +15,10 @@ export class ChannelController {
         await database.addOccasion(member.guild.id, {
             voiceChannel: voice.id,
             textChannel: text.id,
-            host: member.id,
+            initiator: member.id,
             state: OccasionState.waiting,
             server: server
-        }).catch();
+        });
     }
     /**
      * Should be called when a user joins a channel
@@ -39,7 +39,10 @@ export class ChannelController {
             const text = joinedChannel.guild.channels.cache.get(occasion.textChannel) as TextChannel;
             if(text == undefined || !text.isText) return;
             client.vote.start(occasion.voiceChannel, 1);//change to limit
-            text.send(client.embeds.voting);
+            await client.database.updateOccasion(joinedChannel.guild.id, joinedChannel.id, {
+                state: OccasionState.voting
+            });
+            await text.send(client.embeds.voting);
         }
     }
     /**
