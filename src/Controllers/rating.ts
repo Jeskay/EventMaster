@@ -82,16 +82,16 @@ export class RatingController {
         if(!occasion) throw Error("Cannot find the occasion.");
         const host = occasion.host;
         await Promise.all(channel.members.map( async (member) => {
-                const player = await client.database.getPlayer(member.id);
-                if(!player) await client.database.addPlayer({
-                    id: member.id,
-                    eventsPlayed: (member.id == host) ? 0 : 1,
-                    eventsHosted: (member.id == host) ? 1 : 0,
-                });
-                else await client.database.updatePlayer(member.id, {
-                    eventsPlayed: (member.id == host) ? player.eventsPlayed : player.eventsPlayed + 1,
-                    eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted
-                }); 
+            const player = await client.database.getPlayer(member.id);
+            if(!player) await client.database.addPlayer({
+                id: member.id,
+                eventsPlayed: (member.id == host) ? 0 : 1,
+                eventsHosted: (member.id == host) ? 1 : 0,
+            });
+            else await client.database.updatePlayer(member.id, {
+                eventsPlayed: (member.id == host) ? player.eventsPlayed : player.eventsPlayed + 1,
+                eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted
+            }); 
         }));
     }
 }

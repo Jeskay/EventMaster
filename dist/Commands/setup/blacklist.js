@@ -15,7 +15,7 @@ exports.command = {
     aliases: ['bl'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
-        if (guild == null)
+        if (!guild)
             return;
         if (args.length != 1)
             return;
@@ -32,7 +32,7 @@ exports.command = {
             yield message.channel.send(client.embeds.addedToBlackList(args[0]));
         }
         catch (error) {
-            yield message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(client.embeds.errorInformation(error));
         }
     })
 };

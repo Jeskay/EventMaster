@@ -11,28 +11,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
-    name: 'whitelist',
-    aliases: ['wl'],
+    name: 'profile',
+    description: "print user statistics",
+    aliases: ['info'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
-        const guild = message.guild;
-        if (!guild)
-            return;
-        if (args.length != 1)
+        if (args.length > 1)
             return;
         try {
-            const user = client.helper.extractID(args[0]);
-            const server = yield client.database.getServer(guild.id);
-            if (!server)
-                throw Error("Server is not registered yet.");
-            if (!server.settings.owners.includes(message.author.id))
-                throw Error("Permission denied.");
-            const list = server.settings.black_list;
-            list.splice(list.indexOf(user));
-            yield client.database.updateSettings(guild.id, { black_list: list });
-            yield message.channel.send(client.embeds.removedFromBlackList(args[0]));
+            let userId = args[0];
+            if (args.length == 0)
+                userId = message.author.id;
+            else if (message.guild)
+                userId = client.helper.extractID(args[0]);
+            const profile = yield client.database.getPlayer(userId);
+            if (!profile)
+                throw Error("This user did not join events.");
+            const user = yield client.users.cache.get(userId);
+            if (!user)
+                throw Error("User does not exists.");
+            const commends = yield profile.commendsAbout;
+            yield message.channel.send(client.embeds.playerInfo(profile, user, commends));
         }
         catch (error) {
-            yield message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(error);
         }
     })
 };

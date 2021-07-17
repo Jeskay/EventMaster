@@ -1,18 +1,20 @@
-import { VoiceChannel} from 'discord.js';
+import { TextChannel, VoiceChannel} from 'discord.js';
 import { OccasionState } from '../../Managers/room';
 import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'vote',
+    description: "vote for event host",
     aliases: ['v'],
     run: async(client, message, args) => {
         const author = message.author;
         if(args.length != 1) return;
-        const candidateID = client.helper.extractID(args[0]);
+        let candidateID = args[0];
+        if(message.guild)
+            candidateID = client.helper.extractID(args[0]);
         if(author.id == candidateID) return;
-        /*Discord bug with one member in several guilds should be processed */
         const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidateID, channel)) as VoiceChannel;
-        if(voiceChannel == undefined) return;
+        if(!voiceChannel) return;
         try {   
             const winner = await client.vote.vote(voiceChannel.id, author.id, candidateID);
             if(winner != null){
@@ -27,10 +29,12 @@ export const command: Command = {
                     state: OccasionState.playing,
                     host: eventLeader.id
                 });
-                await message.channel.send(client.embeds.electionFinished(eventLeader.user.username));
+                const channel = voiceChannel.guild.channels.cache.get(occasion.textChannel);
+                if(!channel || !channel.isText) throw Error("Cannot find text channel");
+                await (channel as TextChannel).send(client.embeds.electionFinished(eventLeader.user.username));
             } else await message.channel.send(client.embeds.voteConfimation(args[0]));
         } catch(error) {
-            await message.channel.send(error);
+            message.channel.send(client.embeds.errorInformation(error));
         }
     }
 }; 

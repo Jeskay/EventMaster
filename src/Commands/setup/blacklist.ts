@@ -5,7 +5,7 @@ export const command: Command = {
     aliases: ['bl'],
     run: async(client, message, args) => {
         const guild = message.guild;
-        if(guild == null) return;
+        if(!guild) return;
         if(args.length != 1) return;
         try {
             const user = client.helper.extractID(args[0]);
@@ -17,7 +17,7 @@ export const command: Command = {
             await client.database.updateSettings(guild.id, {black_list: list});
             await message.channel.send(client.embeds.addedToBlackList(args[0]));
         } catch(error) {
-            await message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(client.embeds.errorInformation(error));
         }
     }
 };

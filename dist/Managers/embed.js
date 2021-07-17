@@ -36,11 +36,22 @@ class EmbedManager {
             .addField(`Welcome your new host - ${winner}`, "Since that moment he's responsible for **everything** that happens in this channel.")
             .setFooter("Don't forget to rate your host after the game.")
             .setColor("PURPLE");
-        this.playerInfo = (player, user) => new discord_js_1.MessageEmbed()
-            .setTitle(user.username)
-            .addField("Events played:", player.eventsPlayed)
-            .addField("Events hosted:", player.eventsHosted)
-            .addField("First event:", player.joinedAt.toLocaleString())
+        this.occasionNotification = (name, description, host) => new discord_js_1.MessageEmbed()
+            .setTitle(name)
+            .setDescription(description)
+            .setFooter(`announce by ${host}`)
+            .setColor("PURPLE");
+        this.occasionStarted = (title, description, hostName, members) => new discord_js_1.MessageEmbed()
+            .setTitle(`Event ${title} started`)
+            .setDescription(description)
+            .addField("Host:", hostName)
+            .addField("Members when started:", members)
+            .setColor("PURPLE");
+        this.occasionFinished = (description, hostName, members) => new discord_js_1.MessageEmbed()
+            .setTitle(`Event finished`)
+            .setDescription(description)
+            .addField("Host:", hostName)
+            .addField("Members when finished:", members)
             .setColor("PURPLE");
         this.playerCommended = (user) => new discord_js_1.MessageEmbed()
             .setTitle(`${user.username}'s rating changed`)
@@ -59,6 +70,15 @@ class EmbedManager {
             .setTitle("User removed from blacklist!")
             .addField("Congratulations!", `Since that moment ${user} can participate any events in this server and nomimated as host.`)
             .setColor("GREEN");
+        this.ownerAdded = (username) => new discord_js_1.MessageEmbed()
+            .setTitle("User's permissions increased!")
+            .addField("Congratulations!", `Since that moment ${username} has access to all commands of the bot.`)
+            .addField("Prescription", "However, **only** server owner can edit owners list.")
+            .setColor("GREEN");
+        this.ownerRemoved = (username) => new discord_js_1.MessageEmbed()
+            .setTitle("User's permission denied!")
+            .addField("Guild member was removed from owners list", `Since that moment ${username} has limited access to bot commands.`)
+            .setColor("RED");
         this.errorInformation = (error) => new discord_js_1.MessageEmbed()
             .addField("Error:", error)
             .setFooter("Use help command for detailes.")
@@ -73,6 +93,20 @@ class EmbedManager {
             .addField("Information", `Dear, ${owner}, thank you for using our service in ${guild}`)
             .setFooter("Please, send us a letter to let us know why you decided to stop using our service. We will make neccessary improvements.")
             .setColor("WHITE");
+    }
+    playerInfo(player, user, commends) {
+        const playerLikes = commends.filter(commend => commend.cheer && !commend.host).length;
+        const playerDislikes = commends.filter(commend => !commend.cheer && !commend.host).length;
+        const hostLikes = commends.filter(commend => commend.cheer && commend.host).length;
+        const hostDislikes = commends.filter(commend => !commend.cheer && commend.host).length;
+        return new discord_js_1.MessageEmbed()
+            .setTitle(user.username)
+            .addField("Events played:", player.eventsPlayed)
+            .addField("Events hosted:", player.eventsHosted)
+            .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
+            .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
+            .addField("First event:", player.joinedAt.toLocaleString())
+            .setColor("PURPLE");
     }
 }
 exports.EmbedManager = EmbedManager;

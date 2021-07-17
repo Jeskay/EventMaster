@@ -12,12 +12,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
     name: 'dislike',
+    description: "Send a negative comment about user",
     aliases: [],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
+        if (message.guild)
+            return;
         if (args.length != 1)
             return;
-        const userId = client.helper.extractID(args[0]);
         try {
+            let userId = args[0];
+            if (message.guild)
+                userId = client.helper.extractID(args[0]);
             const user = yield client.users.cache.get(userId);
             if (!user)
                 throw Error("User does not exists.");
@@ -25,7 +30,7 @@ exports.command = {
             yield message.channel.send(client.embeds.playerCommended(user));
         }
         catch (error) {
-            yield message.channel.send(error);
+            message.channel.send(error);
         }
     })
 };

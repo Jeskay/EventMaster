@@ -17,9 +17,7 @@ export class HelperManager{
      * @returns id
      */
     public extractID(input: string){
-        console.log(input);
         const extracted = input.substr(3, input.length - 4);
-        console.log(extracted);
         return extracted;
     }
     /**

@@ -15,7 +15,7 @@ exports.command = {
     aliases: ['fg', 'finish'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
-        if (guild == null)
+        if (!guild)
             return;
         try {
             const server = yield client.database.getServerRelations(guild.id);
@@ -25,16 +25,25 @@ exports.command = {
             if (args.length < 1)
                 throw Error("Event results must be provided. Ask moderation about respond format.");
             const voice = guild.channels.cache.get(occasion.voiceChannel);
+            const text = guild.channels.cache.get(occasion.textChannel);
+            if (!text)
+                throw Error("Text channel has been removed, personal statistic will not be updated.");
             if (!voice)
                 throw Error("Voice channel has been removed, personal statistic will not be updated.");
             console.log(`Voice channel is ${voice.name}`);
             yield client.ratingController.updateMembers(client, voice);
             yield client.database.removeOccasion(server.guild, occasion.voiceChannel);
-            yield message.channel.send(client.embeds.finishedOccasion, client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`));
+            yield text.send(client.embeds.finishedOccasion, client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`));
             setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
+            if (server.settings.logging_channel) {
+                const channel = guild.channels.cache.get(server.settings.logging_channel);
+                if (!channel || !channel.isText)
+                    return;
+                channel.send(client.embeds.occasionFinished(args.join(' '), message.author.username, voice.members.size));
+            }
         }
         catch (error) {
-            yield message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(client.embeds.errorInformation(error));
         }
     })
 };

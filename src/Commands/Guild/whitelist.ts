@@ -5,7 +5,7 @@ export const command: Command = {
     aliases: ['wl'],
     run: async(client, message, args) => {
         const guild = message.guild;
-        if(guild == null) return;
+        if(!guild) return;
         if(args.length != 1) return;
         try {
             const user = client.helper.extractID(args[0]);

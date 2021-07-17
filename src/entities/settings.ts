@@ -8,6 +8,15 @@ export class Settings {
     @Column()
     limit: number;
 
+    @Column({type: "text", nullable: true})
+    notification_channel?: string;
+
+    @Column({type: "text", nullable: true})
+    logging_channel?: string;
+
+    @Column({type: "text", nullable: true})
+    event_role?: string;
+
     @Column({type: "text", array: true})
     black_list: string[];
 

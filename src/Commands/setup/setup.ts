@@ -5,11 +5,14 @@ export const command: Command = {
     aliases: ['s'],
     run: async(client, message, args) => {
         const guild = message.guild;
-        if(guild == null) return;
+        if(!guild) return;
         if(args.length != 2) return;
         const channel = args[0];
         const category = args[1];
         try {
+            const server = await client.database.getServer(guild.id);
+            if(!server) throw Error("Server is not registered yet.");
+            if(!server.settings.owners.includes(message.author.id)) throw Error("Permission denied.");
             client.helper.validatePair(channel, category, guild);
             await client.database.updateServer(guild.id, {
                 eventChannel: channel, 
@@ -17,7 +20,7 @@ export const command: Command = {
             });
             await message.channel.send("channel and category successfuly binded.");
         } catch(error) {
-            await message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(client.embeds.errorInformation(error));
         }
     }
 };

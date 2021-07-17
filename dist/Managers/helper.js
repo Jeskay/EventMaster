@@ -13,9 +13,7 @@ class HelperManager {
             throw Error(`Channel ${channel.name} is not in ${category.name}.`);
     }
     extractID(input) {
-        console.log(input);
         const extracted = input.substr(3, input.length - 4);
-        console.log(extracted);
         return extracted;
     }
     checkChannel(member1, member2, channel) {

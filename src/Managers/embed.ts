@@ -1,5 +1,6 @@
 import { MessageActionRow, MessageButton} from "discord-buttons";
 import { User, MessageEmbed } from "discord.js";
+import { Commend } from "../entities/commend";
 import { Player } from "../entities/player";
 
 export class EmbedManager{
@@ -41,14 +42,42 @@ export class EmbedManager{
     .addField(`Welcome your new host - ${winner}`, "Since that moment he's responsible for **everything** that happens in this channel.")
     .setFooter("Don't forget to rate your host after the game.")
     .setColor("PURPLE");
-    //Rework timezone
-    public playerInfo = (player: Player, user: User) => new MessageEmbed()
-    .setTitle(user.username)
-    .addField("Events played:", player.eventsPlayed)
-    .addField("Events hosted:", player.eventsHosted)
-    .addField("First event:", player.joinedAt.toLocaleString())
+
+    public occasionNotification = (name: string, description: string, host: string) => new MessageEmbed()
+    .setTitle(name)
+    .setDescription(description)
+    .setFooter(`announce by ${host}`)
     .setColor("PURPLE");
 
+    public occasionStarted = (title: string, description: string, hostName: string, members: number) => new MessageEmbed()
+    .setTitle(`Event ${title} started`)
+    .setDescription(description)
+    .addField("Host:", hostName)
+    .addField("Members when started:", members)
+    .setColor("PURPLE");
+
+    public occasionFinished = (description: string, hostName: string, members: number) => new MessageEmbed()
+    .setTitle(`Event finished`)
+    .setDescription(description)
+    .addField("Host:", hostName)
+    .addField("Members when finished:", members)
+    .setColor("PURPLE");
+    //Rework timezone
+    public playerInfo (player: Player, user: User, commends: Commend[]) { 
+        const playerLikes = commends.filter(commend => commend.cheer && !commend.host).length;
+        const playerDislikes = commends.filter(commend => !commend.cheer && !commend.host).length;
+        const hostLikes = commends.filter(commend => commend.cheer && commend.host).length;
+        const hostDislikes = commends.filter(commend => !commend.cheer && commend.host).length;
+        
+        return new MessageEmbed()
+        .setTitle(user.username)
+        .addField("Events played:", player.eventsPlayed)
+        .addField("Events hosted:", player.eventsHosted)
+        .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
+        .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
+        .addField("First event:", player.joinedAt.toLocaleString())
+        .setColor("PURPLE");
+    }
     public playerCommended = (user: User) => new MessageEmbed()
     .setTitle(`${user.username}'s rating changed`)
     .setFooter("Thank you for improving our community.")
@@ -69,6 +98,17 @@ export class EmbedManager{
     .setTitle("User removed from blacklist!")
     .addField("Congratulations!", `Since that moment ${user} can participate any events in this server and nomimated as host.`)
     .setColor("GREEN");
+
+    public ownerAdded = (username: string) => new MessageEmbed()
+    .setTitle("User's permissions increased!")
+    .addField("Congratulations!", `Since that moment ${username} has access to all commands of the bot.`)
+    .addField("Prescription", "However, **only** server owner can edit owners list.")
+    .setColor("GREEN");
+
+    public ownerRemoved = (username: string) => new MessageEmbed()
+    .setTitle("User's permission denied!")
+    .addField("Guild member was removed from owners list", `Since that moment ${username} has limited access to bot commands.`)
+    .setColor("RED");
 
     public errorInformation = (error: string) => new MessageEmbed()
     .addField("Error:", error)

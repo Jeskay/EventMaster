@@ -13,16 +13,19 @@ exports.command = void 0;
 const room_1 = require("../../Managers/room");
 exports.command = {
     name: 'vote',
+    description: "vote for event host",
     aliases: ['v'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const author = message.author;
         if (args.length != 1)
             return;
-        const candidateID = client.helper.extractID(args[0]);
+        let candidateID = args[0];
+        if (message.guild)
+            candidateID = client.helper.extractID(args[0]);
         if (author.id == candidateID)
             return;
         const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidateID, channel));
-        if (voiceChannel == undefined)
+        if (!voiceChannel)
             return;
         try {
             const winner = yield client.vote.vote(voiceChannel.id, author.id, candidateID);
@@ -40,13 +43,16 @@ exports.command = {
                     state: room_1.OccasionState.playing,
                     host: eventLeader.id
                 });
-                yield message.channel.send(client.embeds.electionFinished(eventLeader.user.username));
+                const channel = voiceChannel.guild.channels.cache.get(occasion.textChannel);
+                if (!channel || !channel.isText)
+                    throw Error("Cannot find text channel");
+                yield channel.send(client.embeds.electionFinished(eventLeader.user.username));
             }
             else
                 yield message.channel.send(client.embeds.voteConfimation(args[0]));
         }
         catch (error) {
-            yield message.channel.send(error);
+            message.channel.send(client.embeds.errorInformation(error));
         }
     })
 };

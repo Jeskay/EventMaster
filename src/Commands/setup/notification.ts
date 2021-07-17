@@ -1,8 +1,9 @@
 import {Command} from '../../Interfaces';
 
 export const command: Command = {
-    name: 'setlimit',
-    aliases: ['sl'],
+    name: 'notification',
+    description: "set notification channel where bot will notify users about current events",
+    aliases: ['notify'],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;
@@ -11,8 +12,11 @@ export const command: Command = {
             const server = await client.database.getServer(guild.id);
             if(!server) throw Error("Server is not registered yet.");
             if(!server.settings.owners.includes(message.author.id)) throw Error("Permission denied.");
-            const limit = parseInt(args[0]);
-            await client.database.updateSettings(guild.id, {limit: limit});
+            const channel = guild.channels.cache.get(args[0]);
+            if(!channel) throw Error("Invalid channel id");
+            if(channel.type != 'text' && channel.type != 'news') throw Error("Only text or news channel allowed");
+            await client.database.updateSettings(guild.id, {notification_channel: channel.id});
+            await message.channel.send(`Channel ${channel.name} successfuly set to notification.`);
         } catch(error) {
             message.channel.send(client.embeds.errorInformation(error));
         }

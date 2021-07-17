@@ -12,19 +12,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
     name: 'profile',
+    description: "print user statistics ",
     aliases: ['info'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
-        if (args.length != 1)
+        if (args.length > 1)
             return;
-        const userId = client.helper.extractID(args[0]);
         try {
+            let userId = args[0];
+            if (args.length == 0)
+                userId = message.author.id;
+            else if (message.guild)
+                userId = client.helper.extractID(args[0]);
             const profile = yield client.database.getPlayer(userId);
             if (!profile)
                 throw Error("This user did not join events.");
             const user = yield client.users.cache.get(userId);
             if (!user)
                 throw Error("User does not exists.");
-            yield message.channel.send(client.embeds.playerInfo(profile, user));
+            const commends = yield profile.commendsAbout;
+            yield message.channel.send(client.embeds.playerInfo(profile, user, commends));
         }
         catch (error) {
             yield message.channel.send(error);

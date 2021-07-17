@@ -15,13 +15,18 @@ exports.command = {
     aliases: ['s'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
-        if (guild == null)
+        if (!guild)
             return;
         if (args.length != 2)
             return;
         const channel = args[0];
         const category = args[1];
         try {
+            const server = yield client.database.getServer(guild.id);
+            if (!server)
+                throw Error("Server is not registered yet.");
+            if (!server.settings.owners.includes(message.author.id))
+                throw Error("Permission denied.");
             client.helper.validatePair(channel, category, guild);
             yield client.database.updateServer(guild.id, {
                 eventChannel: channel,
@@ -30,7 +35,7 @@ exports.command = {
             yield message.channel.send("channel and category successfuly binded.");
         }
         catch (error) {
-            yield message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(client.embeds.errorInformation(error));
         }
     })
 };

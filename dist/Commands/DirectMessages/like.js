@@ -16,12 +16,15 @@ exports.command = void 0;
 const console_1 = __importDefault(require("console"));
 exports.command = {
     name: 'like',
+    description: "send a positive comment about user",
     aliases: [],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         if (args.length != 1)
             return;
-        const userId = client.helper.extractID(args[0]);
         try {
+            let userId = args[0];
+            if (message.guild)
+                userId = client.helper.extractID(args[0]);
             const user = yield client.users.cache.get(userId);
             if (!user)
                 throw Error("User does not exists.");
@@ -30,7 +33,7 @@ exports.command = {
         }
         catch (error) {
             console_1.default.log("Error");
-            yield message.channel.send(error);
+            message.channel.send(error);
         }
     })
 };

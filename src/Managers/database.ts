@@ -32,6 +32,11 @@ export class DataBaseManager{
     public getCommend = async (authorId: string, subjectId: string, hosting: boolean, cheer: boolean) => await this.connection.manager.findOne(Commend, {authorId: authorId, subjectId: subjectId, host: hosting, cheer: cheer});
 
     /**
+     * @param params object with Commend fields, describing search parameters
+     * @returns Commends matched parameters
+     */
+    public getCommends = async (params: object) => await this.connection.manager.find(Commend, params);
+    /**
      * @param serverID 
      * @returns server instance with occasions
      */

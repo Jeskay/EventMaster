@@ -15,7 +15,7 @@ exports.command = {
     aliases: ['s'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
-        if (guild == null)
+        if (!guild)
             return;
         try {
             const server = yield client.database.getServerRelations(guild.id);
@@ -25,14 +25,24 @@ exports.command = {
             if (args.length < 2)
                 throw Error("Event name and description must be provided.");
             const title = args.shift();
+            const description = args.join(' ');
             if (!title)
                 throw Error("Event name must be provided");
             yield client.database.updateOccasion(guild.id, occasion.voiceChannel, {
                 Title: title,
                 startedAt: new Date,
-                description: args.join(' ')
+                description: description
             });
             yield message.channel.send(client.embeds.startedOccasion);
+            if (server.settings.logging_channel) {
+                const channel = guild.channels.cache.get(server.settings.logging_channel);
+                if (!channel || !channel.isText)
+                    return;
+                const voiceChannel = guild.channels.cache.get(occasion.voiceChannel);
+                if (!voiceChannel)
+                    throw Error("Cannot find voice channel");
+                yield channel.send(client.embeds.occasionStarted(title, description, message.author.username, voiceChannel.members.size));
+            }
         }
         catch (error) {
             yield message.channel.send(client.embeds.errorInformation(error));

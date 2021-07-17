@@ -11,8 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
-    name: 'whitelist',
-    aliases: ['wl'],
+    name: 'logging',
+    description: "set log channel where bot will post information about passed events",
+    aliases: ['log'],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
         if (!guild)
@@ -20,19 +21,21 @@ exports.command = {
         if (args.length != 1)
             return;
         try {
-            const user = client.helper.extractID(args[0]);
             const server = yield client.database.getServer(guild.id);
             if (!server)
                 throw Error("Server is not registered yet.");
             if (!server.settings.owners.includes(message.author.id))
                 throw Error("Permission denied.");
-            const list = server.settings.black_list;
-            list.splice(list.indexOf(user));
-            yield client.database.updateSettings(guild.id, { black_list: list });
-            yield message.channel.send(client.embeds.removedFromBlackList(args[0]));
+            const channel = guild.channels.cache.get(args[0]);
+            if (!channel)
+                throw Error("Invalid channel id");
+            if (channel.type != 'text' && channel.type != 'news')
+                throw Error("Only text or news channel allowed");
+            yield client.database.updateSettings(guild.id, { logging_channel: channel.id });
+            yield message.channel.send(`Channel ${channel.name} successfuly set for logging.`);
         }
         catch (error) {
-            yield message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(client.embeds.errorInformation(error));
         }
     })
 };
