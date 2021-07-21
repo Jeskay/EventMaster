@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
     name: 'whitelist',
+    description: 'removes a user from the black list',
     aliases: ['wl'],
+    options: [{ name: 'user', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
         if (!guild)

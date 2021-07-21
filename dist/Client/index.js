@@ -38,6 +38,7 @@ const typeorm_1 = require("typeorm");
 const Config_1 = require("../Config");
 const Managers_1 = require("../Managers");
 const Controllers_1 = require("../Controllers");
+const List_1 = require("../List");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);
@@ -65,13 +66,14 @@ class ExtendedClient extends discord_js_1.Client {
                 for (const file of commands) {
                     const { command } = require(`${commandPath}/${dir}/${file}`);
                     this.commands.set(command.name, command);
-                    if ((command === null || command === void 0 ? void 0 : command.aliases.length) !== 0) {
+                    if (command.aliases && command.aliases.length !== 0) {
                         command.aliases.forEach((alias) => {
                             this.aliases.set(alias, command);
                         });
                     }
                 }
             });
+            this.helpList = new List_1.List(30, this.helper.commandsList(this), 10);
             const buttonPath = path_1.default.join(__dirname, "..", "Buttons");
             fs_1.readdirSync(buttonPath).forEach(dir => {
                 const buttons = fs_1.readdirSync(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));

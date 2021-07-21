@@ -2,7 +2,9 @@ import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'blacklist',
+    description: 'add user to black list, so he cannot became host on this server',
     aliases: ['bl'],
+    options: [{name: 'user', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

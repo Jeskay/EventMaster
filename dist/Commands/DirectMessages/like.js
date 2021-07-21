@@ -17,7 +17,7 @@ const console_1 = __importDefault(require("console"));
 exports.command = {
     name: 'like',
     description: "send a positive comment about user",
-    aliases: [],
+    options: [{ name: 'userId', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         if (args.length != 1)
             return;

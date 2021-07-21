@@ -3,8 +3,8 @@ import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'announce',
-    aliases: [],
     description: 'declare in notification channel about the event',
+    options: [{name: 'title', required: true}, {name: 'description', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

@@ -13,6 +13,16 @@ class EmbedManager {
             .setStyle(4)
             .setID(id)
             .setLabel('👎');
+        this.NextButton = (id) => new discord_buttons_1.MessageButton()
+            .setStyle(1)
+            .setID(id)
+            .setLabel('▶️');
+        this.PreviusButton = (id) => new discord_buttons_1.MessageButton()
+            .setStyle(1)
+            .setID(id)
+            .setLabel('◀️');
+        this.ListMessage = (prevId, nextId) => new discord_buttons_1.MessageActionRow()
+            .addComponents(this.PreviusButton(prevId), this.NextButton(nextId));
         this.HostCommend = (likeId, dislikeId) => new discord_buttons_1.MessageActionRow()
             .addComponents(this.LikeHost(likeId), this.DislikeHost(dislikeId));
         this.startedOccasion = new discord_js_1.MessageEmbed()

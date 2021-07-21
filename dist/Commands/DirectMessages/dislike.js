@@ -13,7 +13,7 @@ exports.command = void 0;
 exports.command = {
     name: 'dislike',
     description: "Send a negative comment about user",
-    aliases: [],
+    options: [{ name: "userId", required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         if (message.guild)
             return;

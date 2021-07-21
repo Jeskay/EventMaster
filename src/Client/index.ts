@@ -6,6 +6,7 @@ import {Command, Event, Button} from '../Interfaces';
 import {Config} from '../Config';
 import { DataBaseManager, VoteManager, HelperManager, RoomManger, EmbedManager } from '../Managers';
 import { ChannelController, RatingController } from '../Controllers';
+import { List } from '../List';
 
 class ExtendedClient extends Client {
     public commands: Collection<string, Command> = new Collection();
@@ -18,6 +19,7 @@ class ExtendedClient extends Client {
     public room: RoomManger = new RoomManger();
     public vote: VoteManager = new VoteManager(); 
     public embeds: EmbedManager = new EmbedManager();
+    public helpList: List;
     public channelController: ChannelController = new ChannelController();
     public ratingController: RatingController = new RatingController();
 
@@ -35,13 +37,14 @@ class ExtendedClient extends Client {
                 const {command} = require(`${commandPath}/${dir}/${file}`);
                 this.commands.set(command.name, command);
 
-                if(command?.aliases.length !== 0) {
+                if(command.aliases && command.aliases.length !== 0) {
                     command.aliases.forEach((alias: string) => {
                         this.aliases.set(alias, command);
                     });
                 }
             }
         });
+        this.helpList = new List(30, this.helper.commandsList(this), 10);
         /* buttons */
         const buttonPath = path.join(__dirname, "..", "Buttons");
         readdirSync(buttonPath).forEach(dir => {

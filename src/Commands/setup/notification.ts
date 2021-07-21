@@ -4,6 +4,7 @@ export const command: Command = {
     name: 'notification',
     description: "set notification channel where bot will notify users about current events",
     aliases: ['notify'],
+    options: [{name: 'channel', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

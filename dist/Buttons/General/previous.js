@@ -9,18 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.command = void 0;
-exports.command = {
-    name: 'help',
-    aliases: ['h'],
-    run: (client, message, _args) => __awaiter(void 0, void 0, void 0, function* () {
+exports.button = void 0;
+exports.button = {
+    name: 'previousPage',
+    description: "",
+    run: (client, component, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const prevId = `previousPage.${message.author.id}`;
-            const nextId = `nextPage.${message.author.id}`;
-            yield client.helpList.create(message.channel, client.embeds.ListMessage(prevId, nextId));
+            if (args.length != 1)
+                throw Error("Only one argument required.");
+            const author = args[0];
+            if (author != component.clicker.id)
+                return;
+            const embed = yield client.helpList.previous(component.message.id);
+            yield component.message.edit(embed);
+            component.reply.defer(true);
         }
         catch (error) {
-            message.channel.send(client.embeds.errorInformation(error));
+            yield component.reply.send(client.embeds.errorInformation(error), { ephemeral: true });
         }
     })
 };

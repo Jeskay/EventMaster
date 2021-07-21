@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
     name: 'setup',
+    description: 'set channel where to join for event and category where rooms will be created',
     aliases: ['s'],
+    options: [{ name: 'channel', required: true }, { name: 'category', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
         if (!guild)

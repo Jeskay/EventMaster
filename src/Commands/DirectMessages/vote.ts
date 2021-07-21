@@ -6,6 +6,7 @@ export const command: Command = {
     name: 'vote',
     description: "vote for event host",
     aliases: ['v'],
+    options: [{name: 'user', required: true}],
     run: async(client, message, args) => {
         const author = message.author;
         if(args.length != 1) return;

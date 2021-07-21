@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
     name: 'announce',
-    aliases: [],
     description: 'declare in notification channel about the event',
+    options: [{ name: 'title', required: true }, { name: 'description', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
         if (!guild)

@@ -4,6 +4,7 @@ export const command: Command = {
     name: 'logging',
     description: "set log channel where bot will post information about passed events",
     aliases: ['log'],
+    options: [{name: 'channel', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

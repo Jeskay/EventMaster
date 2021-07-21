@@ -4,6 +4,7 @@ export const command: Command = {
     name: 'profile',
     description: "print user statistics",
     aliases: ['info'],
+    options: [{name: 'user', required: false}],
     run: async(client, message, args) => {
         if(args.length > 1) return;
         try {   

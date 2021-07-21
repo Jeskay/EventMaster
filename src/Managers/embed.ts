@@ -14,6 +14,19 @@ export class EmbedManager{
     .setID(id)
     .setLabel('👎');
 
+    private NextButton = (id: string) => new MessageButton()
+    .setStyle(1)
+    .setID(id)
+    .setLabel('▶️');
+
+    private PreviusButton = (id: string) => new MessageButton()
+    .setStyle(1)
+    .setID(id)
+    .setLabel('◀️');
+
+    public ListMessage = (prevId: string, nextId: string) => new MessageActionRow()
+    .addComponents(this.PreviusButton(prevId), this.NextButton(nextId));
+    
     public HostCommend = (likeId: string, dislikeId: string) => new MessageActionRow()
     .addComponents(this.LikeHost(likeId), this.DislikeHost(dislikeId));
 

@@ -2,7 +2,9 @@ import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'setup',
+    description: 'set channel where to join for event and category where rooms will be created',
     aliases: ['s'],
+    options: [{name: 'channel', required: true}, {name: 'category', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

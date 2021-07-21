@@ -14,6 +14,7 @@ exports.command = {
     name: 'logging',
     description: "set log channel where bot will post information about passed events",
     aliases: ['log'],
+    options: [{ name: 'channel', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
         if (!guild)

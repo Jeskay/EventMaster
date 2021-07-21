@@ -2,7 +2,9 @@ import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'addowner',
+    description: 'give user increased permissions for bot settings',
     aliases: ['setowner'],
+    options: [{name: 'user', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

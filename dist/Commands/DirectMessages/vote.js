@@ -15,6 +15,7 @@ exports.command = {
     name: 'vote',
     description: "vote for event host",
     aliases: ['v'],
+    options: [{ name: 'user', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const author = message.author;
         if (args.length != 1)

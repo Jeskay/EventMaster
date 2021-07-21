@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
     name: 'setlimit',
-    aliases: ['sl'],
+    description: 'set amount of users to start the host election',
+    aliases: ['sl', 'limit'],
+    options: [{ name: 'amount', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         const guild = message.guild;
         if (!guild)

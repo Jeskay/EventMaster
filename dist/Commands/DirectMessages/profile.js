@@ -14,6 +14,7 @@ exports.command = {
     name: 'profile',
     description: "print user statistics",
     aliases: ['info'],
+    options: [{ name: 'user', required: false }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         if (args.length > 1)
             return;

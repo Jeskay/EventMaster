@@ -3,7 +3,7 @@ import {Command} from '../../Interfaces';
 export const command: Command = {
     name: 'dislike',
     description: "Send a negative comment about user",
-    aliases: [],
+    options: [{name: "userId", required: true}],
     run: async(client, message, args) => {
         if(message.guild) return;
         if(args.length != 1) return;

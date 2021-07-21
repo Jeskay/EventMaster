@@ -4,7 +4,7 @@ import {Command} from '../../Interfaces';
 export const command: Command = {
     name: 'like',
     description: "send a positive comment about user",
-    aliases: [],
+    options: [{name: 'userId', required: true}],
     run: async(client, message, args) => {
         if(args.length != 1) return;
         try {

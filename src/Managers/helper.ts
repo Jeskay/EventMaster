@@ -1,4 +1,5 @@
-import { CategoryChannel, Channel, Guild, VoiceChannel } from "discord.js";
+import { CategoryChannel, Channel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
+import ExtendedClient from "../Client";
 
 export class HelperManager{
     /**
@@ -32,5 +33,21 @@ export class HelperManager{
         if(!(channel as VoiceChannel).members.has(member1)) return false;
         if(!(channel as VoiceChannel).members.has(member2)) return false;
         return true;
+    }
+    /**
+     * Creates a list of existing commands
+     * @param client client instance
+     * @returns array of lines to be printed
+     */
+    public commandsList(client: ExtendedClient): MessageEmbed {
+        const embed = new MessageEmbed()
+        .setTitle("Commands");
+        client.commands.forEach(command => {
+            var options: string = "";
+            if(command.options) options = Array.from(command.options, option => `${option.name} (${option.required ? "required" : "not required"})`).join(' ') + '\n';
+            embed.addField( command.name, `${options}${command.description ?? "no description"}`);
+            if(command.aliases) embed.addField("Aliases:", command.aliases.join(', '));
+        });
+        return embed;
     }
 }

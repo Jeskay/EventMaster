@@ -3,7 +3,9 @@ import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'start',
+    description: 'starts an event',
     aliases: ['s'],
+    options: [{name: 'title', required: true}, {name: 'description', required: true, description: 'message that will be sent to log channel'}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

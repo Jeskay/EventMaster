@@ -2,7 +2,9 @@ import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'removeowner',
-    aliases: [],
+    description: 'deny user permissions for bot settings',
+    aliases: ['deleteowner'],
+    options: [{name: 'user', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;

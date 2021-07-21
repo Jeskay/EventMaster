@@ -2,7 +2,9 @@ import {Command} from '../../Interfaces';
 
 export const command: Command = {
     name: 'setlimit',
-    aliases: ['sl'],
+    description: 'set amount of users to start the host election',
+    aliases: ['sl', 'limit'],
+    options: [{name: 'amount', required: true}],
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;
