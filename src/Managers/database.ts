@@ -3,6 +3,7 @@ import { Server } from "../entities/server";
 import { Occasion } from "../entities/occasion";
 import { Player } from "../entities/player";
 import { Commend } from "../entities/commend";
+import { Tag } from "../entities/tag";
 
 export class DataBaseManager{
     private connection: Connection;
@@ -18,6 +19,8 @@ export class DataBaseManager{
     public commend = (commend: object) => this.connection.manager.create(Commend, commend);
     /** Creates Server instance */
     public server = (server: object) => this.connection.manager.create(Server, server);
+    /**Creates Tag instance */
+    public tag = (tag: object) => this.connection.manager.create(Tag, tag);
 
     /** @returns server by guild id */
     public getServer = async(id: string) => await this.connection.manager.findOne(Server, {guild: id});
@@ -30,6 +33,8 @@ export class DataBaseManager{
      * @returns Commend
      */
     public getCommend = async (authorId: string, subjectId: string, hosting: boolean, cheer: boolean) => await this.connection.manager.findOne(Commend, {authorId: authorId, subjectId: subjectId, host: hosting, cheer: cheer});
+    /**@returns tag by its name */
+    public getTag = async(id: string) => await this.connection.manager.findOne(Tag, {title: id});
 
     /**
      * @param params object with Commend fields, describing search parameters
@@ -57,8 +62,7 @@ export class DataBaseManager{
     public async getPlayerRelation(userId: string) {
         const user = await this.connection.getRepository(Player)
         .createQueryBuilder("player")
-        .leftJoinAndSelect("player.commendsBy", "commend")
-        .leftJoinAndSelect("player.commendsAbout", "commend")
+        .leftJoinAndSelect("player.subscriptions", "tag")
         .where("player.id = :id", {id: userId})
         .getOne()
         .catch(err => {throw err;});
@@ -104,6 +108,15 @@ export class DataBaseManager{
        const post = this.commend(commend);
         await this.connection.manager.save(post);
     }
+    /**
+     * Adds tag instance to the database
+     * @param tag object with fields and values which needs to be added
+     */
+    public async addTag(tag: object) {
+        const post = this.tag(tag);
+        await this.connection.manager.save(post);
+    }
+
 
     /**
      * Removes server instance
@@ -137,6 +150,15 @@ export class DataBaseManager{
         const player = await this.getPlayer(userID);
         if(!player) throw Error("Cannot find player");
         await this.connection.manager.remove(player);
+    }
+    /**
+     * Removes tag
+     * @param tagId tag id
+     */
+    public async removeTag(tagId: string) {
+        const tag = await this.getTag(tagId);
+        if(!tag) throw Error("Tag does not exist");
+        await this.connection.manager.remove(tag);
     }
 
     /**
@@ -176,17 +198,27 @@ export class DataBaseManager{
         Object.keys(occasion).forEach(key => occasion[key] = key in params ? params[key] : occasion[key]);
         await this.connection.manager.save(occasion);
     }
+    
+    public async updatePlayer(instance: Player);
     /**
      * Updates player instance
      * @param userID user id
-     * @param params object with fields and values which need to be updated
+     * @param instance object with fields and values which need to be updated
      */
-    public async updatePlayer(userID: string, params: object) {
-        const player = await this.getPlayer(userID);
-        if(!player) throw Error("Cannot find the player.");
-        console.log(Object.keys(player));//debug
-        Object.keys(player).forEach(key => player[key] = key in params ? params[key] : player[key]);
-        await this.connection.manager.save(player);
+    public async updatePlayer(instance: object);
+
+    public async updatePlayer(instance: object) {
+        if(instance instanceof Player) {
+            await this.connection.manager.save(instance);
+        } 
+        else {
+            if(!Object.keys(instance).includes('id')) throw Error("Id must be provided");
+            const player = await this.getPlayer(instance['id']);
+            if(!player) throw Error("Cannot find the player.");
+            console.log(Object.keys(player));//debug
+            Object.keys(player).forEach(key => player[key] = key in instance ? instance[key] : player[key]);
+            await this.connection.manager.save(player);
+        }
     }
     /**
      * Updates commend instance

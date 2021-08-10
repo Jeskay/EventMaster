@@ -19,22 +19,13 @@ exports.command = {
         if (!guild)
             return;
         try {
-            const server = yield client.database.getServerRelations(guild.id);
-            const occasion = server.events.find(event => event.host == message.author.id);
-            if (!occasion)
-                throw Error("Only host has permission to start an event.");
             if (args.length < 2)
                 throw Error("Event name and description must be provided.");
             const title = args.shift();
             if (!title)
                 throw Error("Event title can't be empty.");
             const description = args.join(' ');
-            if (!server.settings.notification_channel)
-                throw Error("Notification channel was not set up.");
-            const channel = guild.channels.cache.get(server.settings.notification_channel);
-            if (!channel || !channel.isText)
-                throw Error("Cannot find notification channel.");
-            yield channel.send(client.embeds.occasionNotification(title, description, message.author.username));
+            yield client.occasionController.Announce(client, title, description, guild, message.author);
         }
         catch (error) {
             message.channel.send(client.embeds.errorInformation(error));

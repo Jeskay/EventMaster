@@ -51,8 +51,10 @@ class ExtendedClient extends discord_js_1.Client {
         this.room = new Managers_1.RoomManger();
         this.vote = new Managers_1.VoteManager();
         this.embeds = new Managers_1.EmbedManager();
+        this.Lists = new discord_js_1.Collection();
         this.channelController = new Controllers_1.ChannelController();
         this.ratingController = new Controllers_1.RatingController();
+        this.occasionController = new Controllers_1.OccasionController();
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -73,7 +75,7 @@ class ExtendedClient extends discord_js_1.Client {
                     }
                 }
             });
-            this.helpList = new List_1.List(30, this.helper.commandsList(this), 10);
+            this.Lists.set('help', new List_1.List(30, this.helper.commandsList(this), 10));
             const buttonPath = path_1.default.join(__dirname, "..", "Buttons");
             fs_1.readdirSync(buttonPath).forEach(dir => {
                 const buttons = fs_1.readdirSync(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));

@@ -15,6 +15,7 @@ const server_1 = require("../entities/server");
 const occasion_1 = require("../entities/occasion");
 const player_1 = require("../entities/player");
 const commend_1 = require("../entities/commend");
+const tag_1 = require("../entities/tag");
 class DataBaseManager {
     constructor() {
         this.connect = () => __awaiter(this, void 0, void 0, function* () { return yield this.connection.connect(); });
@@ -22,9 +23,11 @@ class DataBaseManager {
         this.player = (player) => this.connection.manager.create(player_1.Player, player);
         this.commend = (commend) => this.connection.manager.create(commend_1.Commend, commend);
         this.server = (server) => this.connection.manager.create(server_1.Server, server);
+        this.tag = (tag) => this.connection.manager.create(tag_1.Tag, tag);
         this.getServer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(server_1.Server, { guild: id }); });
         this.getPlayer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(player_1.Player, { id: id }); });
         this.getCommend = (authorId, subjectId, hosting, cheer) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(commend_1.Commend, { authorId: authorId, subjectId: subjectId, host: hosting, cheer: cheer }); });
+        this.getTag = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(tag_1.Tag, { title: id }); });
         this.getCommends = (params) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.find(commend_1.Commend, params); });
         this.connection = typeorm_1.getConnection();
     }
@@ -45,8 +48,7 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield this.connection.getRepository(player_1.Player)
                 .createQueryBuilder("player")
-                .leftJoinAndSelect("player.commendsBy", "commend")
-                .leftJoinAndSelect("player.commendsAbout", "commend")
+                .leftJoinAndSelect("player.subscriptions", "tag")
                 .where("player.id = :id", { id: userId })
                 .getOne()
                 .catch(err => { throw err; });
@@ -84,6 +86,12 @@ class DataBaseManager {
             yield this.connection.manager.save(post);
         });
     }
+    addTag(tag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = this.tag(tag);
+            yield this.connection.manager.save(post);
+        });
+    }
     removeServer(serverID) {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield this.getServer(serverID);
@@ -110,6 +118,14 @@ class DataBaseManager {
             if (!player)
                 throw Error("Cannot find player");
             yield this.connection.manager.remove(player);
+        });
+    }
+    removeTag(tagId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const tag = yield this.getTag(tagId);
+            if (!tag)
+                throw Error("Tag does not exist");
+            yield this.connection.manager.remove(tag);
         });
     }
     updateServer(guildID, params) {
@@ -143,14 +159,21 @@ class DataBaseManager {
             yield this.connection.manager.save(occasion);
         });
     }
-    updatePlayer(userID, params) {
+    updatePlayer(instance) {
         return __awaiter(this, void 0, void 0, function* () {
-            const player = yield this.getPlayer(userID);
-            if (!player)
-                throw Error("Cannot find the player.");
-            console.log(Object.keys(player));
-            Object.keys(player).forEach(key => player[key] = key in params ? params[key] : player[key]);
-            yield this.connection.manager.save(player);
+            if (instance instanceof player_1.Player) {
+                yield this.connection.manager.save(instance);
+            }
+            else {
+                if (!Object.keys(instance).includes('id'))
+                    throw Error("Id must be provided");
+                const player = yield this.getPlayer(instance['id']);
+                if (!player)
+                    throw Error("Cannot find the player.");
+                console.log(Object.keys(player));
+                Object.keys(player).forEach(key => player[key] = key in instance ? instance[key] : player[key]);
+                yield this.connection.manager.save(player);
+            }
         });
     }
     updateCommend(commend, params) {

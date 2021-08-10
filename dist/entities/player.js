@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Player = void 0;
 const typeorm_1 = require("typeorm");
 const commend_1 = require("./commend");
+const tag_1 = require("./tag");
 let Player = class Player {
     constructor() {
         this.eventsPlayed = 0;
@@ -41,6 +42,10 @@ __decorate([
     typeorm_1.Column(),
     __metadata("design:type", Number)
 ], Player.prototype, "tournamentsHosted", void 0);
+__decorate([
+    typeorm_1.ManyToMany(() => tag_1.Tag, tag => tag.subscribers),
+    __metadata("design:type", Promise)
+], Player.prototype, "subscriptions", void 0);
 __decorate([
     typeorm_1.OneToMany(() => commend_1.Commend, commend => commend.author),
     __metadata("design:type", Promise)

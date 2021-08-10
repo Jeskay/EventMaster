@@ -88,7 +88,8 @@ export class RatingController {
                 eventsPlayed: (member.id == host) ? 0 : 1,
                 eventsHosted: (member.id == host) ? 1 : 0,
             });
-            else await client.database.updatePlayer(member.id, {
+            else await client.database.updatePlayer({
+                id: member.id, 
                 eventsPlayed: (member.id == host) ? player.eventsPlayed : player.eventsPlayed + 1,
                 eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted
             }); 

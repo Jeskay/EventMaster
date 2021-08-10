@@ -15,9 +15,12 @@ exports.command = {
     aliases: ['h'],
     run: (client, message, _args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const prevId = `previousPage.${message.author.id}`;
-            const nextId = `nextPage.${message.author.id}`;
-            yield client.helpList.create(message.channel, client.embeds.ListMessage(prevId, nextId));
+            const prevId = `previousPage.${message.author.id} help`;
+            const nextId = `nextPage.${message.author.id} help`;
+            const list = client.Lists.get('help');
+            if (!list)
+                throw Error('System error');
+            yield list.create(message.channel, client.embeds.ListMessage(prevId, nextId));
         }
         catch (error) {
             message.channel.send(client.embeds.errorInformation(error));

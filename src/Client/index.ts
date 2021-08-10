@@ -5,7 +5,7 @@ import {createConnection} from "typeorm";
 import {Command, Event, Button} from '../Interfaces';
 import {Config} from '../Config';
 import { DataBaseManager, VoteManager, HelperManager, RoomManger, EmbedManager } from '../Managers';
-import { ChannelController, RatingController } from '../Controllers';
+import { ChannelController, RatingController, OccasionController } from '../Controllers';
 import { List } from '../List';
 
 class ExtendedClient extends Client {
@@ -19,9 +19,10 @@ class ExtendedClient extends Client {
     public room: RoomManger = new RoomManger();
     public vote: VoteManager = new VoteManager(); 
     public embeds: EmbedManager = new EmbedManager();
-    public helpList: List;
+    public Lists: Collection<string, List> = new Collection();
     public channelController: ChannelController = new ChannelController();
     public ratingController: RatingController = new RatingController();
+    public occasionController: OccasionController = new OccasionController();
 
     public async init() {
         this.login(this.config.token);
@@ -44,7 +45,7 @@ class ExtendedClient extends Client {
                 }
             }
         });
-        this.helpList = new List(30, this.helper.commandsList(this), 10);
+        this.Lists.set('help', new List(30, this.helper.commandsList(this), 10));
         /* buttons */
         const buttonPath = path.join(__dirname, "..", "Buttons");
         readdirSync(buttonPath).forEach(dir => {

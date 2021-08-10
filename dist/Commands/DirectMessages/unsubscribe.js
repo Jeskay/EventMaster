@@ -11,23 +11,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 exports.command = {
-    name: 'start',
-    description: 'starts an event',
-    aliases: ['s'],
-    options: [{ name: 'title', required: true }, { name: 'description', required: true, description: 'message that will be sent to log channel' }],
+    name: 'unsubscribe',
+    description: "remove subscribtion for personal events notifications",
+    aliases: ['unsub'],
+    options: [{ name: 'title', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
-        const guild = message.guild;
-        if (!guild)
+        if (args.length > 1)
             return;
         try {
-            if (args.length < 2)
-                throw Error("Event name and description must be provided.");
-            const title = args.shift();
-            const description = args.join(' ');
-            yield client.occasionController.Start(client, guild, message.author, title, description);
+            const title = args[0];
+            const profile = yield client.database.getPlayer(message.author.id);
+            if (!profile)
+                throw Error("This user did not join events.");
+            const tags = yield profile.subscriptions;
+            if (!tags.find(tag => tag.title == title))
+                throw Error("You are not subscribed for this tag");
+            yield client.database.removeTag(title);
         }
         catch (error) {
-            yield message.channel.send(client.embeds.errorInformation(error));
+            message.channel.send(error);
         }
     })
 };

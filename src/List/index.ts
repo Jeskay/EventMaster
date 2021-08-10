@@ -10,6 +10,8 @@ export class List {
 
     private async updateEmbed(messageId?: string) {
         const page: number = messageId ? this.message_page[messageId] : 1;
+        if(isNaN(page))
+            throw Error("Message is not tracking anymore.");
         const newContent = Object.create(this.content) as MessageEmbed;
         const startingIndex = (page - 1) * this.fields;
         newContent.fields = newContent.fields.slice(startingIndex, startingIndex + this.fields);
@@ -46,7 +48,7 @@ export class List {
     constructor(lifetime: number, content: MessageEmbed, fieldsView: number) {
         this.lifetime = lifetime;
         this.content = content;
-        this.fields = fieldsView;
+        this.fields = fieldsView < 25 ? fieldsView : 25;
         this.message_page = new Collection();
         this.limit = Math.ceil(content.fields.length / this.fields);
     }

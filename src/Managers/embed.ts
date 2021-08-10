@@ -75,6 +75,13 @@ export class EmbedManager{
     .addField("Host:", hostName)
     .addField("Members when finished:", members)
     .setColor("PURPLE");
+    
+    public notification = (title: string, description, url: string) => new MessageEmbed()
+    .setTitle(`${title} is about to start.`)
+    .setDescription(description)
+    .setURL(url)
+    .setColor("GREEN");
+
     //Rework timezone
     public playerInfo (player: Player, user: User, commends: Commend[]) { 
         const playerLikes = commends.filter(commend => commend.cheer && !commend.host).length;

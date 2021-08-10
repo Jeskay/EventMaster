@@ -77,7 +77,8 @@ class RatingController {
                         eventsHosted: (member.id == host) ? 1 : 0,
                     });
                 else
-                    yield client.database.updatePlayer(member.id, {
+                    yield client.database.updatePlayer({
+                        id: member.id,
                         eventsPlayed: (member.id == host) ? player.eventsPlayed : player.eventsPlayed + 1,
                         eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted
                     });

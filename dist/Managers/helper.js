@@ -32,13 +32,35 @@ class HelperManager {
         client.commands.forEach(command => {
             var _a;
             var options = "";
+            var line = "";
             if (command.options)
                 options = Array.from(command.options, option => `${option.name} (${option.required ? "required" : "not required"})`).join(' ') + '\n';
-            embed.addField(command.name, `${options}${(_a = command.description) !== null && _a !== void 0 ? _a : "no description"}`);
+            line += `${options}${(_a = command.description) !== null && _a !== void 0 ? _a : "no description"}`;
             if (command.aliases)
-                embed.addField("Aliases:", command.aliases.join(', '));
+                line += "\nAliases:" + command.aliases.join(', ');
+            embed.addField(command.name, line);
         });
         return embed;
+    }
+    subscriptionList(tags) {
+        var embed = new discord_js_1.MessageEmbed()
+            .setTitle("Subscriptions");
+        let field = "";
+        for (let i = 1; i <= tags.length; i++) {
+            field += ` \`${tags[i - 1].title}\``;
+            if (i % 3 == 0) {
+                embed.addField(`${i > 2 ? i - 2 : 1}-${i}`, field);
+                field = "";
+            }
+        }
+        if (field != "")
+            embed.addField(`${tags.length > 3 ? tags.length - 1 : 1}-${tags.length}`, field);
+        return embed;
+    }
+    findSubscriptions(text) {
+        var _a;
+        const matches = (_a = text.match('#(.*?) ')) !== null && _a !== void 0 ? _a : [];
+        return matches;
     }
 }
 exports.HelperManager = HelperManager;

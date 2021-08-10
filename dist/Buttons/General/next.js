@@ -15,12 +15,15 @@ exports.button = {
     description: "",
     run: (client, component, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            if (args.length != 1)
-                throw Error("Only one argument required.");
+            if (args.length != 2)
+                throw Error("Not enough information.");
             const author = args[0];
+            const list = client.Lists.get(args[1]);
+            if (!list)
+                return;
             if (author != component.clicker.id)
                 return;
-            const embed = yield client.helpList.next(component.message.id);
+            const embed = yield list.next(component.message.id);
             yield component.message.edit(embed);
             component.reply.defer(true);
         }

@@ -15,13 +15,15 @@ class List {
     constructor(lifetime, content, fieldsView) {
         this.lifetime = lifetime;
         this.content = content;
-        this.fields = fieldsView;
+        this.fields = fieldsView < 25 ? fieldsView : 25;
         this.message_page = new discord_js_1.Collection();
         this.limit = Math.ceil(content.fields.length / this.fields);
     }
     updateEmbed(messageId) {
         return __awaiter(this, void 0, void 0, function* () {
             const page = messageId ? this.message_page[messageId] : 1;
+            if (isNaN(page))
+                throw Error("Message is not tracking anymore.");
             const newContent = Object.create(this.content);
             const startingIndex = (page - 1) * this.fields;
             newContent.fields = newContent.fields.slice(startingIndex, startingIndex + this.fields);

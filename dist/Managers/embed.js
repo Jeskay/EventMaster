@@ -63,6 +63,11 @@ class EmbedManager {
             .addField("Host:", hostName)
             .addField("Members when finished:", members)
             .setColor("PURPLE");
+        this.notification = (title, description, url) => new discord_js_1.MessageEmbed()
+            .setTitle(`${title} is about to start.`)
+            .setDescription(description)
+            .setURL(url)
+            .setColor("GREEN");
         this.playerCommended = (user) => new discord_js_1.MessageEmbed()
             .setTitle(`${user.username}'s rating changed`)
             .setFooter("Thank you for improving our community.")

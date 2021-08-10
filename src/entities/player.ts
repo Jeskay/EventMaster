@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
 import { Commend } from "./commend";
+import { Tag } from "./tag";
 
 @Entity()
 export class Player{
@@ -17,6 +18,9 @@ export class Player{
 
     @Column()
     tournamentsHosted: number = 0;
+
+    @ManyToMany(() => Tag, tag => tag.subscribers)
+    subscriptions: Promise<Tag[]>;
 
     @OneToMany(() => Commend, commend => commend.author)
     commendsBy: Promise<Commend[]>;
