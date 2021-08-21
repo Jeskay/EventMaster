@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.event = void 0;
 exports.event = {
-    name: 'message',
+    name: 'messageCreate',
     run: (client, message) => {
         var _a;
         if (message.author.bot || !message.content.startsWith(client.config.prefix))

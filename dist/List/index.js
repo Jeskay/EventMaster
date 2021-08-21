@@ -34,7 +34,7 @@ class List {
     create(channel, attachments) {
         return __awaiter(this, void 0, void 0, function* () {
             const embed = yield this.updateEmbed();
-            const messages = yield channel.send(embed, attachments);
+            const messages = yield channel.send({ embeds: [embed], components: [attachments] });
             const message = messages instanceof discord_js_1.Message ? messages : messages[0];
             this.message_page[message.id] = 1;
             setTimeout(() => message.delete(), this.lifetime * 1000);

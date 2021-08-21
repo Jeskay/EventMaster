@@ -42,7 +42,7 @@ export class ChannelController {
             await client.database.updateOccasion(joinedChannel.guild.id, joinedChannel.id, {
                 state: OccasionState.voting
             });
-            await text.send(client.embeds.voting);
+            await text.send({embeds: [client.embeds.voting]});
         }
     }
     /**

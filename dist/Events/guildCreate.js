@@ -14,7 +14,7 @@ const settings_1 = require("../entities/settings");
 exports.event = {
     name: 'guildCreate',
     run: (client, guild) => __awaiter(void 0, void 0, void 0, function* () {
-        const owner = yield guild.members.fetch(guild.ownerID);
+        const owner = yield guild.members.fetch(guild.ownerId);
         const default_limit = 2;
         if (owner == null)
             return;
@@ -29,10 +29,11 @@ exports.event = {
                 guild: guild.id,
                 description: "empty"
             });
-            yield dm.send(client.embeds.greeting(guild.name, owner.user.username));
+            yield dm.send({ embeds: [client.embeds.greeting(guild.name, owner.user.username)] });
         }
         catch (error) {
-            yield dm.send(client.embeds.errorInformation(error));
+            if (error instanceof Error)
+                yield dm.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

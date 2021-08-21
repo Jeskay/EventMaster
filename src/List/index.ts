@@ -1,5 +1,4 @@
-import { MessageActionRow } from "discord-buttons";
-import { Collection, DMChannel, Message, MessageEmbed, NewsChannel, TextChannel } from "discord.js";
+import { Collection, Message, MessageActionRow, MessageEmbed, TextBasedChannels } from "discord.js";
 
 export class List {
     private readonly lifetime: number;
@@ -21,9 +20,9 @@ export class List {
     /** Creates a list instance for new message.
      * Also starts a countdown until message clearing
      */
-    public async create(channel: TextChannel | DMChannel | NewsChannel, attachments: MessageActionRow) {
+    public async create(channel: TextBasedChannels, attachments: MessageActionRow) {
         const embed = await this.updateEmbed();
-        const messages = await channel.send(embed, attachments);
+        const messages = await channel.send({embeds: [embed], components: [attachments]});
         const message = messages instanceof Message ? messages : messages[0]; 
         this.message_page[message.id] = 1;
         setTimeout(() => message.delete(), this.lifetime * 1000);

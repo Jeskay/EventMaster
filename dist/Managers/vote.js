@@ -70,10 +70,7 @@ class VoteManager {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.elections[occasion] == undefined)
                 throw Error("There is no current election in the channel.");
-            const elected = yield this.elections[occasion].add(voter, candidate);
-            if (elected)
-                return this.elections[occasion].leader;
-            return null;
+            return yield this.elections[occasion].add(voter, candidate);
         });
     }
 }

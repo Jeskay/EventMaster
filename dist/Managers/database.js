@@ -16,6 +16,7 @@ const occasion_1 = require("../entities/occasion");
 const player_1 = require("../entities/player");
 const commend_1 = require("../entities/commend");
 const tag_1 = require("../entities/tag");
+const Error_1 = require("../Error");
 class DataBaseManager {
     constructor() {
         this.connect = () => __awaiter(this, void 0, void 0, function* () { return yield this.connection.connect(); });
@@ -40,7 +41,7 @@ class DataBaseManager {
                 .getOne()
                 .catch(err => { throw err; });
             if (!server)
-                throw Error("Guild with followed id is not registered.");
+                throw new Error_1.DataBaseError("Guild with followed id is not registered.");
             return server;
         });
     }
@@ -53,7 +54,7 @@ class DataBaseManager {
                 .getOne()
                 .catch(err => { throw err; });
             if (!user)
-                throw Error("Player with followed id is not registered.");
+                throw new Error_1.DataBaseError("Player with followed id is not registered.");
             return user;
         });
     }
@@ -74,9 +75,9 @@ class DataBaseManager {
             const post = this.occasion(occasion);
             const server = yield this.getServer(guildID);
             if (!server)
-                throw Error("Guild with followed id is not registered.");
+                throw new Error_1.DataBaseError("Guild with followed id is not registered.");
             else if (server.events && server.events.includes(post))
-                throw Error("There is occasion's duplicate.");
+                throw new Error_1.DataBaseError("There is an occasion's duplicate.");
             yield this.connection.manager.save(post);
         });
     }
@@ -96,7 +97,7 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield this.getServer(serverID);
             if (server == undefined)
-                throw Error("");
+                throw new Error_1.DataBaseError("Server does not exist");
             this.connection.manager.remove(server);
         });
     }
@@ -104,10 +105,10 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield this.getServerRelations(guildID);
             if (!server)
-                throw Error("Guild with followed id is not registered.");
+                throw new Error_1.DataBaseError("Guild with followed id is not registered.");
             const occasion = server.events.find(event => event.voiceChannel == voiceChannel);
             if (!occasion)
-                throw Error("Cannot find occasion with following voice channel");
+                throw new Error_1.DataBaseError("Cannot find occasion with following voice channel");
             yield this.connection.manager.remove(occasion);
             return { voice: occasion.voiceChannel, text: occasion.textChannel };
         });
@@ -116,7 +117,7 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const player = yield this.getPlayer(userID);
             if (!player)
-                throw Error("Cannot find player");
+                throw new Error_1.DataBaseError("Cannot find player");
             yield this.connection.manager.remove(player);
         });
     }
@@ -124,7 +125,7 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const tag = yield this.getTag(tagId);
             if (!tag)
-                throw Error("Tag does not exist");
+                throw new Error_1.DataBaseError("Tag does not exist.");
             yield this.connection.manager.remove(tag);
         });
     }
@@ -132,7 +133,7 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const current = yield this.getServer(guildID);
             if (!current)
-                throw Error("Cannot find server.");
+                throw new Error_1.DataBaseError("Cannot find server.");
             else
                 Object.keys(current).forEach(key => current[key] = key in params ? params[key] : current[key]);
             yield this.connection.manager.save(current);
@@ -142,7 +143,7 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield this.getServer(guildID);
             if (!server)
-                throw Error("Cannot find server.");
+                throw new Error_1.DataBaseError("Cannot find server.");
             Object.keys(server.settings).forEach(key => server.settings[key] = key in params ? params[key] : server.settings[key]);
             yield this.connection.manager.save(server);
         });
@@ -151,10 +152,10 @@ class DataBaseManager {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield this.getServerRelations(guildID);
             if (!server)
-                throw Error("Guild with followed id is not registered.");
+                throw new Error_1.DataBaseError("Guild with followed id is not registered.");
             const occasion = server.events.find(event => event.voiceChannel == voiceChannel);
             if (!occasion)
-                throw Error("Cannot find occasion with following voice channel");
+                throw new Error_1.DataBaseError("Cannot find occasion with following voice channel.");
             Object.keys(occasion).forEach(key => occasion[key] = key in params ? params[key] : occasion[key]);
             yield this.connection.manager.save(occasion);
         });
@@ -166,10 +167,10 @@ class DataBaseManager {
             }
             else {
                 if (!Object.keys(instance).includes('id'))
-                    throw Error("Id must be provided");
+                    throw new Error_1.DataBaseError("Player id must be provided.");
                 const player = yield this.getPlayer(instance['id']);
                 if (!player)
-                    throw Error("Cannot find the player.");
+                    throw new Error_1.DataBaseError("Cannot find the player.");
                 console.log(Object.keys(player));
                 Object.keys(player).forEach(key => player[key] = key in instance ? instance[key] : player[key]);
                 yield this.connection.manager.save(player);

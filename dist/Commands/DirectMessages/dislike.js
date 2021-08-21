@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Error_1 = require("../../Error");
 exports.command = {
     name: 'dislike',
     description: "Send a negative comment about user",
@@ -25,12 +26,13 @@ exports.command = {
                 userId = client.helper.extractID(args[0]);
             const user = yield client.users.cache.get(userId);
             if (!user)
-                throw Error("User does not exists.");
+                throw new Error_1.CommandError("User does not exists.");
             yield client.ratingController.DislikePlayer(client, user.id, message.author.id);
-            yield message.channel.send(client.embeds.playerCommended(user));
+            yield message.channel.send({ embeds: [client.embeds.playerCommended(user)] });
         }
         catch (error) {
-            message.channel.send(error);
+            if (error instanceof Error)
+                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

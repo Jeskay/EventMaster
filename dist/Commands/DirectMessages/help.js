@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Error_1 = require("../../Error");
 exports.command = {
     name: 'help',
     aliases: ['h'],
@@ -19,11 +20,12 @@ exports.command = {
             const nextId = `nextPage.${message.author.id} help`;
             const list = client.Lists.get('help');
             if (!list)
-                throw Error('System error');
+                throw new Error_1.CommandError('Command list not found.');
             yield list.create(message.channel, client.embeds.ListMessage(prevId, nextId));
         }
         catch (error) {
-            message.channel.send(client.embeds.errorInformation(error));
+            if (error instanceof Error)
+                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

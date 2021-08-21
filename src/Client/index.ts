@@ -1,4 +1,4 @@
-import {Client, Collection} from 'discord.js';
+import {Client, Collection} from "discord.js";
 import path from 'path';
 import {readdirSync} from 'fs';
 import {createConnection} from "typeorm";

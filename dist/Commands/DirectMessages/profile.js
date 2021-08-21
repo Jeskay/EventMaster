@@ -10,15 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Error_1 = require("../../Error");
 exports.command = {
     name: 'profile',
     description: "print user statistics",
     aliases: ['info'],
     options: [{ name: 'user', required: false }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
-        if (args.length > 1)
-            return;
         try {
+            if (args.length > 1)
+                return;
             let userId = args[0];
             if (args.length == 0)
                 userId = message.author.id;
@@ -26,15 +27,16 @@ exports.command = {
                 userId = client.helper.extractID(args[0]);
             const profile = yield client.database.getPlayer(userId);
             if (!profile)
-                throw Error("This user did not join events.");
+                throw new Error_1.CommandError("This user did not join events.");
             const user = yield client.users.cache.get(userId);
             if (!user)
-                throw Error("User does not exists.");
+                throw new Error_1.CommandError("User does not exists.");
             const commends = yield profile.commendsAbout;
-            yield message.channel.send(client.embeds.playerInfo(profile, user, commends));
+            yield message.channel.send({ embeds: [client.embeds.playerInfo(profile, user, commends)] });
         }
         catch (error) {
-            message.channel.send(error);
+            if (error instanceof Error)
+                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

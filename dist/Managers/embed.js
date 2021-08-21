@@ -1,29 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmbedManager = void 0;
-const discord_buttons_1 = require("discord-buttons");
 const discord_js_1 = require("discord.js");
 class EmbedManager {
     constructor() {
-        this.LikeHost = (id) => new discord_buttons_1.MessageButton()
+        this.LikeHost = (id) => new discord_js_1.MessageButton()
             .setStyle(3)
-            .setID(id)
-            .setLabel('👍');
-        this.DislikeHost = (id) => new discord_buttons_1.MessageButton()
+            .setCustomId(id)
+            .setEmoji('👍');
+        this.DislikeHost = (id) => new discord_js_1.MessageButton()
             .setStyle(4)
-            .setID(id)
+            .setCustomId(id)
             .setLabel('👎');
-        this.NextButton = (id) => new discord_buttons_1.MessageButton()
+        this.NextButton = (id) => new discord_js_1.MessageButton()
             .setStyle(1)
-            .setID(id)
+            .setCustomId(id)
             .setLabel('▶️');
-        this.PreviusButton = (id) => new discord_buttons_1.MessageButton()
+        this.PreviusButton = (id) => new discord_js_1.MessageButton()
             .setStyle(1)
-            .setID(id)
+            .setCustomId(id)
             .setLabel('◀️');
-        this.ListMessage = (prevId, nextId) => new discord_buttons_1.MessageActionRow()
+        this.ListMessage = (prevId, nextId) => new discord_js_1.MessageActionRow()
             .addComponents(this.PreviusButton(prevId), this.NextButton(nextId));
-        this.HostCommend = (likeId, dislikeId) => new discord_buttons_1.MessageActionRow()
+        this.HostCommend = (likeId, dislikeId) => new discord_js_1.MessageActionRow()
             .addComponents(this.LikeHost(likeId), this.DislikeHost(dislikeId));
         this.startedOccasion = new discord_js_1.MessageEmbed()
             .setTitle("Event started!")
@@ -55,13 +54,13 @@ class EmbedManager {
             .setTitle(`Event ${title} started`)
             .setDescription(description)
             .addField("Host:", hostName)
-            .addField("Members when started:", members)
+            .addField("Members when started:", members.toString())
             .setColor("PURPLE");
         this.occasionFinished = (description, hostName, members) => new discord_js_1.MessageEmbed()
             .setTitle(`Event finished`)
             .setDescription(description)
             .addField("Host:", hostName)
-            .addField("Members when finished:", members)
+            .addField("Members when finished:", members.toString())
             .setColor("PURPLE");
         this.notification = (title, description, url) => new discord_js_1.MessageEmbed()
             .setTitle(`${title} is about to start.`)
@@ -94,8 +93,8 @@ class EmbedManager {
             .setTitle("User's permission denied!")
             .addField("Guild member was removed from owners list", `Since that moment ${username} has limited access to bot commands.`)
             .setColor("RED");
-        this.errorInformation = (error) => new discord_js_1.MessageEmbed()
-            .addField("Error:", error)
+        this.errorInformation = (error, message) => new discord_js_1.MessageEmbed()
+            .addField(error, message)
             .setFooter("Use help command for detailes.")
             .setColor("RED");
         this.greeting = (guild, owner) => new discord_js_1.MessageEmbed()
@@ -116,8 +115,8 @@ class EmbedManager {
         const hostDislikes = commends.filter(commend => !commend.cheer && commend.host).length;
         return new discord_js_1.MessageEmbed()
             .setTitle(user.username)
-            .addField("Events played:", player.eventsPlayed)
-            .addField("Events hosted:", player.eventsHosted)
+            .addField("Events played:", player.eventsPlayed.toString())
+            .addField("Events hosted:", player.eventsHosted.toString())
             .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
             .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
             .addField("First event:", player.joinedAt.toLocaleString())

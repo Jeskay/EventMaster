@@ -1,8 +1,8 @@
-import { MessageComponent } from 'discord-buttons';
+import { MessageComponentInteraction } from 'discord.js';
 import Client from '../Client';
 
 interface Run {
-    (client: Client, component: MessageComponent, args: string[]): any;
+    (client: Client, component: MessageComponentInteraction, args: string[]): any;
 }
 
 export interface Button {

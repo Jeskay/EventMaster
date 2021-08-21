@@ -62,13 +62,11 @@ export class VoteManager {
     }
     /**
      * Performs vote operation
-     * @return winner id if election is over, otherwise returns null
+     * @returns true if the candidate won the election otherwise returns false
      */
-    public async vote(occasion: string, voter: string, candidate: string){
+    public async vote(occasion: string, voter: string, candidate: string) {
         if(this.elections[occasion] == undefined) throw Error("There is no current election in the channel.");
-        const elected = await this.elections[occasion].add(voter, candidate);
-        if(elected) return this.elections[occasion].leader;
-        return null;
+        return await this.elections[occasion].add(voter, candidate);
     }
     
     constructor(){

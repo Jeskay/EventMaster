@@ -1,14 +1,56 @@
-import { GuildChannel, VoiceChannel } from "discord.js";
+import { GuildChannel, GuildMember, VoiceChannel } from "discord.js";
 import { Guild, TextChannel, User } from "discord.js";
-import ExtendedClient from "src/Client";
+import { Occasion } from "../entities/occasion";
+import ExtendedClient from "../Client";
+import { CommandError } from "../Error";
+import { OccasionState } from "../Managers/room";
 
 export class OccasionController {
     private async notifyPlayer(client: ExtendedClient, userId: string, title: string, description: string, channel: GuildChannel) {
         const user = await client.users.fetch(userId);
-        const invite = await channel.createInvite();
+        const invite = await channel.guild.invites.create(channel);
         const dm = user.dmChannel ?? await user.createDM();
-        dm.send(client.embeds.notification(title, description, invite.url));
+        dm.send({embeds: [client.embeds.notification(title, description, invite.url)]});
     }
+    /**
+     * Gives channel credentials to host
+     * @param client client instance
+     * @param candidate user who gonna become host
+     * @param voiceChannel voice channel
+     */
+     private async DeclareHost(client: ExtendedClient, occasion: Occasion, candidate: GuildMember, voiceChannel: VoiceChannel, textChannel: TextChannel) {
+        client.vote.finish(voiceChannel.id);
+        if(!occasion) return;
+        client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
+        await client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
+            state: OccasionState.playing,
+            host: candidate.id
+        });
+        textChannel.send({embeds: [client.embeds.electionFinished(candidate.user.username)]});
+    }
+    /**
+     * Performing vote for occasion host
+     * @param client client instance
+     * @param guild 
+     * @param voterId 
+     * @param candidateId 
+     */
+    public async Vote(client: ExtendedClient, voiceChannel: VoiceChannel, voterId: string, candidateId: string) {
+        const guild = voiceChannel.guild;
+        const server = await client.database.getServerRelations(guild.id);
+        const occasion = server.events.find(occasion => occasion.voiceChannel == voiceChannel.id);
+        if(!occasion) throw new CommandError("You must be in event channel to vote.");
+        if(occasion.host) throw new CommandError("There is already a host in this occasion.");
+        const textChannel = voiceChannel.guild.channels.cache.get(occasion.textChannel);
+        if(!textChannel || !textChannel.isText) throw new CommandError("Cannot find text channel");
+        const candidate = await guild.members.fetch(candidateId);
+        const finished = await client.vote.vote(voiceChannel.id, voterId, candidateId);
+            if(finished){
+                client.occasionController.DeclareHost(client, occasion, candidate, voiceChannel as VoiceChannel, textChannel as TextChannel);
+            } else await (textChannel as TextChannel).send({embeds: [client.embeds.voteConfimation(candidate.user.username)]});
+
+    }
+    
     /**
      * Starts a new occasion
      * @param client main client instance
@@ -33,7 +75,7 @@ export class OccasionController {
             if(!channel || !channel.isText) return;
             const voiceChannel = guild.channels.cache.get(occasion.voiceChannel) as VoiceChannel;
             if(!voiceChannel) throw Error("Cannot find voice channel");
-            await (channel as TextChannel).send(client.embeds.occasionStarted(title, description, author.username, voiceChannel.members.size));
+            await (channel as TextChannel).send({embeds: [client.embeds.occasionStarted(title, description, author.username, voiceChannel.members.size)]});
         }
     }
     /**
@@ -53,13 +95,13 @@ export class OccasionController {
         if(!voice) throw Error("Voice channel has been removed, personal statistic will not be updated.");
         await client.ratingController.updateMembers(client, voice as VoiceChannel);
         await client.database.removeOccasion(server.guild, occasion.voiceChannel);
-        await (text as TextChannel).send(client.embeds.finishedOccasion, client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`));
+        await (text as TextChannel).send({embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
         setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
         //logging 
         if(server.settings.logging_channel) {
             const channel = guild.channels.cache.get(server.settings.logging_channel);
             if(!channel || !channel.isText) return;
-            (channel as TextChannel).send(client.embeds.occasionFinished(results, author.username, voice.members.size));
+            (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(results, author.username, (voice as VoiceChannel).members.size)]});
         }
     }
     /**
@@ -78,10 +120,10 @@ export class OccasionController {
         const channel = guild.channels.cache.get(server.settings.notification_channel);
         const hashtags = client.helper.findSubscriptions(description);
         if(!channel || !channel.isText) throw Error("Cannot find notification channel.");
-        await (channel as TextChannel).send(client.embeds.occasionNotification(title, description, author.username));
+        await (channel as TextChannel).send({embeds:[client.embeds.occasionNotification(title, description, author.username)]});
         if(hashtags.length > 0) {
             hashtags.forEach(tag => {
-                this.NotifyPlayers(client, tag, channel, title, description);
+                this.NotifyPlayers(client, tag, channel as GuildChannel, title, description);
             });
         }
     }
@@ -95,7 +137,7 @@ export class OccasionController {
      */
     public async NotifyPlayers(client: ExtendedClient, tagId: string, channel: GuildChannel, title: string, description: string) {
         const tag = await client.database.getTag(tagId);
-        if(!tag) throw Error("There are no subscriptions for this tag");
+        if(!tag) return;
         const players = await tag.subscribers;
         await Promise.all(players.map(async (player) => 
             await this.notifyPlayer(client, player.id, title, description, channel))

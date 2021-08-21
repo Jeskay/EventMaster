@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Error_1 = require("../../Error");
 exports.command = {
     name: 'finishgame',
     description: 'finish an event and close room',
@@ -19,13 +20,8 @@ exports.command = {
         const guild = message.guild;
         if (!guild)
             return;
-        try {
-            if (args.length < 1)
-                throw Error("Event results must be provided. Ask moderation about respond format.");
-            yield client.occasionController.Finish(client, guild, message.author, args.join(' '));
-        }
-        catch (error) {
-            message.channel.send(client.embeds.errorInformation(error));
-        }
+        if (args.length < 1)
+            throw new Error_1.CommandError("Event results must be provided. Ask moderation about respond format.");
+        yield client.occasionController.Finish(client, guild, message.author, args.join(' '));
     })
 };

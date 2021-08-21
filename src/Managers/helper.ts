@@ -30,7 +30,7 @@ export class HelperManager{
      * @returns true if the channel contains given members
      */
     public checkChannel(member1 : string, member2: string, channel: Channel): boolean{
-        if(channel.type != "voice") return false;
+        if(channel.type != "GUILD_VOICE") return false;
         if(!(channel as VoiceChannel).members.has(member1)) return false;
         if(!(channel as VoiceChannel).members.has(member2)) return false;
         return true;

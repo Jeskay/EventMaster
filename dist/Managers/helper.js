@@ -18,7 +18,7 @@ class HelperManager {
         return extracted;
     }
     checkChannel(member1, member2, channel) {
-        if (channel.type != "voice")
+        if (channel.type != "GUILD_VOICE")
             return false;
         if (!channel.members.has(member1))
             return false;

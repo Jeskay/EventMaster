@@ -48,7 +48,7 @@ class ChannelController {
                 yield client.database.updateOccasion(joinedChannel.guild.id, joinedChannel.id, {
                     state: room_1.OccasionState.voting
                 });
-                yield text.send(client.embeds.voting);
+                yield text.send({ embeds: [client.embeds.voting] });
             }
         });
     }

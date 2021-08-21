@@ -1,3 +1,4 @@
+import { CommandError } from '../../Error';
 import {Command} from '../../Interfaces';
 
 export const command: Command = {
@@ -6,22 +7,21 @@ export const command: Command = {
     aliases: ['sub'],
     options: [{name: 'title', required: true}],
     run: async(client, message, args) => {
-        if(args.length > 1) return;
         try {
+            if(args.length > 1) return;
             const title = args[0];
             const profile = await client.database.getPlayer(message.author.id);
-            if(!profile) throw Error("This user did not join events.");
+            if(!profile) throw new CommandError("This user did not join events.");
             const tags = await profile.subscriptions;
-            console.log(tags);
-            if(tags.find(tag => tag.title == title)) throw Error("You are already subscribed for this tag");
+            if(tags.find(tag => tag.title == title)) throw new CommandError("You are already subscribed for this tag.");
             var tag = await client.database.getTag(title) ?? client.database.tag({title: title});
             await client.database.addTag(tag);
             tags.push(tag);
             profile.subscriptions = Promise.resolve(tags);
-            console.log("updating");
             await client.database.updatePlayer(profile);
         } catch(error) {
-            message.channel.send(error);
+            if(error instanceof Error)
+                message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});
         }
     }
 }; 

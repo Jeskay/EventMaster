@@ -1,27 +1,26 @@
-import { MessageActionRow, MessageButton} from "discord-buttons";
-import { User, MessageEmbed } from "discord.js";
+import { User, MessageEmbed, MessageButton, MessageActionRow } from "discord.js";
 import { Commend } from "../entities/commend";
 import { Player } from "../entities/player";
 
 export class EmbedManager{
     private LikeHost = (id: string) => new MessageButton()
     .setStyle(3)
-    .setID(id)
-    .setLabel('👍');
+    .setCustomId(id)
+    .setEmoji('👍');
 
     private DislikeHost = (id: string) => new MessageButton()
     .setStyle(4)
-    .setID(id)
+    .setCustomId(id)
     .setLabel('👎');
 
     private NextButton = (id: string) => new MessageButton()
     .setStyle(1)
-    .setID(id)
+    .setCustomId(id)
     .setLabel('▶️');
 
     private PreviusButton = (id: string) => new MessageButton()
     .setStyle(1)
-    .setID(id)
+    .setCustomId(id)
     .setLabel('◀️');
 
     public ListMessage = (prevId: string, nextId: string) => new MessageActionRow()
@@ -66,14 +65,14 @@ export class EmbedManager{
     .setTitle(`Event ${title} started`)
     .setDescription(description)
     .addField("Host:", hostName)
-    .addField("Members when started:", members)
+    .addField("Members when started:", members.toString())
     .setColor("PURPLE");
 
     public occasionFinished = (description: string, hostName: string, members: number) => new MessageEmbed()
     .setTitle(`Event finished`)
     .setDescription(description)
     .addField("Host:", hostName)
-    .addField("Members when finished:", members)
+    .addField("Members when finished:", members.toString())
     .setColor("PURPLE");
     
     public notification = (title: string, description, url: string) => new MessageEmbed()
@@ -91,8 +90,8 @@ export class EmbedManager{
         
         return new MessageEmbed()
         .setTitle(user.username)
-        .addField("Events played:", player.eventsPlayed)
-        .addField("Events hosted:", player.eventsHosted)
+        .addField("Events played:", player.eventsPlayed.toString())
+        .addField("Events hosted:", player.eventsHosted.toString())
         .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
         .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
         .addField("First event:", player.joinedAt.toLocaleString())
@@ -130,8 +129,8 @@ export class EmbedManager{
     .addField("Guild member was removed from owners list", `Since that moment ${username} has limited access to bot commands.`)
     .setColor("RED");
 
-    public errorInformation = (error: string) => new MessageEmbed()
-    .addField("Error:", error)
+    public errorInformation = (error: string, message: string) => new MessageEmbed()
+    .addField(error, message)
     .setFooter("Use help command for detailes.")
     .setColor("RED");
 

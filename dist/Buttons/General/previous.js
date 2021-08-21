@@ -10,25 +10,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = void 0;
+const Error_1 = require("../../Error");
 exports.button = {
     name: 'previousPage',
     description: "",
     run: (client, component, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (args.length != 2)
-                throw Error("Only one argument required.");
+                throw new Error_1.CommandError("Only one argument required.");
             const author = args[0];
             const list = client.Lists.get(args[1]);
             if (!list)
                 return;
-            if (author != component.clicker.id)
+            if (author != component.user.id)
                 return;
             const embed = yield list.previous(component.message.id);
-            yield component.message.edit(embed);
-            component.reply.defer(true);
+            yield component.message.edit({ embeds: [embed] });
+            yield component.deferUpdate({ fetchReply: true });
         }
         catch (error) {
-            yield component.reply.send(client.embeds.errorInformation(error), { ephemeral: true });
+            if (error instanceof Error)
+                component.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
         }
     })
 };

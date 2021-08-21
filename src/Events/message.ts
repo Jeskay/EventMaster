@@ -2,7 +2,7 @@ import { Message } from 'discord.js';
 import {Command, Event} from '../Interfaces';
 
 export const event: Event = {
-    name: 'message',
+    name: 'messageCreate',
     run: (client, message: Message) => {
         if(message.author.bot || !message.content.startsWith(client.config.prefix))
             return;

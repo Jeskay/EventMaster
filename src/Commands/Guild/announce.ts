@@ -1,3 +1,4 @@
+import { CommandError } from '../../Error';
 import {Command} from '../../Interfaces';
 
 export const command: Command = {
@@ -7,15 +8,10 @@ export const command: Command = {
     run: async(client, message, args) => {
         const guild = message.guild;
         if(!guild) return;
-        try {
-            if(args.length < 2) throw Error("Event name and description must be provided.");
-            const title = args.shift();
-            if(!title) throw Error("Event title can't be empty.");
-            const description = args.join(' ');
-            await client.occasionController.Announce(client, title, description, guild, message.author);
-            
-        } catch(error) {
-            message.channel.send(client.embeds.errorInformation(error));
-        }
+        if(args.length < 2) throw new CommandError("Event name and description must be provided.");
+        const title = args.shift();
+        if(!title) throw new CommandError("Event title can't be empty.");
+        const description = args.join(' ');
+        await client.occasionController.Announce(client, title, description, guild, message.author);
     }
 };

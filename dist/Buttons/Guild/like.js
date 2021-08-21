@@ -10,20 +10,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = void 0;
+const Error_1 = require("../../Error");
 exports.button = {
     name: 'likeHost',
     description: "",
     run: (client, component, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (args.length != 1)
-                throw Error("Only one argument required.");
-            const author = component.clicker.id;
+                throw new Error_1.CommandError("Only one argument required.");
+            const author = component.user.id;
             const host = args[0];
             yield client.ratingController.likeHost(client, host, author);
-            yield component.reply.send(client.embeds.hostCommended(), { ephemeral: true });
+            yield component.reply({ embeds: [client.embeds.hostCommended()], ephemeral: true });
         }
         catch (error) {
-            yield component.reply.send(client.embeds.errorInformation(error), { ephemeral: true });
+            if (error instanceof Error)
+                component.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
         }
     })
 };

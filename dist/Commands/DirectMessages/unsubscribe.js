@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Error_1 = require("../../Error");
 exports.command = {
     name: 'unsubscribe',
     description: "remove subscribtion for personal events notifications",
@@ -22,14 +23,15 @@ exports.command = {
             const title = args[0];
             const profile = yield client.database.getPlayer(message.author.id);
             if (!profile)
-                throw Error("This user did not join events.");
+                throw new Error_1.CommandError("This user did not join events.");
             const tags = yield profile.subscriptions;
             if (!tags.find(tag => tag.title == title))
-                throw Error("You are not subscribed for this tag");
+                throw new Error_1.CommandError("You are not subscribed for this tag.");
             yield client.database.removeTag(title);
         }
         catch (error) {
-            message.channel.send(error);
+            if (error instanceof Error)
+                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

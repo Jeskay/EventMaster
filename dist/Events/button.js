@@ -11,11 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.event = void 0;
 exports.event = {
-    name: 'clickButton',
+    name: "interactionCreate",
     run: (client, button) => __awaiter(void 0, void 0, void 0, function* () {
-        const divider = button.id.indexOf('.');
-        const name = button.id.substr(0, divider);
-        const args = button.id.substring(divider + 1).split(/ +/g);
+        if (button.componentType != 'BUTTON')
+            return;
+        const divider = button.customId.indexOf('.');
+        const name = button.customId.substr(0, divider);
+        const args = button.customId.substring(divider + 1).split(/ +/g);
         const btn = client.buttons.get(name);
         if (btn)
             btn.run(client, button, args);

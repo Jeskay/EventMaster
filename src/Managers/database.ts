@@ -4,6 +4,7 @@ import { Occasion } from "../entities/occasion";
 import { Player } from "../entities/player";
 import { Commend } from "../entities/commend";
 import { Tag } from "../entities/tag";
+import { DataBaseError } from "../Error";
 
 export class DataBaseManager{
     private connection: Connection;
@@ -52,7 +53,7 @@ export class DataBaseManager{
             .where("server.guild = :guild", {guild: serverID})
             .getOne()
             .catch(err => { throw err });
-            if(!server) throw Error("Guild with followed id is not registered.");
+            if(!server) throw new DataBaseError("Guild with followed id is not registered.");
             return server;
     }
     /**
@@ -66,7 +67,7 @@ export class DataBaseManager{
         .where("player.id = :id", {id: userId})
         .getOne()
         .catch(err => {throw err;});
-        if(!user) throw Error("Player with followed id is not registered.");
+        if(!user) throw new DataBaseError("Player with followed id is not registered.");
         return user;
     }
 
@@ -96,8 +97,8 @@ export class DataBaseManager{
     public async addOccasion(guildID: string, occasion: object){
         const post = this.occasion(occasion);
         const server = await this.getServer(guildID);
-        if(!server) throw Error("Guild with followed id is not registered.");
-        else if(server.events && server.events.includes(post)) throw Error("There is occasion's duplicate.");
+        if(!server) throw new DataBaseError("Guild with followed id is not registered.");
+        else if(server.events && server.events.includes(post)) throw new DataBaseError("There is an occasion's duplicate.");
         await this.connection.manager.save(post);
     }
     /**
@@ -125,7 +126,7 @@ export class DataBaseManager{
      */
     public async removeServer(serverID: string){
         const server = await this.getServer(serverID);
-        if(server == undefined) throw Error("")
+        if(server == undefined) throw new DataBaseError("Server does not exist");
         this.connection.manager.remove(server);
     }
     /**
@@ -136,9 +137,9 @@ export class DataBaseManager{
      */
     public async removeOccasion(guildID: string, voiceChannel: string){
         const server = await this.getServerRelations(guildID);
-        if(!server) throw Error("Guild with followed id is not registered.");
+        if(!server) throw new DataBaseError("Guild with followed id is not registered.");
         const occasion = server.events.find(event => event.voiceChannel == voiceChannel);
-        if(!occasion) throw Error("Cannot find occasion with following voice channel");
+        if(!occasion) throw new DataBaseError("Cannot find occasion with following voice channel");
         await this.connection.manager.remove(occasion);
         return {voice: occasion.voiceChannel, text: occasion.textChannel};
     }
@@ -148,7 +149,7 @@ export class DataBaseManager{
      */
     public async removePlayer(userID: string) {
         const player = await this.getPlayer(userID);
-        if(!player) throw Error("Cannot find player");
+        if(!player) throw new DataBaseError("Cannot find player");
         await this.connection.manager.remove(player);
     }
     /**
@@ -157,7 +158,7 @@ export class DataBaseManager{
      */
     public async removeTag(tagId: string) {
         const tag = await this.getTag(tagId);
-        if(!tag) throw Error("Tag does not exist");
+        if(!tag) throw new DataBaseError("Tag does not exist.");
         await this.connection.manager.remove(tag);
     }
 
@@ -169,7 +170,7 @@ export class DataBaseManager{
      */
     public async updateServer(guildID: string, params: object){
         const current = await this.getServer(guildID);
-        if(!current) throw Error("Cannot find server.");
+        if(!current) throw new DataBaseError("Cannot find server.");
         else Object.keys(current).forEach(key => current[key] = key in params ? params[key] : current[key]);
         await this.connection.manager.save(current);
     }
@@ -180,7 +181,7 @@ export class DataBaseManager{
      */
     public async updateSettings(guildID: string, params: object){
         const server = await this.getServer(guildID);
-        if(!server) throw Error("Cannot find server.");
+        if(!server) throw new DataBaseError("Cannot find server.");
         Object.keys(server.settings).forEach(key => server.settings[key] = key in params ? params[key] : server.settings[key]);
         await this.connection.manager.save(server);
     }
@@ -192,9 +193,9 @@ export class DataBaseManager{
      */
     public async updateOccasion(guildID: string, voiceChannel: string, params: object) {
         const server = await this.getServerRelations(guildID);
-        if(!server) throw Error("Guild with followed id is not registered.");
+        if(!server) throw new DataBaseError("Guild with followed id is not registered.");
         const occasion = server.events.find(event => event.voiceChannel == voiceChannel);
-        if(!occasion) throw Error("Cannot find occasion with following voice channel");
+        if(!occasion) throw new DataBaseError("Cannot find occasion with following voice channel.");
         Object.keys(occasion).forEach(key => occasion[key] = key in params ? params[key] : occasion[key]);
         await this.connection.manager.save(occasion);
     }
@@ -212,9 +213,9 @@ export class DataBaseManager{
             await this.connection.manager.save(instance);
         } 
         else {
-            if(!Object.keys(instance).includes('id')) throw Error("Id must be provided");
+            if(!Object.keys(instance).includes('id')) throw new DataBaseError("Player id must be provided.");
             const player = await this.getPlayer(instance['id']);
-            if(!player) throw Error("Cannot find the player.");
+            if(!player) throw new DataBaseError("Cannot find the player.");
             console.log(Object.keys(player));//debug
             Object.keys(player).forEach(key => player[key] = key in instance ? instance[key] : player[key]);
             await this.connection.manager.save(player);

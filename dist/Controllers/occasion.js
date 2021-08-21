@@ -10,14 +10,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OccasionController = void 0;
+const Error_1 = require("../Error");
+const room_1 = require("../Managers/room");
 class OccasionController {
     notifyPlayer(client, userId, title, description, channel) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield client.users.fetch(userId);
-            const invite = yield channel.createInvite();
+            const invite = yield channel.guild.invites.create(channel);
             const dm = (_a = user.dmChannel) !== null && _a !== void 0 ? _a : yield user.createDM();
-            dm.send(client.embeds.notification(title, description, invite.url));
+            dm.send({ embeds: [client.embeds.notification(title, description, invite.url)] });
+        });
+    }
+    DeclareHost(client, occasion, candidate, voiceChannel, textChannel) {
+        return __awaiter(this, void 0, void 0, function* () {
+            client.vote.finish(voiceChannel.id);
+            if (!occasion)
+                return;
+            client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
+            yield client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
+                state: room_1.OccasionState.playing,
+                host: candidate.id
+            });
+            textChannel.send({ embeds: [client.embeds.electionFinished(candidate.user.username)] });
+        });
+    }
+    Vote(client, voiceChannel, voterId, candidateId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const guild = voiceChannel.guild;
+            const server = yield client.database.getServerRelations(guild.id);
+            const occasion = server.events.find(occasion => occasion.voiceChannel == voiceChannel.id);
+            if (!occasion)
+                throw new Error_1.CommandError("You must be in event channel to vote.");
+            if (occasion.host)
+                throw new Error_1.CommandError("There is already a host in this occasion.");
+            const textChannel = voiceChannel.guild.channels.cache.get(occasion.textChannel);
+            if (!textChannel || !textChannel.isText)
+                throw new Error_1.CommandError("Cannot find text channel");
+            const candidate = yield guild.members.fetch(candidateId);
+            const finished = yield client.vote.vote(voiceChannel.id, voterId, candidateId);
+            if (finished) {
+                client.occasionController.DeclareHost(client, occasion, candidate, voiceChannel, textChannel);
+            }
+            else
+                yield textChannel.send({ embeds: [client.embeds.voteConfimation(candidate.user.username)] });
         });
     }
     Start(client, guild, author, title, description) {
@@ -40,7 +76,7 @@ class OccasionController {
                 const voiceChannel = guild.channels.cache.get(occasion.voiceChannel);
                 if (!voiceChannel)
                     throw Error("Cannot find voice channel");
-                yield channel.send(client.embeds.occasionStarted(title, description, author.username, voiceChannel.members.size));
+                yield channel.send({ embeds: [client.embeds.occasionStarted(title, description, author.username, voiceChannel.members.size)] });
             }
         });
     }
@@ -58,13 +94,13 @@ class OccasionController {
                 throw Error("Voice channel has been removed, personal statistic will not be updated.");
             yield client.ratingController.updateMembers(client, voice);
             yield client.database.removeOccasion(server.guild, occasion.voiceChannel);
-            yield text.send(client.embeds.finishedOccasion, client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`));
+            yield text.send({ embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)] });
             setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
             if (server.settings.logging_channel) {
                 const channel = guild.channels.cache.get(server.settings.logging_channel);
                 if (!channel || !channel.isText)
                     return;
-                channel.send(client.embeds.occasionFinished(results, author.username, voice.members.size));
+                channel.send({ embeds: [client.embeds.occasionFinished(results, author.username, voice.members.size)] });
             }
         });
     }
@@ -80,7 +116,7 @@ class OccasionController {
             const hashtags = client.helper.findSubscriptions(description);
             if (!channel || !channel.isText)
                 throw Error("Cannot find notification channel.");
-            yield channel.send(client.embeds.occasionNotification(title, description, author.username));
+            yield channel.send({ embeds: [client.embeds.occasionNotification(title, description, author.username)] });
             if (hashtags.length > 0) {
                 hashtags.forEach(tag => {
                     this.NotifyPlayers(client, tag, channel, title, description);
@@ -92,7 +128,7 @@ class OccasionController {
         return __awaiter(this, void 0, void 0, function* () {
             const tag = yield client.database.getTag(tagId);
             if (!tag)
-                throw Error("There are no subscriptions for this tag");
+                return;
             const players = yield tag.subscribers;
             yield Promise.all(players.map((player) => __awaiter(this, void 0, void 0, function* () { return yield this.notifyPlayer(client, player.id, title, description, channel); })));
         });

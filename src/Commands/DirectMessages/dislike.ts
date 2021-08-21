@@ -1,3 +1,4 @@
+import { CommandError } from '../../Error';
 import {Command} from '../../Interfaces';
 
 export const command: Command = {
@@ -12,11 +13,12 @@ export const command: Command = {
             if(message.guild)
                 userId = client.helper.extractID(args[0]);
             const user = await client.users.cache.get(userId);
-            if(!user) throw Error("User does not exists.");
+            if(!user) throw new CommandError("User does not exists.");
             await client.ratingController.DislikePlayer(client, user.id, message.author.id);
-            await message.channel.send(client.embeds.playerCommended(user));
+            await message.channel.send({embeds: [client.embeds.playerCommended(user)]});
         } catch(error) {
-            message.channel.send(error);
+            if(error instanceof Error)
+                message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});
         }
     }
 }; 

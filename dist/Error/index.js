@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PageLimitError = exports.CommandError = exports.DataBaseError = void 0;
+exports.PermissionError = exports.PageLimitError = exports.CommandError = exports.DataBaseError = void 0;
 class DataBaseError extends Error {
     constructor(message) {
         super(message);
@@ -22,3 +22,10 @@ class PageLimitError extends Error {
     }
 }
 exports.PageLimitError = PageLimitError;
+class PermissionError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "PermissionError";
+    }
+}
+exports.PermissionError = PermissionError;

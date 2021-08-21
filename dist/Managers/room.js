@@ -31,9 +31,9 @@ class RoomManger {
     }
     create(initiator, category) {
         return __awaiter(this, void 0, void 0, function* () {
-            const voiceChnl = yield category.guild.channels.create(initiator.username, { type: "voice", parent: category });
+            const voiceChnl = yield category.guild.channels.create(initiator.username, { type: "GUILD_VOICE", parent: category });
             const textChnl = yield category.guild.channels.create(initiator.username, {
-                type: "text",
+                type: "GUILD_TEXT",
                 parent: category,
                 rateLimitPerUser: 30
             });
@@ -43,10 +43,10 @@ class RoomManger {
     givePermissions(guild, text, voice, user) {
         return __awaiter(this, void 0, void 0, function* () {
             const { voiceChannel, textChannel } = this.channels(guild, text, voice);
-            yield voiceChannel.updateOverwrite(user, {
+            yield voiceChannel.permissionOverwrites.edit(user, {
                 MANAGE_CHANNELS: true
             });
-            yield textChannel.updateOverwrite(user, {
+            yield textChannel.permissionOverwrites.edit(user, {
                 MANAGE_CHANNELS: true
             });
             const permissions = voiceChannel.permissionsFor(user);

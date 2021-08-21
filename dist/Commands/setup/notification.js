@@ -10,33 +10,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Error_1 = require("../../Error");
 exports.command = {
     name: 'notification',
     description: "set notification channel where bot will notify users about current events",
     aliases: ['notify'],
     options: [{ name: 'channel', required: true }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
-        const guild = message.guild;
-        if (!guild)
-            return;
-        if (args.length != 1)
-            return;
         try {
+            const guild = message.guild;
+            if (!guild)
+                return;
+            if (args.length != 1)
+                return;
             const server = yield client.database.getServer(guild.id);
             if (!server)
-                throw Error("Server is not registered yet.");
+                throw new Error_1.CommandError("Server is not registered yet.");
             if (!server.settings.owners.includes(message.author.id))
-                throw Error("Permission denied.");
+                throw new Error_1.CommandError("Permission denied.");
             const channel = guild.channels.cache.get(args[0]);
             if (!channel)
-                throw Error("Invalid channel id");
-            if (channel.type != 'text' && channel.type != 'news')
-                throw Error("Only text or news channel allowed");
+                throw new Error_1.CommandError("Invalid channel id");
+            if (channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS')
+                throw new Error_1.CommandError("Only text or news channel allowed");
             yield client.database.updateSettings(guild.id, { notification_channel: channel.id });
             yield message.channel.send(`Channel ${channel.name} successfuly set to notification.`);
         }
         catch (error) {
-            message.channel.send(client.embeds.errorInformation(error));
+            if (error instanceof Error)
+                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

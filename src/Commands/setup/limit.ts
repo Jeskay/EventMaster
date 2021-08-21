@@ -1,3 +1,4 @@
+import { CommandError } from '../../Error';
 import {Command} from '../../Interfaces';
 
 export const command: Command = {
@@ -6,17 +7,18 @@ export const command: Command = {
     aliases: ['sl', 'limit'],
     options: [{name: 'amount', required: true}],
     run: async(client, message, args) => {
-        const guild = message.guild;
-        if(!guild) return;
-        if(args.length != 1) return;
         try {
+            const guild = message.guild;
+            if(!guild) return;
+            if(args.length != 1) return;
             const server = await client.database.getServer(guild.id);
-            if(!server) throw Error("Server is not registered yet.");
-            if(!server.settings.owners.includes(message.author.id)) throw Error("Permission denied.");
+            if(!server) throw new CommandError("Server is not registered yet.");
+            if(!server.settings.owners.includes(message.author.id)) throw new CommandError("Permission denied.");
             const limit = parseInt(args[0]);
             await client.database.updateSettings(guild.id, {limit: limit});
         } catch(error) {
-            message.channel.send(client.embeds.errorInformation(error));
+            if(error instanceof Error)
+                message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});
         }
     }
 };

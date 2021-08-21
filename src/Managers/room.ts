@@ -26,9 +26,9 @@ export class RoomManger {
      * @returns an object with text and voice channels
      */
     public async create(initiator: User, category: CategoryChannel){
-        const voiceChnl = await category.guild.channels.create(initiator.username, {type: "voice", parent: category});
+        const voiceChnl = await category.guild.channels.create(initiator.username, {type: "GUILD_VOICE", parent: category});
         const textChnl = await category.guild.channels.create(initiator.username, {
-            type: "text",
+            type: "GUILD_TEXT",
             parent: category,
             rateLimitPerUser: 30
         });
@@ -43,10 +43,10 @@ export class RoomManger {
      */
     public async givePermissions(guild: Guild, text: string, voice: string, user: GuildMember){
         const {voiceChannel, textChannel} = this.channels(guild, text, voice);
-        await voiceChannel.updateOverwrite(user, {
+        await voiceChannel.permissionOverwrites.edit(user, {
             MANAGE_CHANNELS:true
         });
-        await textChannel.updateOverwrite(user, {
+        await textChannel.permissionOverwrites.edit(user, {
             MANAGE_CHANNELS: true
         });
         const permissions = voiceChannel.permissionsFor(user);

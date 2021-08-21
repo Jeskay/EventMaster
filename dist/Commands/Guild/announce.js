@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Error_1 = require("../../Error");
 exports.command = {
     name: 'announce',
     description: 'declare in notification channel about the event',
@@ -18,17 +19,12 @@ exports.command = {
         const guild = message.guild;
         if (!guild)
             return;
-        try {
-            if (args.length < 2)
-                throw Error("Event name and description must be provided.");
-            const title = args.shift();
-            if (!title)
-                throw Error("Event title can't be empty.");
-            const description = args.join(' ');
-            yield client.occasionController.Announce(client, title, description, guild, message.author);
-        }
-        catch (error) {
-            message.channel.send(client.embeds.errorInformation(error));
-        }
+        if (args.length < 2)
+            throw new Error_1.CommandError("Event name and description must be provided.");
+        const title = args.shift();
+        if (!title)
+            throw new Error_1.CommandError("Event title can't be empty.");
+        const description = args.join(' ');
+        yield client.occasionController.Announce(client, title, description, guild, message.author);
     })
 };

@@ -1,3 +1,4 @@
+import { CommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
 
 export const button: Button = {
@@ -5,13 +6,14 @@ export const button: Button = {
     description: "",
     run: async(client, component, args) => {
         try {
-            if(args.length != 1) throw Error("Too much arguments");
-            const author = component.clicker.id;
+            if(args.length != 1) throw new CommandError("Too much arguments");
+            const author = component.user.id;
             const host = args[0];
             await client.ratingController.dislikeHost(client, host, author);
-            await component.reply.send(client.embeds.hostCommended(), {ephemeral: true});
+            await component.reply({embeds: [client.embeds.hostCommended()], ephemeral: true});
         } catch(error) {
-            await component.reply.send(client.embeds.errorInformation(error), {ephemeral: true});
+            if(error instanceof Error)
+                component.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
         }
     }
 };
