@@ -112,7 +112,7 @@ export class OccasionController {
      * @param guild occasion guild
      * @param author occasion host
      */
-    public async Announce(client: ExtendedClient, title: string, description: string, guild: Guild, author: User){
+    public async Announce(client: ExtendedClient, title: string, description: string, guild: Guild, author: User, image?: string){
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to start an event.");
@@ -120,7 +120,7 @@ export class OccasionController {
         const channel = guild.channels.cache.get(server.settings.notification_channel);
         const hashtags = client.helper.findSubscriptions(description);
         if(!channel || !channel.isText) throw Error("Cannot find notification channel.");
-        await (channel as TextChannel).send({embeds:[client.embeds.occasionNotification(title, description, author.username)]});
+        await (channel as TextChannel).send({embeds:[client.embeds.occasionNotification(title, description, author.username, image)]});
         if(hashtags.length > 0) {
             hashtags.forEach(tag => {
                 this.NotifyPlayers(client, tag, channel as GuildChannel, title, description);

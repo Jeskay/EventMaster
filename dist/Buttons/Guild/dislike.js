@@ -14,18 +14,18 @@ const Error_1 = require("../../Error");
 exports.button = {
     name: 'dislikeHost',
     description: "",
-    run: (client, component, args) => __awaiter(void 0, void 0, void 0, function* () {
+    run: (client, button, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (args.length != 1)
                 throw new Error_1.CommandError("Too much arguments");
-            const author = component.user.id;
+            const author = button.user.id;
             const host = args[0];
             yield client.ratingController.dislikeHost(client, host, author);
-            yield component.reply({ embeds: [client.embeds.hostCommended()], ephemeral: true });
+            yield button.reply({ embeds: [client.embeds.hostCommended()], ephemeral: true });
         }
         catch (error) {
             if (error instanceof Error)
-                component.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
+                button.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
         }
     })
 };

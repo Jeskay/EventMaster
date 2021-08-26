@@ -104,7 +104,7 @@ class OccasionController {
             }
         });
     }
-    Announce(client, title, description, guild, author) {
+    Announce(client, title, description, guild, author, image) {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield client.database.getServerRelations(guild.id);
             const occasion = server.events.find(event => event.host == author.id);
@@ -116,7 +116,7 @@ class OccasionController {
             const hashtags = client.helper.findSubscriptions(description);
             if (!channel || !channel.isText)
                 throw Error("Cannot find notification channel.");
-            yield channel.send({ embeds: [client.embeds.occasionNotification(title, description, author.username)] });
+            yield channel.send({ embeds: [client.embeds.occasionNotification(title, description, author.username, image)] });
             if (hashtags.length > 0) {
                 hashtags.forEach(tag => {
                     this.NotifyPlayers(client, tag, channel, title, description);

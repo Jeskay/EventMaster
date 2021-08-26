@@ -1,17 +1,21 @@
-import { CategoryChannel, Channel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
+import { ApplicationCommandOption, CategoryChannel, Channel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
+import {SlashCommandBuilder} from "@discordjs/builders";
 import { Tag } from "../entities/tag";
 import ExtendedClient from "../Client";
 
 export class HelperManager{
     /**
      * Resolves when given channel is located in category and guild
+     * @returns given channels
      */
-    public validatePair(channelID: string, categoryID: string, guild: Guild) {
-            const channel = guild.channels.cache.get(channelID);
-            const category = guild.channels.cache.get(categoryID) as CategoryChannel;
-            if(!channel) throw Error("Cannot find the channel.");
-            if(!category) throw Error("Cannot find the category.");
-            if(!category.children.has(channelID)) throw Error(`Channel ${channel.name} is not in ${category.name}.`);
+    public async getRelatedChannels(channelID: string, categoryID: string, guild: Guild) {
+        const channel = await guild.channels.fetch(channelID);
+        const category = await guild.channels.fetch(categoryID);
+        if(!channel) throw Error("Cannot find the channel.");
+        if(!category) throw Error("Cannot find the category.");
+        if(!(channel instanceof VoiceChannel && category instanceof CategoryChannel)) throw Error("Invalid channel types.");
+            if(!category.children.has(channel.id)) throw Error(`Channel ${channel.name} is not in ${category.name}.`);
+        return {voice: channel, category: category};
     }
     /**
      * extracts ID from link
@@ -46,7 +50,7 @@ export class HelperManager{
         client.commands.forEach(command => {
             var options: string = "";
             var line = "";
-            if(command.options) options = Array.from(command.options, option => `${option.name} (${option.required ? "required" : "not required"})`).join(' ') + '\n';
+            if(command.options) options = Array.from(command.options, option => `${option.name}`).join(' ') + '\n';
             line += `${options}${command.description ?? "no description"}`;
             if(command.aliases) line += "\nAliases:" + command.aliases.join(', ');
             embed.addField(command.name, line);
@@ -70,5 +74,35 @@ export class HelperManager{
     public findSubscriptions(text: string) {
         const matches = text.match('#(.*?) ') ?? [];
         return matches as Array<string>;
+    }
+    public createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder) {
+        const setOption = (option: any) => 
+            option.setName(interact_option.name)
+            .setDescription(interact_option.description)
+            .setRequired(interact_option.required ?? false);
+        
+        switch (interact_option.type) {
+            case "USER":
+                slashCommand.addUserOption(setOption);
+                break;
+            case "STRING":
+                slashCommand.addStringOption(setOption);
+                break;
+            case "INTEGER":
+                slashCommand.addIntegerOption(setOption);
+                break;
+            case "CHANNEL":
+                slashCommand.addChannelOption(setOption);
+                break;
+            case "NUMBER":
+                slashCommand.addIntegerOption(setOption);
+                break;
+            case "SUB_COMMAND":
+                slashCommand.addSubcommand(setOption);
+                break;
+            default:
+                break;
+        }
+        return slashCommand;
     }
 }

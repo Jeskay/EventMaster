@@ -14,7 +14,7 @@ const Error_1 = require("../../Error");
 exports.button = {
     name: 'previousPage',
     description: "",
-    run: (client, component, args) => __awaiter(void 0, void 0, void 0, function* () {
+    run: (client, button, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (args.length != 2)
                 throw new Error_1.CommandError("Only one argument required.");
@@ -22,15 +22,15 @@ exports.button = {
             const list = client.Lists.get(args[1]);
             if (!list)
                 return;
-            if (author != component.user.id)
+            if (author != button.user.id)
                 return;
-            const embed = yield list.previous(component.message.id);
-            yield component.message.edit({ embeds: [embed] });
-            yield component.deferUpdate({ fetchReply: true });
+            const embed = yield list.previous(button.message.id);
+            yield button.message.edit({ embeds: [embed] });
+            yield button.deferUpdate({ fetchReply: true });
         }
         catch (error) {
             if (error instanceof Error)
-                component.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
+                button.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
         }
     })
 };

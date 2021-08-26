@@ -1,6 +1,7 @@
 import { User, MessageEmbed, MessageButton, MessageActionRow } from "discord.js";
 import { Commend } from "../entities/commend";
 import { Player } from "../entities/player";
+const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
 
 export class EmbedManager{
     private LikeHost = (id: string) => new MessageButton()
@@ -55,10 +56,11 @@ export class EmbedManager{
     .setFooter("Don't forget to rate your host after the game.")
     .setColor("PURPLE");
 
-    public occasionNotification = (name: string, description: string, host: string) => new MessageEmbed()
+    public occasionNotification = (name: string, description: string, host: string, image: string | undefined) => new MessageEmbed()
     .setTitle(name)
     .setDescription(description)
     .setFooter(`announce by ${host}`)
+    .setImage(image ?? defaultImageUrl)
     .setColor("PURPLE");
 
     public occasionStarted = (title: string, description: string, hostName: string, members: number) => new MessageEmbed()

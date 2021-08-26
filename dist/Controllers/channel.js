@@ -40,11 +40,13 @@ class ChannelController {
             const occasion = server.events.find(event => event.voiceChannel == joinedChannel.id);
             if (occasion == undefined)
                 return;
+            if (occasion.host)
+                return;
             if (joinedChannel.members.size >= server.settings.limit) {
                 const text = joinedChannel.guild.channels.cache.get(occasion.textChannel);
                 if (text == undefined || !text.isText)
                     return;
-                client.vote.start(occasion.voiceChannel, 1);
+                client.vote.start(occasion.voiceChannel, server.settings.limit);
                 yield client.database.updateOccasion(joinedChannel.guild.id, joinedChannel.id, {
                     state: room_1.OccasionState.voting
                 });

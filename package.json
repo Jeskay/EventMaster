@@ -15,6 +15,7 @@
     "ts-node": "^10.0.0"
   },
   "dependencies": {
+    "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
     "@mikro-orm/cli": "^4.5.6",
     "@mikro-orm/core": "^4.5.6",

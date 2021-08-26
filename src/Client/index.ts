@@ -1,19 +1,25 @@
-import {Client, Collection} from "discord.js";
+import {ApplicationCommandOption, Client, Collection, Guild} from "discord.js";
+import {REST} from '@discordjs/rest';
 import path from 'path';
-import {readdirSync} from 'fs';
+import {readdirSync, readdir} from 'fs';
+import {promisify} from'util';
 import {createConnection} from "typeorm";
-import {Command, Event, Button} from '../Interfaces';
+import {Event, Button, TextCommand, InteractCommand, ContextCommand} from '../Interfaces';
 import {Config} from '../Config';
 import { DataBaseManager, VoteManager, HelperManager, RoomManger, EmbedManager } from '../Managers';
 import { ChannelController, RatingController, OccasionController } from '../Controllers';
 import { List } from '../List';
+import { Routes } from "discord-api-types/v9";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 class ExtendedClient extends Client {
-    public commands: Collection<string, Command> = new Collection();
-    public events: Collection<string, Event> = new Collection();
-    public aliases: Collection<string, Command> = new Collection();
-    public buttons: Collection<string, Button> = new Collection();
     public config: Config = new Config();
+    public commands: Collection<string, TextCommand> = new Collection();
+    public slashCommands: Collection<string, InteractCommand> = new Collection();
+    public contextMenu: Collection<string, ContextCommand> = new Collection();
+    public events: Collection<string, Event> = new Collection();
+    public aliases: Collection<string, TextCommand> = new Collection();
+    public buttons: Collection<string, Button> = new Collection();
     public database: DataBaseManager;
     public helper: HelperManager = new HelperManager();
     public room: RoomManger = new RoomManger();
@@ -24,13 +30,70 @@ class ExtendedClient extends Client {
     public ratingController: RatingController = new RatingController();
     public occasionController: OccasionController = new OccasionController();
 
+    private async extractCommands(files: string[], path: string) {
+        const commands: Array<any> = [];
+        await Promise.all(files.map(async (file) => {
+            const { command } = await import(`${path}/${file}`);
+            let slash_command = new SlashCommandBuilder()
+            .setName(command.name)
+            .setDescription(command.description);
+            (command.options as ApplicationCommandOption[]).forEach(option => {
+                slash_command = this.helper.createOption(option, slash_command);
+            });
+            if(!this.slashCommands.get(command.name)) this.slashCommands.set(command.name, command);
+            commands.push(slash_command.toJSON());
+        }));
+        return commands;
+    }
+
+    public async registerContextMenu() {
+        if(!this.user) throw Error("User unavailable");
+        const rest = new REST({version: '9'}).setToken(this.config.token);
+        const readdirAsync = promisify(readdir);
+        const interactionPath = path.join(__dirname, "..", "ContextMenu");
+        const files = await readdirAsync(`${interactionPath}`);
+        const commands: Array<any> = [];
+        await Promise.all(files.map(async (file) => {
+            const { command } = await import(`${interactionPath}/${file}`);
+            const contextCommand = {
+                name: command.name,
+                type: command.type
+            };
+            if(!this.contextMenu.get(command.name)) this.contextMenu.set(command.name, command);
+            commands.push(contextCommand);
+        }));
+        await rest.put(Routes.applicationCommands(this.user.id), {body: commands});
+    }
+
+    public async registerGuildCommands(guild: Guild, clientId: string) {
+        const rest = new REST({version: '9'}).setToken(this.config.token);
+        const readdirAsync = promisify(readdir);
+        const interactionPath = path.join(__dirname, "..", "SlashCommands/Guild");
+        const files = await readdirAsync(`${interactionPath}`);
+        const commands = await this.extractCommands(files, interactionPath);
+        await rest.put(Routes.applicationGuildCommands(clientId, guild.id), {
+            body: commands
+        });
+    }
+
+    public async registerGlobalCommands() {
+        const rest = new REST({version: '9'}).setToken(this.config.token);
+        const readdirAsync = promisify(readdir);
+        const interactionPath = path.join(__dirname, "..", "SlashCommands/Global");
+        const files = await readdirAsync(`${interactionPath}`);
+        const commands = await this.extractCommands(files, interactionPath);
+        if(!this.user) throw Error("Unable to access bot.");
+        await rest.put(Routes.applicationCommands(this.user.id), {
+            body: commands
+        });
+    }
     public async init() {
         this.login(this.config.token);
         /* database */
         await createConnection();
         this.database = new DataBaseManager();
         /* commands */
-        const commandPath = path.join(__dirname, "..", "Commands");
+        const commandPath = path.join(__dirname, "..", "TextCommands");
         const file_ending = (this.config.state == "dev") ? '.ts' : '.js';
         readdirSync(commandPath).forEach((dir) => {
             const commands = readdirSync(`${commandPath}/${dir}`).filter((file) => file.endsWith(file_ending));

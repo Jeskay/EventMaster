@@ -1,5 +1,5 @@
 import { Message } from 'discord.js';
-import {Command, Event} from '../Interfaces';
+import {Event, TextCommand} from '../Interfaces';
 
 export const event: Event = {
     name: 'messageCreate',
@@ -11,7 +11,7 @@ export const event: Event = {
         if(!cmd) return;
         const command = client.commands.get(cmd) || client.aliases.get(cmd);
         if(command) {
-            (command as Command).run(client, message, args);
+            (command as TextCommand).run(client, message, args);
             if(message.guild) message.delete().catch(error => console.log(error));
         }
     }

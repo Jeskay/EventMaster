@@ -13,15 +13,15 @@ exports.event = void 0;
 exports.event = {
     name: 'guildDelete',
     run: (client, guild) => __awaiter(void 0, void 0, void 0, function* () {
-        const owner = yield guild.members.fetch(guild.ownerId);
+        const owner = yield client.users.fetch(guild.ownerId);
         if (owner == null)
             return;
-        let dm = owner.user.dmChannel;
+        let dm = owner.dmChannel;
         if (dm == null)
             dm = yield owner.createDM();
         try {
             yield client.database.removeServer(guild.id);
-            yield dm.send({ embeds: [client.embeds.farawell(guild.name, owner.user.username)] });
+            yield dm.send({ embeds: [client.embeds.farawell(guild.name, owner.username)] });
         }
         catch (error) {
             if (error instanceof Error)
