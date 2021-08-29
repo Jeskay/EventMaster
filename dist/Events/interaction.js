@@ -21,5 +21,11 @@ exports.event = {
             if (cmd)
                 cmd.run(client, command);
         }
+        else if (interaction.isContextMenu()) {
+            const command = interaction;
+            const cmd = client.contextMenu.get(command.commandName);
+            if (cmd)
+                cmd.run(client, command);
+        }
     }
 };

@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.finish = exports.start = exports.announce = void 0;
-function announce(client, author, guild, title, description, image) {
+function announce(client, author, guild, description, title, image) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.occasionController.Announce(client, title, description, guild, author, image);
+        yield client.occasionController.Announce(client, description, guild, author, title, image);
     });
 }
 exports.announce = announce;

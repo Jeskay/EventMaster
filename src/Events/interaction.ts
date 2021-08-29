@@ -1,5 +1,5 @@
-import { ButtonInteraction, CommandInteraction, Interaction } from 'discord.js';
-import {Button, Event, InteractCommand} from '../Interfaces';
+import { ButtonInteraction, CommandInteraction, ContextMenuInteraction, Interaction } from 'discord.js';
+import {Button, ContextCommand, Event, InteractCommand} from '../Interfaces';
 
 export const event: Event = {
     name: 'interactionCreate',
@@ -16,6 +16,10 @@ export const event: Event = {
             const command = interaction as CommandInteraction;
             const cmd = client.slashCommands.get(command.commandName);
             if(cmd) (cmd as InteractCommand).run(client, command);
+        } else if(interaction.isContextMenu()) {
+            const command = interaction as ContextMenuInteraction;
+            const cmd = client.contextMenu.get(command.commandName);
+            if(cmd) (cmd as ContextCommand).run(client, command);
         }
     }
 }

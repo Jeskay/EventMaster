@@ -47,7 +47,7 @@ class EmbedManager {
             .setFooter("Don't forget to rate your host after the game.")
             .setColor("PURPLE");
         this.occasionNotification = (name, description, host, image) => new discord_js_1.MessageEmbed()
-            .setTitle(name)
+            .setTitle(name !== null && name !== void 0 ? name : "New occasion is about to start!")
             .setDescription(description)
             .setFooter(`announce by ${host}`)
             .setImage(image !== null && image !== void 0 ? image : defaultImageUrl)
@@ -64,11 +64,6 @@ class EmbedManager {
             .addField("Host:", hostName)
             .addField("Members when finished:", members.toString())
             .setColor("PURPLE");
-        this.notification = (title, description, url) => new discord_js_1.MessageEmbed()
-            .setTitle(`${title} is about to start.`)
-            .setDescription(description)
-            .setURL(url)
-            .setColor("GREEN");
         this.playerCommended = (user) => new discord_js_1.MessageEmbed()
             .setTitle(`${user.username}'s rating changed`)
             .setFooter("Thank you for improving our community.")
@@ -109,6 +104,25 @@ class EmbedManager {
             .addField("Information", `Dear, ${owner}, thank you for using our service in ${guild}`)
             .setFooter("Please, send us a letter to let us know why you decided to stop using our service. We will make neccessary improvements.")
             .setColor("WHITE");
+    }
+    InviteMessage(inviteUrl, guild) {
+        const button = new discord_js_1.MessageButton()
+            .setStyle('LINK')
+            .setLabel(guild)
+            .setURL(inviteUrl);
+        const row = new discord_js_1.MessageActionRow()
+            .addComponents(button);
+        return row;
+    }
+    notification(title, description, url, banner) {
+        const embed = new discord_js_1.MessageEmbed()
+            .setTitle(`${title} is about to start.`)
+            .setDescription(description)
+            .setURL(url)
+            .setColor("GREEN");
+        if (banner)
+            embed.setThumbnail(banner);
+        return embed;
     }
     playerInfo(player, user, commends) {
         const playerLikes = commends.filter(commend => commend.cheer && !commend.host).length;

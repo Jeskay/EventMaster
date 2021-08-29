@@ -80,11 +80,10 @@ class ExtendedClient extends discord_js_1.Client {
             return commands;
         });
     }
-    registerContextMenu() {
+    extractContextCommands() {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.user)
                 throw Error("User unavailable");
-            const rest = new rest_1.REST({ version: '9' }).setToken(this.config.token);
             const readdirAsync = util_1.promisify(fs_1.readdir);
             const interactionPath = path_1.default.join(__dirname, "..", "ContextMenu");
             const files = yield readdirAsync(`${interactionPath}`);
@@ -99,19 +98,22 @@ class ExtendedClient extends discord_js_1.Client {
                     this.contextMenu.set(command.name, command);
                 commands.push(contextCommand);
             })));
-            yield rest.put(v9_1.Routes.applicationCommands(this.user.id), { body: commands });
+            return commands;
         });
     }
-    registerGuildCommands(guild, clientId) {
+    registerGuildCommands(guilds, clientId) {
         return __awaiter(this, void 0, void 0, function* () {
             const rest = new rest_1.REST({ version: '9' }).setToken(this.config.token);
             const readdirAsync = util_1.promisify(fs_1.readdir);
             const interactionPath = path_1.default.join(__dirname, "..", "SlashCommands/Guild");
             const files = yield readdirAsync(`${interactionPath}`);
             const commands = yield this.extractCommands(files, interactionPath);
-            yield rest.put(v9_1.Routes.applicationGuildCommands(clientId, guild.id), {
-                body: commands
-            });
+            const contextCommands = yield this.extractContextCommands();
+            yield Promise.all(guilds.map((guild) => __awaiter(this, void 0, void 0, function* () {
+                yield rest.put(v9_1.Routes.applicationGuildCommands(clientId, guild), {
+                    body: commands.concat(contextCommands)
+                });
+            })));
         });
     }
     registerGlobalCommands() {

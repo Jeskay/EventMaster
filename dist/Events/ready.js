@@ -18,8 +18,7 @@ exports.event = {
         const clientId = client.user.id;
         ;
         console.log(`${client.user.tag} is online`);
-        yield Promise.all(client.guilds.cache.map((guild) => __awaiter(void 0, void 0, void 0, function* () { yield client.registerGuildCommands(guild, clientId); })));
+        yield client.registerGuildCommands(client.guilds.cache.map(guild => guild.id), clientId);
         yield client.registerGlobalCommands();
-        yield client.registerContextMenu();
     })
 };

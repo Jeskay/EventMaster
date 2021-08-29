@@ -10,7 +10,10 @@ export class OccasionController {
         const user = await client.users.fetch(userId);
         const invite = await channel.guild.invites.create(channel);
         const dm = user.dmChannel ?? await user.createDM();
-        dm.send({embeds: [client.embeds.notification(title, description, invite.url)]});
+        dm.send({
+            embeds: [client.embeds.notification(title, description, invite.url, channel.guild.bannerURL() ?? undefined)], 
+            components: [client.embeds.InviteMessage(invite.url, channel.guild.name)]
+        });
     }
     /**
      * Gives channel credentials to host
@@ -112,7 +115,7 @@ export class OccasionController {
      * @param guild occasion guild
      * @param author occasion host
      */
-    public async Announce(client: ExtendedClient, title: string, description: string, guild: Guild, author: User, image?: string){
+    public async Announce(client: ExtendedClient,  description: string, guild: Guild, author: User, title?: string, image?: string){
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to start an event.");
@@ -123,7 +126,7 @@ export class OccasionController {
         await (channel as TextChannel).send({embeds:[client.embeds.occasionNotification(title, description, author.username, image)]});
         if(hashtags.length > 0) {
             hashtags.forEach(tag => {
-                this.NotifyPlayers(client, tag, channel as GuildChannel, title, description);
+                this.NotifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);
             });
         }
     }

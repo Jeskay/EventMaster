@@ -23,16 +23,18 @@ exports.command = {
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
         try {
+            yield interaction.deferReply({ ephemeral: true });
             if (!interaction.guild)
                 throw new Error_1.CommandError("You can use this command only in guild");
             const title = interaction.options.getString("title", true);
             const description = interaction.options.getString("description", true);
             const image = (_a = interaction.options.getString("image")) !== null && _a !== void 0 ? _a : undefined;
-            yield Guild_1.announce(client, interaction.user, interaction.guild, title, description, image);
+            yield Guild_1.announce(client, interaction.user, interaction.guild, description, title, image);
+            yield interaction.editReply("Announce published successfuly.");
         }
         catch (error) {
             if (error instanceof Error)
-                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
+                interaction.editReply({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

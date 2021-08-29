@@ -30,6 +30,16 @@ export class EmbedManager{
     public HostCommend = (likeId: string, dislikeId: string) => new MessageActionRow()
     .addComponents(this.LikeHost(likeId), this.DislikeHost(dislikeId));
 
+    public InviteMessage(inviteUrl: string, guild: string) {
+        const button = new MessageButton()
+        .setStyle('LINK')
+        .setLabel(guild)
+        .setURL(inviteUrl);
+        const row = new MessageActionRow()
+        .addComponents(button);
+        return row;
+    }
+
     public startedOccasion = new MessageEmbed()
     .setTitle("Event started!")
     .setFooter("Notification will be automatically posted to the notification channel.")
@@ -56,8 +66,8 @@ export class EmbedManager{
     .setFooter("Don't forget to rate your host after the game.")
     .setColor("PURPLE");
 
-    public occasionNotification = (name: string, description: string, host: string, image: string | undefined) => new MessageEmbed()
-    .setTitle(name)
+    public occasionNotification = (name: string | undefined, description: string, host: string, image: string | undefined) => new MessageEmbed()
+    .setTitle(name ?? "New occasion is about to start!")
     .setDescription(description)
     .setFooter(`announce by ${host}`)
     .setImage(image ?? defaultImageUrl)
@@ -77,11 +87,15 @@ export class EmbedManager{
     .addField("Members when finished:", members.toString())
     .setColor("PURPLE");
     
-    public notification = (title: string, description, url: string) => new MessageEmbed()
-    .setTitle(`${title} is about to start.`)
-    .setDescription(description)
-    .setURL(url)
-    .setColor("GREEN");
+    public notification(title: string, description: string, url: string, banner: string | undefined){
+        const embed = new MessageEmbed()
+        .setTitle(`${title} is about to start.`)
+        .setDescription(description)
+        .setURL(url)
+        .setColor("GREEN");
+        if(banner) embed.setThumbnail(banner);
+        return embed;
+    }
 
     //Rework timezone
     public playerInfo (player: Player, user: User, commends: Commend[]) { 

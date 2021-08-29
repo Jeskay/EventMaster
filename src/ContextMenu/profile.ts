@@ -3,7 +3,7 @@ import { profile } from '../Commands/DirectMessages';
 import {ContextCommand, ContextType} from '../Interfaces';
 
 export const command: ContextCommand = {
-    name: 'profile',
+    name: 'profile_menu',
     type: ContextType.USER,
     run: async(client, interaction) => {
         try {

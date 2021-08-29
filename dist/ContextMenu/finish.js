@@ -10,19 +10,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Guild_1 = require("../Commands/Guild");
 const Error_1 = require("../Error");
-const DirectMessages_1 = require("../Commands/DirectMessages");
 const Interfaces_1 = require("../Interfaces");
 exports.command = {
-    name: 'profile_menu',
-    type: Interfaces_1.ContextType.USER,
+    name: 'finish message',
+    type: Interfaces_1.ContextType.MESSAGE,
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const user = interaction.options.getUser('user');
-            if (!user)
-                throw new Error_1.CommandError('Unable to find user.');
-            const response = yield DirectMessages_1.profile(client, user);
-            yield interaction.reply({ embeds: [response], ephemeral: true });
+            if (!interaction.guild)
+                throw new Error_1.CommandError("This is allowed only in guild channel");
+            const result = interaction.options.getMessage("message");
+            if (!result)
+                throw new Error_1.CommandError("Unable to find a message.");
+            yield Guild_1.finish(client, interaction.user, interaction.guild, result.content);
         }
         catch (error) {
             if (error instanceof Error)

@@ -14,12 +14,15 @@ const Error_1 = require("../Error");
 const room_1 = require("../Managers/room");
 class OccasionController {
     notifyPlayer(client, userId, title, description, channel) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const user = yield client.users.fetch(userId);
             const invite = yield channel.guild.invites.create(channel);
             const dm = (_a = user.dmChannel) !== null && _a !== void 0 ? _a : yield user.createDM();
-            dm.send({ embeds: [client.embeds.notification(title, description, invite.url)] });
+            dm.send({
+                embeds: [client.embeds.notification(title, description, invite.url, (_b = channel.guild.bannerURL()) !== null && _b !== void 0 ? _b : undefined)],
+                components: [client.embeds.InviteMessage(invite.url, channel.guild.name)]
+            });
         });
     }
     DeclareHost(client, occasion, candidate, voiceChannel, textChannel) {
@@ -104,7 +107,7 @@ class OccasionController {
             }
         });
     }
-    Announce(client, title, description, guild, author, image) {
+    Announce(client, description, guild, author, title, image) {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield client.database.getServerRelations(guild.id);
             const occasion = server.events.find(event => event.host == author.id);
@@ -119,7 +122,7 @@ class OccasionController {
             yield channel.send({ embeds: [client.embeds.occasionNotification(title, description, author.username, image)] });
             if (hashtags.length > 0) {
                 hashtags.forEach(tag => {
-                    this.NotifyPlayers(client, tag, channel, title, description);
+                    this.NotifyPlayers(client, tag, channel, title !== null && title !== void 0 ? title : tag, description);
                 });
             }
         });

@@ -12,14 +12,16 @@ export const command: InteractCommand = {
     ],
     run: async(client, interaction) => {
         try {
+            await interaction.deferReply({ephemeral: true});
             if(!interaction.guild) throw new CommandError("You can use this command only in guild");
             const title = interaction.options.getString("title", true);
             const description = interaction.options.getString("description", true);
             const image = interaction.options.getString("image") ?? undefined;
-            await announce(client, interaction.user, interaction.guild, title, description, image);
+            await announce(client, interaction.user, interaction.guild, description, title, image);
+            await interaction.editReply("Announce published successfuly.");
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                interaction.editReply({embeds: [client.embeds.errorInformation(error.name, error.message)]});
         }
     }
 };

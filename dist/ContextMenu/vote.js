@@ -14,7 +14,7 @@ const Interfaces_1 = require("../Interfaces");
 const DirectMessages_1 = require("../Commands/DirectMessages");
 const Error_1 = require("../Error");
 exports.command = {
-    name: 'vote',
+    name: 'vote_menu',
     type: Interfaces_1.ContextType.USER,
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {

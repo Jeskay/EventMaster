@@ -27,7 +27,7 @@ exports.command = {
             if (!title)
                 throw new Error_1.CommandError("Event title can't be empty.");
             const description = args.join(' ');
-            yield Guild_1.announce(client, message.author, guild, title, description);
+            yield Guild_1.announce(client, message.author, guild, description, title);
         }
         catch (error) {
             if (error instanceof Error)

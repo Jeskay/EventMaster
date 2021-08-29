@@ -3,7 +3,7 @@ import {vote} from '../Commands/DirectMessages';
 import { CommandError } from '../Error';
 
 export const command: ContextCommand = {
-    name: 'vote',
+    name: 'vote_menu',
     type: ContextType.USER,
     run: async(client, interaction) => {
         try {

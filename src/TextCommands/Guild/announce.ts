@@ -14,7 +14,7 @@ export const command: TextCommand = {
             const title = args.shift();
             if(!title) throw new CommandError("Event title can't be empty.");
             const description = args.join(' ');
-            await announce(client, message.author, guild, title, description);
+            await announce(client, message.author, guild, description, title);
         } catch(error) {
             if(error instanceof Error)
                 message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});

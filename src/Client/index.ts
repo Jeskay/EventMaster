@@ -1,4 +1,4 @@
-import {ApplicationCommandOption, Client, Collection, Guild} from "discord.js";
+import {ApplicationCommandOption, Client, Collection} from "discord.js";
 import {REST} from '@discordjs/rest';
 import path from 'path';
 import {readdirSync, readdir} from 'fs';
@@ -46,9 +46,8 @@ class ExtendedClient extends Client {
         return commands;
     }
 
-    public async registerContextMenu() {
+    private async extractContextCommands() {
         if(!this.user) throw Error("User unavailable");
-        const rest = new REST({version: '9'}).setToken(this.config.token);
         const readdirAsync = promisify(readdir);
         const interactionPath = path.join(__dirname, "..", "ContextMenu");
         const files = await readdirAsync(`${interactionPath}`);
@@ -62,18 +61,21 @@ class ExtendedClient extends Client {
             if(!this.contextMenu.get(command.name)) this.contextMenu.set(command.name, command);
             commands.push(contextCommand);
         }));
-        await rest.put(Routes.applicationCommands(this.user.id), {body: commands});
+        return commands;
     }
 
-    public async registerGuildCommands(guild: Guild, clientId: string) {
+    public async registerGuildCommands(guilds: string[], clientId: string) {
         const rest = new REST({version: '9'}).setToken(this.config.token);
         const readdirAsync = promisify(readdir);
         const interactionPath = path.join(__dirname, "..", "SlashCommands/Guild");
         const files = await readdirAsync(`${interactionPath}`);
         const commands = await this.extractCommands(files, interactionPath);
-        await rest.put(Routes.applicationGuildCommands(clientId, guild.id), {
-            body: commands
-        });
+        const contextCommands = await this.extractContextCommands();
+        await Promise.all(guilds.map(async (guild) => { 
+            await rest.put(Routes.applicationGuildCommands(clientId, guild), {
+                body: commands.concat(contextCommands)
+            });
+        }));
     }
 
     public async registerGlobalCommands() {

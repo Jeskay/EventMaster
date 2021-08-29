@@ -10,23 +10,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Guild_1 = require("../Commands/Guild");
 const Error_1 = require("../Error");
-const DirectMessages_1 = require("../Commands/DirectMessages");
 const Interfaces_1 = require("../Interfaces");
 exports.command = {
-    name: 'profile_menu',
-    type: Interfaces_1.ContextType.USER,
+    name: 'announce',
+    type: Interfaces_1.ContextType.MESSAGE,
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const user = interaction.options.getUser('user');
-            if (!user)
-                throw new Error_1.CommandError('Unable to find user.');
-            const response = yield DirectMessages_1.profile(client, user);
-            yield interaction.reply({ embeds: [response], ephemeral: true });
+            yield interaction.deferReply({ ephemeral: true });
+            if (!interaction.guild)
+                throw new Error_1.CommandError("You can use this command only in guild");
+            const description = interaction.options.getMessage('message');
+            if (!description)
+                throw new Error_1.CommandError("Message can't be empty.");
+            yield Guild_1.announce(client, interaction.user, interaction.guild, description.content);
+            yield interaction.editReply("Announce published successfuly.");
         }
         catch (error) {
             if (error instanceof Error)
-                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
+                interaction.editReply({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };
