@@ -102,6 +102,12 @@ class HelperManager {
             case "SUB_COMMAND":
                 slashCommand.addSubcommand(setOption);
                 break;
+            case "ROLE":
+                slashCommand.addRoleOption(setOption);
+                break;
+            case "MENTIONABLE":
+                slashCommand.addMentionableOption(setOption);
+                break;
             default:
                 break;
         }

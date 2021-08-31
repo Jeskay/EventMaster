@@ -7,9 +7,10 @@ const intents = [
     Intents.FLAGS.GUILD_MESSAGES, 
     Intents.FLAGS.DIRECT_MESSAGES, 
     Intents.FLAGS.GUILD_VOICE_STATES,
+    Intents.FLAGS.GUILD_MEMBERS,
 ];
 const client = new Client({
-    allowedMentions: {parse: ['users', 'roles'], repliedUser: true},
+    allowedMentions: {parse: ['users', 'roles', 'everyone'], repliedUser: true},
     intents: intents,
     partials: ['CHANNEL', 'MESSAGE','GUILD_MEMBER', 'USER']
 });

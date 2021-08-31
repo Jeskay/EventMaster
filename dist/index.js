@@ -12,9 +12,10 @@ const intents = [
     discord_js_1.Intents.FLAGS.GUILD_MESSAGES,
     discord_js_1.Intents.FLAGS.DIRECT_MESSAGES,
     discord_js_1.Intents.FLAGS.GUILD_VOICE_STATES,
+    discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
 ];
 const client = new Client_1.default({
-    allowedMentions: { parse: ['users', 'roles'], repliedUser: true },
+    allowedMentions: { parse: ['users', 'roles', 'everyone'], repliedUser: true },
     intents: intents,
     partials: ['CHANNEL', 'MESSAGE', 'GUILD_MEMBER', 'USER']
 });

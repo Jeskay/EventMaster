@@ -75,6 +75,7 @@ export class HelperManager{
         const matches = text.match('#(.*?) ') ?? [];
         return matches as Array<string>;
     }
+    /**Must be deprecated */
     public createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder) {
         const setOption = (option: any) => 
             option.setName(interact_option.name)
@@ -99,6 +100,12 @@ export class HelperManager{
                 break;
             case "SUB_COMMAND":
                 slashCommand.addSubcommand(setOption);
+                break;
+            case "ROLE":
+                slashCommand.addRoleOption(setOption);
+                break;
+            case "MENTIONABLE":
+                slashCommand.addMentionableOption(setOption);
                 break;
             default:
                 break;

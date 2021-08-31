@@ -121,7 +121,7 @@ class OccasionController {
                 throw Error("Cannot find notification channel.");
             const eventRole = server.settings.event_role;
             yield channel.send({
-                content: eventRole ? `<@${eventRole}>` : "",
+                content: eventRole ? `<@&${eventRole}>` : "",
                 embeds: [client.embeds.occasionNotification(title, description, author.username, image)]
             });
             if (hashtags.length > 0) {
