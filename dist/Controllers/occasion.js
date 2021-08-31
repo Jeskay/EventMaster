@@ -119,7 +119,11 @@ class OccasionController {
             const hashtags = client.helper.findSubscriptions(description);
             if (!channel || !channel.isText)
                 throw Error("Cannot find notification channel.");
-            yield channel.send({ embeds: [client.embeds.occasionNotification(title, description, author.username, image)] });
+            const eventRole = server.settings.event_role;
+            yield channel.send({
+                content: eventRole ? `<@${eventRole}>` : "",
+                embeds: [client.embeds.occasionNotification(title, description, author.username, image)]
+            });
             if (hashtags.length > 0) {
                 hashtags.forEach(tag => {
                     this.NotifyPlayers(client, tag, channel, title !== null && title !== void 0 ? title : tag, description);

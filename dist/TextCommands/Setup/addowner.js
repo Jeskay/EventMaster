@@ -28,7 +28,7 @@ exports.command = {
             const user = yield client.users.fetch(userId);
             if (!user)
                 throw new Error_1.CommandError("Cannot find a user.");
-            const response = yield Setup_1.addOwner(client, guild, message.author, user);
+            const response = yield (0, Setup_1.addOwner)(client, guild, message.author, user);
             yield message.channel.send({ embeds: [response] });
         }
         catch (error) {

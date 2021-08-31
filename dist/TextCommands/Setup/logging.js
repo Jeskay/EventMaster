@@ -27,7 +27,7 @@ exports.command = {
             const channel = yield guild.channels.fetch(args[0]);
             if (!channel)
                 throw new Error_1.CommandError("Invalid channel id.");
-            const response = yield Setup_1.setLog(client, guild, message.author, channel);
+            const response = yield (0, Setup_1.setLog)(client, guild, message.author, channel);
             yield message.channel.send(response);
         }
         catch (error) {

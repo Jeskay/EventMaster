@@ -20,7 +20,7 @@ exports.command = {
             return;
         try {
             const user = interaction.options.getUser('user', true);
-            const response = yield DirectMessages_1.dislike(client, interaction.user, user);
+            const response = yield (0, DirectMessages_1.dislike)(client, interaction.user, user);
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {

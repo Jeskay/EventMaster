@@ -22,7 +22,7 @@ exports.command = {
             if (!interaction.guild)
                 throw new Error_1.CommandError("Avaliable only in a guild.");
             const user = interaction.options.getUser("user", true);
-            const response = yield Setup_1.addToBlackList(client, interaction.guild, interaction.user, user);
+            const response = yield (0, Setup_1.addToBlackList)(client, interaction.guild, interaction.user, user);
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {

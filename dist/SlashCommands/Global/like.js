@@ -21,7 +21,7 @@ exports.command = {
             const user = interaction.options.getUser("user", true);
             if (!user)
                 throw new Error_1.CommandError("User does not exists.");
-            const response = yield DirectMessages_1.like(client, interaction.user, user);
+            const response = yield (0, DirectMessages_1.like)(client, interaction.user, user);
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {

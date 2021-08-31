@@ -22,7 +22,7 @@ exports.command = {
             if (!interaction.guild)
                 throw new Error_1.CommandError("Available only in a guild.");
             const channel = interaction.options.getChannel("channel", true);
-            const response = yield Setup_1.setNotification(client, interaction.guild, interaction.user, channel);
+            const response = yield (0, Setup_1.setNotification)(client, interaction.guild, interaction.user, channel);
             yield interaction.reply({ content: response, ephemeral: true });
         }
         catch (error) {

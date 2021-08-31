@@ -23,7 +23,7 @@ exports.command = {
             const result = interaction.options.getMessage("message");
             if (!result)
                 throw new Error_1.CommandError("Unable to find a message.");
-            yield Guild_1.finish(client, interaction.user, interaction.guild, result.content);
+            yield (0, Guild_1.finish)(client, interaction.user, interaction.guild, result.content);
         }
         catch (error) {
             if (error instanceof Error)

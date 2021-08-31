@@ -30,7 +30,7 @@ class DataBaseManager {
         this.getCommend = (authorId, subjectId, hosting, cheer) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(commend_1.Commend, { authorId: authorId, subjectId: subjectId, host: hosting, cheer: cheer }); });
         this.getTag = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(tag_1.Tag, { title: id }); });
         this.getCommends = (params) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.find(commend_1.Commend, params); });
-        this.connection = typeorm_1.getConnection();
+        this.connection = (0, typeorm_1.getConnection)();
     }
     getServerRelations(serverID) {
         return __awaiter(this, void 0, void 0, function* () {

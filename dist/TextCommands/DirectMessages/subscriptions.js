@@ -20,7 +20,7 @@ exports.command = {
         if (args.length != 0)
             return;
         try {
-            yield DirectMessages_1.subscriptions(client, message.author, message.channel);
+            yield (0, DirectMessages_1.subscriptions)(client, message.author, message.channel);
         }
         catch (error) {
             if (error instanceof Error)

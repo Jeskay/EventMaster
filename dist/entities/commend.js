@@ -15,44 +15,44 @@ const player_1 = require("./player");
 let Commend = class Commend {
 };
 __decorate([
-    typeorm_1.PrimaryColumn(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
 ], Commend.prototype, "authorId", void 0);
 __decorate([
-    typeorm_1.PrimaryColumn(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
 ], Commend.prototype, "subjectId", void 0);
 __decorate([
-    typeorm_1.PrimaryColumn(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", Boolean)
 ], Commend.prototype, "host", void 0);
 __decorate([
-    typeorm_1.PrimaryColumn(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", Boolean)
 ], Commend.prototype, "cheer", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Commend.prototype, "duplicates", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => player_1.Player, player => player.commendsBy, { primary: true }),
-    typeorm_1.JoinColumn({ name: "authorId" }),
+    (0, typeorm_1.ManyToOne)(() => player_1.Player, player => player.commendsBy, { primary: true }),
+    (0, typeorm_1.JoinColumn)({ name: "authorId" }),
     __metadata("design:type", Promise)
 ], Commend.prototype, "author", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => player_1.Player, player => player.commendsAbout, { primary: true }),
-    typeorm_1.JoinColumn({ name: "subjectId" }),
+    (0, typeorm_1.ManyToOne)(() => player_1.Player, player => player.commendsAbout, { primary: true }),
+    (0, typeorm_1.JoinColumn)({ name: "subjectId" }),
     __metadata("design:type", Promise)
 ], Commend.prototype, "subject", void 0);
 __decorate([
-    typeorm_1.CreateDateColumn(),
+    (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Commend.prototype, "firstCommend", void 0);
 __decorate([
-    typeorm_1.UpdateDateColumn(),
+    (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Commend.prototype, "lastCommend", void 0);
 Commend = __decorate([
-    typeorm_1.Entity()
+    (0, typeorm_1.Entity)()
 ], Commend);
 exports.Commend = Commend;

@@ -22,7 +22,7 @@ exports.command = {
             const user = interaction.options.getUser("user", true);
             if (!interaction.guild)
                 throw new Error_1.CommandError("Avaliable only in guild.");
-            const response = yield Setup_1.addOwner(client, interaction.guild, interaction.user, user);
+            const response = yield (0, Setup_1.addOwner)(client, interaction.guild, interaction.user, user);
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {

@@ -15,15 +15,15 @@ const player_1 = require("./player");
 let Tag = class Tag {
 };
 __decorate([
-    typeorm_1.PrimaryColumn(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
 ], Tag.prototype, "title", void 0);
 __decorate([
-    typeorm_1.ManyToMany(() => player_1.Player, player => player.subscriptions),
-    typeorm_1.JoinTable(),
+    (0, typeorm_1.ManyToMany)(() => player_1.Player, player => player.subscriptions),
+    (0, typeorm_1.JoinTable)(),
     __metadata("design:type", Promise)
 ], Tag.prototype, "subscribers", void 0);
 Tag = __decorate([
-    typeorm_1.Entity()
+    (0, typeorm_1.Entity)()
 ], Tag);
 exports.Tag = Tag;

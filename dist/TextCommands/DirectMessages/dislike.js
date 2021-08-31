@@ -28,7 +28,7 @@ exports.command = {
             const user = yield client.users.cache.get(userId);
             if (!user)
                 throw new Error_1.CommandError("User does not exists.");
-            const reponse = yield DirectMessages_1.dislike(client, message.author, user);
+            const reponse = yield (0, DirectMessages_1.dislike)(client, message.author, user);
             yield message.channel.send({ embeds: [reponse] });
         }
         catch (error) {

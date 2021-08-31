@@ -31,7 +31,7 @@ exports.event = {
             });
             if (!client.user)
                 throw Error("Unable to find bot's client.");
-            yield client.registerGuildCommands(guild, client.user.id);
+            yield client.registerGuildCommands([guild.id], client.user.id);
             yield dm.send({ embeds: [client.embeds.greeting(guild.name, owner.user.username)] });
         }
         catch (error) {

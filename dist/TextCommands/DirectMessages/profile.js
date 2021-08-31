@@ -29,7 +29,7 @@ exports.command = {
             const user = yield client.users.cache.get(userId);
             if (!user)
                 throw new Error_1.CommandError("User does not exists.");
-            const response = yield DirectMessages_1.profile(client, user);
+            const response = yield (0, DirectMessages_1.profile)(client, user);
             yield message.channel.send({ embeds: [response] });
         }
         catch (error) {

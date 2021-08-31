@@ -16,50 +16,50 @@ const room_1 = require("../Managers/room");
 let Occasion = class Occasion {
 };
 __decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Occasion.prototype, "id", void 0);
 __decorate([
-    typeorm_1.ManyToOne(() => server_1.Server, server => server.events, { cascade: true }),
+    (0, typeorm_1.ManyToOne)(() => server_1.Server, server => server.events, { cascade: true }),
     __metadata("design:type", server_1.Server)
 ], Occasion.prototype, "server", void 0);
 __decorate([
-    typeorm_1.Column('int'),
+    (0, typeorm_1.Column)('int'),
     __metadata("design:type", Number)
 ], Occasion.prototype, "state", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Occasion.prototype, "voiceChannel", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Occasion.prototype, "textChannel", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Occasion.prototype, "initiator", void 0);
 __decorate([
-    typeorm_1.Column({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Occasion.prototype, "host", void 0);
 __decorate([
-    typeorm_1.Column({ type: 'timestamptz', nullable: true }),
+    (0, typeorm_1.Column)({ type: 'timestamptz', nullable: true }),
     __metadata("design:type", Date)
 ], Occasion.prototype, "startedAt", void 0);
 __decorate([
-    typeorm_1.CreateDateColumn(),
+    (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Occasion.prototype, "createdAt", void 0);
 __decorate([
-    typeorm_1.Column({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Occasion.prototype, "description", void 0);
 __decorate([
-    typeorm_1.Column({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Occasion.prototype, "Title", void 0);
 Occasion = __decorate([
-    typeorm_1.Entity()
+    (0, typeorm_1.Entity)()
 ], Occasion);
 exports.Occasion = Occasion;

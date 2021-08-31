@@ -1,4 +1,5 @@
-import { CategoryChannel, Guild, GuildChannel, User, VoiceChannel } from 'discord.js';
+import { APIRole } from 'discord-api-types';
+import { CategoryChannel, Guild, GuildChannel, Role, User, VoiceChannel } from 'discord.js';
 import ExtendedClient from 'src/Client';
 import { CommandError } from '../../Error';
 
@@ -44,6 +45,14 @@ export async function setLog(client: ExtendedClient, guild: Guild, author: User,
     if(channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS') throw new CommandError("Only text or news channel allowed");
     await client.database.updateSettings(guild.id, {logging_channel: channel.id});
     return `Channel ${channel.name} successfuly set for logging.`;
+}
+
+export async function setEventRole(client: ExtendedClient, guild: Guild, author: User, role: Role | APIRole) {
+    const server = await client.database.getServer(guild.id);
+    if(!server) throw new CommandError("Server is not registered yet.");
+    if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
+    await client.database.updateSettings(guild.id, {event_role: role.id});
+    return `Role ${role.name} will be mentioned in occasion notifications`;
 }
 
 export async function setNotification(client: ExtendedClient, guild: Guild, author: User, channel: GuildChannel) {

@@ -22,7 +22,7 @@ exports.command = {
             const limit = interaction.options.getInteger("amount", true);
             if (!interaction.guild)
                 throw new Error_1.CommandError("Avaliable only in a guild.");
-            yield Setup_1.setLimit(client, interaction.guild, interaction.user, limit);
+            yield (0, Setup_1.setLimit)(client, interaction.guild, interaction.user, limit);
         }
         catch (error) {
             if (error instanceof Error)

@@ -24,7 +24,7 @@ exports.command = {
                 return;
             if (args.length < 1)
                 throw new Error_1.CommandError("Event results must be provided. Ask moderation about respond format.");
-            yield Guild_1.finish(client, message.author, guild, args.join(' '));
+            yield (0, Guild_1.finish)(client, message.author, guild, args.join(' '));
         }
         catch (error) {
             if (error instanceof Error)

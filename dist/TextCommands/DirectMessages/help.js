@@ -17,7 +17,7 @@ exports.command = {
     aliases: ['h'],
     run: (client, message, _args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            yield DirectMessages_1.help(client, message.author, message.channel);
+            yield (0, DirectMessages_1.help)(client, message.author, message.channel);
         }
         catch (error) {
             if (error instanceof Error)

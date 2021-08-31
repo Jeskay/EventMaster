@@ -19,7 +19,7 @@ export const event: Event = {
                 description: "empty"
             });
             if(!client.user) throw Error("Unable to find bot's client.");
-            await client.registerGuildCommands(guild, client.user.id);
+            await client.registerGuildCommands([guild.id], client.user.id);
             await dm.send({embeds: [client.embeds.greeting(guild.name, owner.user.username)]});
         } catch(error) {
             if(error instanceof Error)

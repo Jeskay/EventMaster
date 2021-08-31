@@ -29,7 +29,7 @@ exports.command = {
             const category = interaction.options.getChannel('category', true);
             if (!(voice instanceof discord_js_1.VoiceChannel && category instanceof discord_js_1.CategoryChannel))
                 throw new Error_1.CommandError("Invalid channel type.");
-            const response = yield Setup_1.setOccasions(client, interaction.guild, interaction.user, voice, category);
+            const response = yield (0, Setup_1.setOccasions)(client, interaction.guild, interaction.user, voice, category);
             yield interaction.reply({ content: response, ephemeral: true });
         }
         catch (error) {

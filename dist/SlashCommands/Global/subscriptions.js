@@ -21,7 +21,7 @@ exports.command = {
         try {
             if (!interaction.channel)
                 throw new Error_1.CommandError("Channel not found");
-            yield DirectMessages_1.subscriptions(client, interaction.user, interaction.channel);
+            yield (0, DirectMessages_1.subscriptions)(client, interaction.user, interaction.channel);
             yield interaction.fetchReply();
         }
         catch (error) {

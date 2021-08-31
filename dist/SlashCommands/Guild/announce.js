@@ -29,7 +29,7 @@ exports.command = {
             const title = interaction.options.getString("title", true);
             const description = interaction.options.getString("description", true);
             const image = (_a = interaction.options.getString("image")) !== null && _a !== void 0 ? _a : undefined;
-            yield Guild_1.announce(client, interaction.user, interaction.guild, description, title, image);
+            yield (0, Guild_1.announce)(client, interaction.user, interaction.guild, description, title, image);
             yield interaction.editReply("Announce published successfuly.");
         }
         catch (error) {

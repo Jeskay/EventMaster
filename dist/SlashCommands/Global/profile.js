@@ -20,7 +20,7 @@ exports.command = {
         var _a;
         try {
             const user = (_a = interaction.options.getUser('user')) !== null && _a !== void 0 ? _a : interaction.user;
-            const response = yield DirectMessages_1.profile(client, user);
+            const response = yield (0, DirectMessages_1.profile)(client, user);
             yield interaction.reply({ embeds: [response] });
         }
         catch (error) {

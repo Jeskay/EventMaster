@@ -23,46 +23,46 @@ let Player = class Player {
     }
 };
 __decorate([
-    typeorm_1.PrimaryColumn(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
 ], Player.prototype, "id", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Player.prototype, "eventsPlayed", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Player.prototype, "eventsHosted", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Player.prototype, "tournamentsPlayed", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Player.prototype, "tournamentsHosted", void 0);
 __decorate([
-    typeorm_1.ManyToMany(() => tag_1.Tag, tag => tag.subscribers),
+    (0, typeorm_1.ManyToMany)(() => tag_1.Tag, tag => tag.subscribers),
     __metadata("design:type", Promise)
 ], Player.prototype, "subscriptions", void 0);
 __decorate([
-    typeorm_1.OneToMany(() => commend_1.Commend, commend => commend.author),
+    (0, typeorm_1.OneToMany)(() => commend_1.Commend, commend => commend.author),
     __metadata("design:type", Promise)
 ], Player.prototype, "commendsBy", void 0);
 __decorate([
-    typeorm_1.OneToMany(() => commend_1.Commend, commend => commend.subject),
+    (0, typeorm_1.OneToMany)(() => commend_1.Commend, commend => commend.subject),
     __metadata("design:type", Promise)
 ], Player.prototype, "commendsAbout", void 0);
 __decorate([
-    typeorm_1.Column({ type: 'timestamptz' }),
+    (0, typeorm_1.Column)({ type: 'timestamptz' }),
     __metadata("design:type", Date)
 ], Player.prototype, "scoreTime", void 0);
 __decorate([
-    typeorm_1.CreateDateColumn(),
+    (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Player.prototype, "joinedAt", void 0);
 Player = __decorate([
-    typeorm_1.Entity()
+    (0, typeorm_1.Entity)()
 ], Player);
 exports.Player = Player;

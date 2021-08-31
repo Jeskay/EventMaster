@@ -26,7 +26,7 @@ exports.command = {
                 throw new Error_1.CommandError("User Id must be provided");
             const userId = client.helper.extractID(args[0]);
             const user = yield client.users.fetch(userId);
-            const response = yield Setup_1.removeFromBlackList(client, guild, message.author, user);
+            const response = yield (0, Setup_1.removeFromBlackList)(client, guild, message.author, user);
             yield message.channel.send({ embeds: [response] });
         }
         catch (error) {

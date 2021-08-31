@@ -24,7 +24,7 @@ exports.command = {
             const description = interaction.options.getMessage('message');
             if (!description)
                 throw new Error_1.CommandError("Message can't be empty.");
-            yield Guild_1.announce(client, interaction.user, interaction.guild, description.content);
+            yield (0, Guild_1.announce)(client, interaction.user, interaction.guild, description.content);
             yield interaction.editReply("Announce published successfuly.");
         }
         catch (error) {

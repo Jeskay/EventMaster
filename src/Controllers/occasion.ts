@@ -123,7 +123,11 @@ export class OccasionController {
         const channel = guild.channels.cache.get(server.settings.notification_channel);
         const hashtags = client.helper.findSubscriptions(description);
         if(!channel || !channel.isText) throw Error("Cannot find notification channel.");
-        await (channel as TextChannel).send({embeds:[client.embeds.occasionNotification(title, description, author.username, image)]});
+        const eventRole = server.settings.event_role;
+        await (channel as TextChannel).send({
+            content: eventRole ? `<@${eventRole}>` : "",
+             embeds:[client.embeds.occasionNotification(title, description, author.username, image)]
+        });
         if(hashtags.length > 0) {
             hashtags.forEach(tag => {
                 this.NotifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);

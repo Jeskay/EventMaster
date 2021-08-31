@@ -26,7 +26,7 @@ exports.command = {
                 throw new Error_1.CommandError("Event name and description must be provided.");
             const title = args.shift();
             const description = args.join(' ');
-            yield Guild_1.start(client, message.author, guild, title, description);
+            yield (0, Guild_1.start)(client, message.author, guild, title, description);
         }
         catch (error) {
             if (error instanceof Error)

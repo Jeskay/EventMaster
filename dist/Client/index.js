@@ -84,7 +84,7 @@ class ExtendedClient extends discord_js_1.Client {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.user)
                 throw Error("User unavailable");
-            const readdirAsync = util_1.promisify(fs_1.readdir);
+            const readdirAsync = (0, util_1.promisify)(fs_1.readdir);
             const interactionPath = path_1.default.join(__dirname, "..", "ContextMenu");
             const files = yield readdirAsync(`${interactionPath}`);
             const commands = [];
@@ -104,7 +104,7 @@ class ExtendedClient extends discord_js_1.Client {
     registerGuildCommands(guilds, clientId) {
         return __awaiter(this, void 0, void 0, function* () {
             const rest = new rest_1.REST({ version: '9' }).setToken(this.config.token);
-            const readdirAsync = util_1.promisify(fs_1.readdir);
+            const readdirAsync = (0, util_1.promisify)(fs_1.readdir);
             const interactionPath = path_1.default.join(__dirname, "..", "SlashCommands/Guild");
             const files = yield readdirAsync(`${interactionPath}`);
             const commands = yield this.extractCommands(files, interactionPath);
@@ -119,7 +119,7 @@ class ExtendedClient extends discord_js_1.Client {
     registerGlobalCommands() {
         return __awaiter(this, void 0, void 0, function* () {
             const rest = new rest_1.REST({ version: '9' }).setToken(this.config.token);
-            const readdirAsync = util_1.promisify(fs_1.readdir);
+            const readdirAsync = (0, util_1.promisify)(fs_1.readdir);
             const interactionPath = path_1.default.join(__dirname, "..", "SlashCommands/Global");
             const files = yield readdirAsync(`${interactionPath}`);
             const commands = yield this.extractCommands(files, interactionPath);
@@ -133,12 +133,12 @@ class ExtendedClient extends discord_js_1.Client {
     init() {
         return __awaiter(this, void 0, void 0, function* () {
             this.login(this.config.token);
-            yield typeorm_1.createConnection();
+            yield (0, typeorm_1.createConnection)();
             this.database = new Managers_1.DataBaseManager();
             const commandPath = path_1.default.join(__dirname, "..", "TextCommands");
             const file_ending = (this.config.state == "dev") ? '.ts' : '.js';
-            fs_1.readdirSync(commandPath).forEach((dir) => {
-                const commands = fs_1.readdirSync(`${commandPath}/${dir}`).filter((file) => file.endsWith(file_ending));
+            (0, fs_1.readdirSync)(commandPath).forEach((dir) => {
+                const commands = (0, fs_1.readdirSync)(`${commandPath}/${dir}`).filter((file) => file.endsWith(file_ending));
                 for (const file of commands) {
                     const { command } = require(`${commandPath}/${dir}/${file}`);
                     this.commands.set(command.name, command);
@@ -151,15 +151,15 @@ class ExtendedClient extends discord_js_1.Client {
             });
             this.Lists.set('help', new List_1.List(30, this.helper.commandsList(this), 10));
             const buttonPath = path_1.default.join(__dirname, "..", "Buttons");
-            fs_1.readdirSync(buttonPath).forEach(dir => {
-                const buttons = fs_1.readdirSync(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));
+            (0, fs_1.readdirSync)(buttonPath).forEach(dir => {
+                const buttons = (0, fs_1.readdirSync)(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));
                 for (const file of buttons) {
                     const { button } = require(`${buttonPath}/${dir}/${file}`);
                     this.buttons.set(button.name, button);
                 }
             });
             const eventPath = path_1.default.join(__dirname, "..", "Events");
-            fs_1.readdirSync(eventPath).forEach((file) => __awaiter(this, void 0, void 0, function* () {
+            (0, fs_1.readdirSync)(eventPath).forEach((file) => __awaiter(this, void 0, void 0, function* () {
                 const { event } = yield Promise.resolve().then(() => __importStar(require(`${eventPath}/${file}`)));
                 this.events.set(event.name, event);
                 console.log(event);

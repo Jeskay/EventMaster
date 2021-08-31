@@ -21,7 +21,7 @@ exports.command = {
             const user = interaction.options.getUser('user');
             if (!user)
                 throw new Error_1.CommandError('Unable to find user.');
-            const response = yield DirectMessages_1.profile(client, user);
+            const response = yield (0, DirectMessages_1.profile)(client, user);
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {

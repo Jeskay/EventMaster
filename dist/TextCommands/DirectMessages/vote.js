@@ -24,7 +24,7 @@ exports.command = {
             candidateID = client.helper.extractID(args[0]);
         const candidate = yield client.users.fetch(candidateID);
         try {
-            yield DirectMessages_1.vote(client, message.author, candidate);
+            yield (0, DirectMessages_1.vote)(client, message.author, candidate);
         }
         catch (error) {
             if (error instanceof Error)

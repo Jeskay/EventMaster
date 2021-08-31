@@ -19,7 +19,7 @@ exports.command = {
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const title = interaction.options.getString('title', true);
-            yield DirectMessages_1.subscribe(client, interaction.user, title);
+            yield (0, DirectMessages_1.subscribe)(client, interaction.user, title);
         }
         catch (error) {
             if (error instanceof Error)

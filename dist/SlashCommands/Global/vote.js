@@ -19,7 +19,7 @@ exports.command = {
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const user = interaction.options.getUser("user", true);
-            const response = yield DirectMessages_1.vote(client, interaction.user, user);
+            const response = yield (0, DirectMessages_1.vote)(client, interaction.user, user);
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {

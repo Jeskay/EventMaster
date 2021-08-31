@@ -10,28 +10,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Setup_1 = require("../../Commands/Setup");
 const Error_1 = require("../../Error");
-const DirectMessages_1 = require("../../Commands/DirectMessages");
 exports.command = {
-    name: 'like',
-    description: "send a positive comment about user",
-    options: [{ name: 'userId', type: 'USER' }],
-    run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
+    name: 'eventrole',
+    description: 'set up a role which will be mentioned in notifications.',
+    options: [
+        { name: 'role', type: "ROLE", description: "role to be mentioned", required: true },
+    ],
+    run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            if (args.length != 1)
-                return;
-            let userId = args[0];
-            if (message.guild)
-                userId = client.helper.extractID(args[0]);
-            const user = client.users.cache.get(userId);
-            if (!user)
-                throw new Error_1.CommandError("User does not exists.");
-            const response = yield (0, DirectMessages_1.like)(client, message.author, user);
-            yield message.channel.send({ embeds: [response] });
+            yield interaction.deferReply({ ephemeral: true });
+            if (!interaction.guild)
+                throw new Error_1.CommandError("You can use this command only in guild");
+            const role = interaction.options.getRole("role", true);
+            yield (0, Setup_1.setEventRole)(client, interaction.guild, interaction.user, role);
+            yield interaction.editReply("Announce published successfuly.");
         }
         catch (error) {
             if (error instanceof Error)
-                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
+                interaction.editReply({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

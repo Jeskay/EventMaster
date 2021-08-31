@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setOccasions = exports.removeFromBlackList = exports.addToBlackList = exports.setNotification = exports.setLog = exports.setLimit = exports.removeOwner = exports.addOwner = void 0;
+exports.setOccasions = exports.removeFromBlackList = exports.addToBlackList = exports.setNotification = exports.setEventRole = exports.setLog = exports.setLimit = exports.removeOwner = exports.addOwner = void 0;
 const Error_1 = require("../../Error");
 function addOwner(client, guild, author, user) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -76,6 +76,18 @@ function setLog(client, guild, author, channel) {
     });
 }
 exports.setLog = setLog;
+function setEventRole(client, guild, author, role) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const server = yield client.database.getServer(guild.id);
+        if (!server)
+            throw new Error_1.CommandError("Server is not registered yet.");
+        if (!server.settings.owners.includes(author.id))
+            throw new Error_1.CommandError("Permission denied.");
+        yield client.database.updateSettings(guild.id, { event_role: role.id });
+        return `Role ${role.name} will be mentioned in occasion notifications`;
+    });
+}
+exports.setEventRole = setEventRole;
 function setNotification(client, guild, author, channel) {
     return __awaiter(this, void 0, void 0, function* () {
         const server = yield client.database.getServer(guild.id);

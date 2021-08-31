@@ -22,7 +22,7 @@ exports.command = {
             if (!interaction.guild)
                 throw new Error_1.CommandError("This is allowed only in guild channel");
             const result = interaction.options.getString("result", true);
-            yield Guild_1.finish(client, interaction.user, interaction.guild, result);
+            yield (0, Guild_1.finish)(client, interaction.user, interaction.guild, result);
         }
         catch (error) {
             if (error instanceof Error)

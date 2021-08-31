@@ -21,7 +21,7 @@ exports.command = {
             return;
         try {
             const title = args[0];
-            yield DirectMessages_1.subscribe(client, message.author, title);
+            yield (0, DirectMessages_1.subscribe)(client, message.author, title);
         }
         catch (error) {
             if (error instanceof Error)

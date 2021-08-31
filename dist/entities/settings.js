@@ -19,27 +19,27 @@ class Settings {
     }
 }
 __decorate([
-    typeorm_1.Column("bigint", { nullable: false, array: true }),
+    (0, typeorm_1.Column)("bigint", { nullable: false, array: true }),
     __metadata("design:type", Array)
 ], Settings.prototype, "owners", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
 ], Settings.prototype, "limit", void 0);
 __decorate([
-    typeorm_1.Column({ type: "text", nullable: true }),
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
     __metadata("design:type", String)
 ], Settings.prototype, "notification_channel", void 0);
 __decorate([
-    typeorm_1.Column({ type: "text", nullable: true }),
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
     __metadata("design:type", String)
 ], Settings.prototype, "logging_channel", void 0);
 __decorate([
-    typeorm_1.Column({ type: "text", nullable: true }),
+    (0, typeorm_1.Column)({ type: "text", nullable: true }),
     __metadata("design:type", String)
 ], Settings.prototype, "event_role", void 0);
 __decorate([
-    typeorm_1.Column({ type: "text", array: true }),
+    (0, typeorm_1.Column)({ type: "text", array: true }),
     __metadata("design:type", Array)
 ], Settings.prototype, "black_list", void 0);
 exports.Settings = Settings;

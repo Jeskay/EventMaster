@@ -16,34 +16,34 @@ const settings_1 = require("./settings");
 let Server = class Server {
 };
 __decorate([
-    typeorm_1.PrimaryColumn(),
+    (0, typeorm_1.PrimaryColumn)(),
     __metadata("design:type", String)
 ], Server.prototype, "guild", void 0);
 __decorate([
-    typeorm_1.OneToMany(() => occasion_1.Occasion, occasion => occasion.server),
+    (0, typeorm_1.OneToMany)(() => occasion_1.Occasion, occasion => occasion.server),
     __metadata("design:type", Array)
 ], Server.prototype, "events", void 0);
 __decorate([
-    typeorm_1.Column(() => settings_1.Settings),
+    (0, typeorm_1.Column)(() => settings_1.Settings),
     __metadata("design:type", settings_1.Settings)
 ], Server.prototype, "settings", void 0);
 __decorate([
-    typeorm_1.Column({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Server.prototype, "eventChannel", void 0);
 __decorate([
-    typeorm_1.Column({ nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Server.prototype, "eventCategory", void 0);
 __decorate([
-    typeorm_1.CreateDateColumn(),
+    (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Server.prototype, "joinedAt", void 0);
 __decorate([
-    typeorm_1.Column(),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Server.prototype, "description", void 0);
 Server = __decorate([
-    typeorm_1.Entity()
+    (0, typeorm_1.Entity)()
 ], Server);
 exports.Server = Server;

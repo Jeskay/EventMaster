@@ -25,7 +25,7 @@ exports.command = {
             if (args.length != 1)
                 throw new Error_1.CommandError("Users amount must be provided.");
             const limit = parseInt(args[0]);
-            yield Setup_1.setLimit(client, guild, message.author, limit);
+            yield (0, Setup_1.setLimit)(client, guild, message.author, limit);
         }
         catch (error) {
             if (error instanceof Error)
