@@ -9,7 +9,8 @@ export const command: InteractCommand = {
     run: async(client, interaction) => {
         try {
             const title = interaction.options.getString('title', true);
-            await unsubscribe(client, interaction.user, title);
+            const response = await unsubscribe(client, interaction.user, title);
+            await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
                 interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)]});

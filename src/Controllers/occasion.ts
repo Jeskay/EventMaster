@@ -21,7 +21,7 @@ export class OccasionController {
      * @param candidate user who gonna become host
      * @param voiceChannel voice channel
      */
-     private async DeclareHost(client: ExtendedClient, occasion: Occasion, candidate: GuildMember, voiceChannel: VoiceChannel, textChannel: TextChannel) {
+     private async declareHost(client: ExtendedClient, occasion: Occasion, candidate: GuildMember, voiceChannel: VoiceChannel, textChannel: TextChannel) {
         client.vote.finish(voiceChannel.id);
         if(!occasion) return;
         client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
@@ -38,7 +38,7 @@ export class OccasionController {
      * @param voterId 
      * @param candidateId 
      */
-    public async Vote(client: ExtendedClient, voiceChannel: VoiceChannel, voterId: string, candidateId: string) {
+    public async vote(client: ExtendedClient, voiceChannel: VoiceChannel, voterId: string, candidateId: string) {
         const guild = voiceChannel.guild;
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(occasion => occasion.voiceChannel == voiceChannel.id);
@@ -49,7 +49,7 @@ export class OccasionController {
         const candidate = await guild.members.fetch(candidateId);
         const finished = await client.vote.vote(voiceChannel.id, voterId, candidateId);
             if(finished){
-                client.occasionController.DeclareHost(client, occasion, candidate, voiceChannel as VoiceChannel, textChannel as TextChannel);
+                client.occasionController.declareHost(client, occasion, candidate, voiceChannel as VoiceChannel, textChannel as TextChannel);
             } else await (textChannel as TextChannel).send({embeds: [client.embeds.voteConfimation(candidate.user.username)]});
 
     }
@@ -62,7 +62,7 @@ export class OccasionController {
      * @param title occasion title
      * @param description occasion description
      */
-    public async Start(client: ExtendedClient, guild: Guild, author: User, title: string, description: string){
+    public async start(client: ExtendedClient, guild: Guild, author: User, title: string, description: string){
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to start an event");
@@ -88,7 +88,7 @@ export class OccasionController {
      * @param author occasion host
      * @param results results to print in logs
      */
-    public async Finish(client: ExtendedClient, guild: Guild, author: User, results: string) {
+    public async finish(client: ExtendedClient, guild: Guild, author: User, results: string) {
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to finish an event");
@@ -115,7 +115,7 @@ export class OccasionController {
      * @param guild occasion guild
      * @param author occasion host
      */
-    public async Announce(client: ExtendedClient,  description: string, guild: Guild, author: User, title?: string, image?: string){
+    public async announce(client: ExtendedClient,  description: string, guild: Guild, author: User, title?: string, image?: string){
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to start an event.");
@@ -130,7 +130,7 @@ export class OccasionController {
         });
         if(hashtags.length > 0) {
             hashtags.forEach(tag => {
-                this.NotifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);
+                this.notifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);
             });
         }
     }
@@ -142,7 +142,7 @@ export class OccasionController {
      * @param title occasion title
      * @param description occasion description
      */
-    public async NotifyPlayers(client: ExtendedClient, tagId: string, channel: GuildChannel, title: string, description: string) {
+    public async notifyPlayers(client: ExtendedClient, tagId: string, channel: GuildChannel, title: string, description: string) {
         const tag = await client.database.getTag(tagId);
         if(!tag) return;
         const players = await tag.subscribers;

@@ -11,7 +11,8 @@ export const command: InteractCommand = {
         try {
             const limit = interaction.options.getInteger("amount", true);
             if(!interaction.guild) throw new CommandError("Avaliable only in a guild.");
-            await setLimit(client, interaction.guild, interaction.user, limit);
+            const response = await setLimit(client, interaction.guild, interaction.user, limit);
+            await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
                 interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});

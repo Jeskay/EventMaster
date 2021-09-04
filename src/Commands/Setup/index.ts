@@ -36,6 +36,7 @@ export async function setLimit(client: ExtendedClient, guild: Guild, author: Use
     if(!server) throw new CommandError("Server is not registered yet.");
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     await client.database.updateSettings(guild.id, {limit: limit});
+    return client.embeds.limitChanged(limit);
 }
 
 export async function setLog(client: ExtendedClient, guild: Guild, author: User, channel: GuildChannel) {

@@ -4,12 +4,12 @@ import ExtendedClient from '../../Client';
 import { CommandError } from '../../Error';
 
 export async function dislike(client: ExtendedClient, author: User, user: User) {
-    await client.ratingController.DislikePlayer(client, user.id, author.id);
+    await client.ratingController.dislikePlayer(client, user.id, author.id);
     return client.embeds.playerCommended(user);
 }
 
 export async function like(client: ExtendedClient, author: User, user: User) {
-    await client.ratingController.LikePlayer(client, user.id, author.id);
+    await client.ratingController.likePlayer(client, user.id, author.id);
     return client.embeds.playerCommended(user);
 }
 
@@ -38,6 +38,7 @@ export async function subscribe(client: ExtendedClient, author: User, title: str
     tags.push(tag);
     profile.subscriptions = Promise.resolve(tags);
     await client.database.updatePlayer(profile);
+    return client.embeds.subscribed(tag.title);
 }
 
 export async function unsubscribe(client: ExtendedClient, author: User, title: string) {
@@ -46,6 +47,7 @@ export async function unsubscribe(client: ExtendedClient, author: User, title: s
     const tags = await profile.subscriptions;
     if(!tags.find(tag => tag.title == title)) throw new CommandError("You are not subscribed for this tag.");
     await client.database.removeTag(title);
+    return client.embeds.unsubscribed(title);
 }
 
 export async function subscriptions(client: ExtendedClient, author: User, channel: TextBasedChannels) {
@@ -64,6 +66,6 @@ export async function vote(client: ExtendedClient, author: User, candidate: User
     if(author.id == candidate.id) throw new CommandError("You can't vote for yourself.");
     const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidate.id, channel)) as VoiceChannel;
     if(!voiceChannel) throw new CommandError("Both voter and candidate must be in occasion channel.");
-    await client.occasionController.Vote(client, voiceChannel, author.id, candidate.id);
+    await client.occasionController.vote(client, voiceChannel, author.id, candidate.id);
     return client.embeds.voteConfimation(candidate.username);
 }

@@ -46,7 +46,7 @@ export class RatingController {
      * @param author user who gives feedback
      * @returns Promise
      */
-    public DislikePlayer = async (client: ExtendedClient, user: string, author: string) => await this.commendPlayer(client, user, author, false, false); 
+    public dislikePlayer = async (client: ExtendedClient, user: string, author: string) => await this.commendPlayer(client, user, author, false, false); 
     /**
      * Creates positive feedback for player
      * @param client client instance
@@ -54,7 +54,7 @@ export class RatingController {
      * @param author user who gives feedback
      * @returns Promise
      */
-    public LikePlayer = async (client: ExtendedClient, user: string, author: string) => await this.commendPlayer(client, user, author, true, false);
+    public likePlayer = async (client: ExtendedClient, user: string, author: string) => await this.commendPlayer(client, user, author, true, false);
     /**
      * Creates negative feedback about host
      * @param client client instance

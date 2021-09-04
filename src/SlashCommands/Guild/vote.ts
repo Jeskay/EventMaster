@@ -2,14 +2,13 @@ import {InteractCommand} from '../../Interfaces';
 import { vote } from '../../Commands/DirectMessages';
 
 export const command: InteractCommand = {
-    name: 'voteid',
+    name: 'vote',
     description: "vote for event host",
-    options: [{name: 'userid', type: "STRING", description: "Id of user you want to become a host.", required: true}],
+    options: [{name: 'user', type: "USER", description: "User you want to be a host.", required: true}],
     run: async(client, interaction) => {
         try {
-            const candidateID = interaction.options.getString("userId", true);
-            const candidate = await client.users.fetch(candidateID);
-            const response = await vote(client, interaction.user, candidate);
+            const user = interaction.options.getUser("user", true);
+            const response = await vote(client, interaction.user, user);
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)

@@ -145,6 +145,21 @@ export class EmbedManager{
     .addField("Guild member was removed from owners list", `Since that moment ${username} has limited access to bot commands.`)
     .setColor("RED");
 
+    public limitChanged = (limit: number) => new MessageEmbed()
+    .setTitle("Limit changed successfuly")
+    .setDescription(`Minimum amount of members to start an occasion was changed to ${limit}`)
+    .setColor("GREEN");
+
+    public unsubscribed = (tag: string) => new MessageEmbed()
+    .setTitle(`Tag ${tag} was successfuly removed from subscriptions`)
+    .setDescription("You won't receive notifications about this type of occasions.")
+    .setColor("DARK_GREEN");
+
+    public subscribed = (tag: string) => new MessageEmbed()
+    .setTitle(`Tag ${tag} successfuly added to personal subscribtions.`)
+    .setDescription("Bot will send you notification about this type of occasions.")
+    .setColor("GREEN");
+    
     public errorInformation = (error: string, message: string) => new MessageEmbed()
     .addField(error, message)
     .setFooter("Use help command for detailes.")
