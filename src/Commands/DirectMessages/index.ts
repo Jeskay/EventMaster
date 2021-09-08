@@ -1,4 +1,4 @@
-import { TextBasedChannels, User, VoiceChannel } from 'discord.js';
+import { CommandInteraction, TextBasedChannels, User, VoiceChannel } from 'discord.js';
 import { List } from '../../List';
 import ExtendedClient from '../../Client';
 import { CommandError } from '../../Error';
@@ -50,7 +50,7 @@ export async function unsubscribe(client: ExtendedClient, author: User, title: s
     return client.embeds.unsubscribed(title);
 }
 
-export async function subscriptions(client: ExtendedClient, author: User, channel: TextBasedChannels) {
+export async function subscriptions(client: ExtendedClient, author: User, channel: TextBasedChannels | CommandInteraction) {
     const profile = await client.database.getPlayer(author.id);
     if(!profile) throw new CommandError("This user did not join events.");
     const subId = `subs${author.id}`;
