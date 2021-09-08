@@ -24,7 +24,7 @@ export class List {
         const embed = await this.updateEmbed();
         let message: Message;
         if(channel instanceof CommandInteraction)
-            message = await channel.reply({embeds: [embed], components: [attachments], ephemeral: true, fetchReply: true}) as Message;
+            message = await channel.reply({embeds: [embed], components: [attachments], fetchReply: true}) as Message;
         else message = await channel.send({embeds: [embed], components: [attachments]});
         this.message_page[message.id] = 1;
         setTimeout(() => message.delete(), this.lifetime * 1000);
