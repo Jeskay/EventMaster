@@ -80,13 +80,29 @@ export class EmbedManager{
     .addField("Members when started:", members.toString())
     .setColor("PURPLE");
 
-    public occasionFinished = (description: string, hostName: string, members: number) => new MessageEmbed()
+    public occasionFinished = (description: string, hostName: string, minutes: number, members: number) => new MessageEmbed()
     .setTitle(`Event finished`)
     .setDescription(description)
     .addField("Host:", hostName)
     .addField("Members when finished:", members.toString())
+    .addField("Minutes played:", minutes.toString())
     .setColor("PURPLE");
     
+    public occasionStartResponse = (title: string, description: string) => new MessageEmbed()
+    .setTitle(`Occasion ${title} started`)
+    .setDescription(description)
+    .setColor("GREEN");
+
+    public occasionFinishResponse = (title: string, time: number) => new MessageEmbed()
+    .setTitle(`Occasion ${title} finished`)
+    .addField("Lasted for",`${time} minutes`)
+    .setColor("GREEN");
+
+    public announcePublishedResponse = (tags: string[]) => new MessageEmbed()
+    .setTitle(`Announce published`)
+    .addField("Users with these tags will be notified:", tags.join('\n'))
+    .setColor("GREEN");
+
     public notification(title: string, description: string, url: string, banner: string | undefined){
         const embed = new MessageEmbed()
         .setTitle(`${title} is about to start.`)
