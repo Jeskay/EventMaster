@@ -29,8 +29,8 @@ exports.command = {
             const title = interaction.options.getString("title", true);
             const description = interaction.options.getString("description", true);
             const image = (_a = interaction.options.getString("image")) !== null && _a !== void 0 ? _a : undefined;
-            yield (0, Guild_1.announce)(client, interaction.user, interaction.guild, description, title, image);
-            yield interaction.editReply("Announce published successfuly.");
+            const response = yield (0, Guild_1.announce)(client, interaction.user, interaction.guild, description, title, image);
+            yield interaction.editReply({ embeds: [response] });
         }
         catch (error) {
             if (error instanceof Error)

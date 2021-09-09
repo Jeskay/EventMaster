@@ -75,12 +75,13 @@ class OccasionController {
             if (server.settings.logging_channel) {
                 const channel = guild.channels.cache.get(server.settings.logging_channel);
                 if (!channel || !channel.isText)
-                    return;
+                    return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
                 const voiceChannel = guild.channels.cache.get(occasion.voiceChannel);
                 if (!voiceChannel)
                     throw Error("Cannot find voice channel");
                 yield channel.send({ embeds: [client.embeds.occasionStarted(title, description, author.username, voiceChannel.members.size)] });
             }
+            return client.embeds.occasionStartResponse(title, description);
         });
     }
     finish(client, guild, author, results) {
@@ -99,12 +100,14 @@ class OccasionController {
             yield client.database.removeOccasion(server.guild, occasion.voiceChannel);
             yield text.send({ embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)] });
             setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
+            const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
             if (server.settings.logging_channel) {
                 const channel = guild.channels.cache.get(server.settings.logging_channel);
                 if (!channel || !channel.isText)
-                    return;
-                channel.send({ embeds: [client.embeds.occasionFinished(results, author.username, voice.members.size)] });
+                    return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
+                channel.send({ embeds: [client.embeds.occasionFinished(results, author.username, duration, voice.members.size)] });
             }
+            return client.embeds.occasionFinishResponse(occasion.Title, duration);
         });
     }
     announce(client, description, guild, author, title, image) {
@@ -129,6 +132,7 @@ class OccasionController {
                     this.notifyPlayers(client, tag, channel, title !== null && title !== void 0 ? title : tag, description);
                 });
             }
+            return client.embeds.announcePublishedResponse(hashtags);
         });
     }
     notifyPlayers(client, tagId, channel, title, description) {

@@ -12,19 +12,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.finish = exports.start = exports.announce = void 0;
 function announce(client, author, guild, description, title, image) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.occasionController.announce(client, description, guild, author, title, image);
+        return yield client.occasionController.announce(client, description, guild, author, title, image);
     });
 }
 exports.announce = announce;
 function start(client, author, guild, title, description) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.occasionController.start(client, guild, author, title, description);
+        return yield client.occasionController.start(client, guild, author, title, description);
     });
 }
 exports.start = start;
 function finish(client, author, guild, results) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.occasionController.finish(client, guild, author, results);
+        return yield client.occasionController.finish(client, guild, author, results);
     });
 }
 exports.finish = finish;

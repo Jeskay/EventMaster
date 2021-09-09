@@ -22,7 +22,8 @@ exports.command = {
             if (!interaction.guild)
                 throw new Error_1.CommandError("This is allowed only in guild channel");
             const result = interaction.options.getString("result", true);
-            yield (0, Guild_1.finish)(client, interaction.user, interaction.guild, result);
+            const response = yield (0, Guild_1.finish)(client, interaction.user, interaction.guild, result);
+            yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {
             if (error instanceof Error)

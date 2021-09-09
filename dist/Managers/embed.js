@@ -58,12 +58,25 @@ class EmbedManager {
             .addField("Host:", hostName)
             .addField("Members when started:", members.toString())
             .setColor("PURPLE");
-        this.occasionFinished = (description, hostName, members) => new discord_js_1.MessageEmbed()
+        this.occasionFinished = (description, hostName, minutes, members) => new discord_js_1.MessageEmbed()
             .setTitle(`Event finished`)
             .setDescription(description)
             .addField("Host:", hostName)
             .addField("Members when finished:", members.toString())
+            .addField("Minutes played:", minutes.toString())
             .setColor("PURPLE");
+        this.occasionStartResponse = (title, description) => new discord_js_1.MessageEmbed()
+            .setTitle(`Occasion ${title} started`)
+            .setDescription(description)
+            .setColor("GREEN");
+        this.occasionFinishResponse = (title, time) => new discord_js_1.MessageEmbed()
+            .setTitle(`Occasion ${title} finished`)
+            .addField("Lasted for", `${time} minutes`)
+            .setColor("GREEN");
+        this.announcePublishedResponse = (tags) => new discord_js_1.MessageEmbed()
+            .setTitle(`Announce published`)
+            .addField("Users with these tags will be notified:", tags.join('\n'))
+            .setColor("GREEN");
         this.playerCommended = (user) => new discord_js_1.MessageEmbed()
             .setTitle(`${user.username}'s rating changed`)
             .setFooter("Thank you for improving our community.")
