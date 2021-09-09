@@ -13,6 +13,7 @@ exports.event = void 0;
 exports.event = {
     name: 'ready',
     run: (client) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log("ready");
         if (!client.user)
             throw new Error("User is null");
         const clientId = client.user.id;
