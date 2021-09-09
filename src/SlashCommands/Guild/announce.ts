@@ -17,8 +17,8 @@ export const command: InteractCommand = {
             const title = interaction.options.getString("title", true);
             const description = interaction.options.getString("description", true);
             const image = interaction.options.getString("image") ?? undefined;
-            await announce(client, interaction.user, interaction.guild, description, title, image);
-            await interaction.editReply("Announce published successfuly.");
+            const response = await announce(client, interaction.user, interaction.guild, description, title, image);
+            await interaction.editReply({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)
                 interaction.editReply({embeds: [client.embeds.errorInformation(error.name, error.message)]});

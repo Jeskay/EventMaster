@@ -15,7 +15,8 @@ export const command: InteractCommand = {
             if(!interaction.guild) throw new CommandError("This is allowed only in guild channel.");
             const title = interaction.options.getString("title", true);
             const description = interaction.options.getString("description", true);
-            await start(client, interaction.user, interaction.guild, title, description);
+            const response = await start(client, interaction.user, interaction.guild, title, description);
+            await interaction.reply({embeds: [response], ephemeral: true});
         }
         catch(error){
             if(error instanceof Error)

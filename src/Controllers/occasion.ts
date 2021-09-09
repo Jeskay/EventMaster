@@ -75,11 +75,12 @@ export class OccasionController {
         // Logging
         if(server.settings.logging_channel) {
             const channel = guild.channels.cache.get(server.settings.logging_channel);
-            if(!channel || !channel.isText) return;
+            if(!channel || !channel.isText) return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
             const voiceChannel = guild.channels.cache.get(occasion.voiceChannel) as VoiceChannel;
             if(!voiceChannel) throw Error("Cannot find voice channel");
             await (channel as TextChannel).send({embeds: [client.embeds.occasionStarted(title, description, author.username, voiceChannel.members.size)]});
         }
+        return client.embeds.occasionStartResponse(title, description);
     }
     /**
      * Finishes current occasion
@@ -101,11 +102,13 @@ export class OccasionController {
         await (text as TextChannel).send({embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
         setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
         //logging 
+        const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
         if(server.settings.logging_channel) {
             const channel = guild.channels.cache.get(server.settings.logging_channel);
-            if(!channel || !channel.isText) return;
-            (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(results, author.username, (voice as VoiceChannel).members.size)]});
+            if(!channel || !channel.isText) return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
+            (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(results, author.username, duration, (voice as VoiceChannel).members.size)]});
         }
+        return client.embeds.occasionFinishResponse(occasion.Title, duration);
     }
     /**
      * Announce the occasion
@@ -133,6 +136,7 @@ export class OccasionController {
                 this.notifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);
             });
         }
+        return client.embeds.announcePublishedResponse(hashtags);
     }
     /**
      * Sends personal notifications about occasion
