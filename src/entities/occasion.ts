@@ -11,7 +11,10 @@ export class Occasion {
     server: Server;
 
     @Column('int')
-    state: OccasionState; 
+    state: OccasionState;
+    
+    @Column()
+    announced: boolean;
 
     @Column()
     voiceChannel: string;

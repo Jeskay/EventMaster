@@ -66,6 +66,7 @@ export class OccasionController {
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to start an event");
+        if(occasion.state == OccasionState.playing) throw new CommandError("Occasion has already started.");
         if(!title) throw Error("Event name must be provided");
         await client.database.updateOccasion(guild.id, occasion.voiceChannel, {
             Title: title, 
@@ -121,7 +122,8 @@ export class OccasionController {
     public async announce(client: ExtendedClient,  description: string, guild: Guild, author: User, title?: string, image?: string){
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
-        if(!occasion) throw Error("Only host has permission to start an event.");
+        if(!occasion) throw Error("Only host has permission to announce an event.");
+        if(occasion.announced) throw new CommandError("Announced has been already published.");
         if(!server.settings.notification_channel) throw Error("Notification channel was not set up.");
         const channel = guild.channels.cache.get(server.settings.notification_channel);
         const hashtags = client.helper.findSubscriptions(description);
@@ -136,6 +138,9 @@ export class OccasionController {
                 this.notifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);
             });
         }
+        await client.database.updateOccasion(occasion.server.guild, occasion.voiceChannel , {
+            announced: true
+        });
         return client.embeds.announcePublishedResponse(hashtags);
     }
     /**
