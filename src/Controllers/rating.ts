@@ -76,7 +76,7 @@ export class RatingController {
      * @param client client instance
      * @param channel voice channel to update
      */
-    public async updateMembers(client: ExtendedClient, channel: VoiceChannel) {
+    public async updateMembers(client: ExtendedClient, channel: VoiceChannel, duration: number) {
         const server = await client.database.getServerRelations(channel.guild.id);
         const occasion = server.events.find(event => event.voiceChannel == channel.id);
         if(!occasion) throw Error("Cannot find the occasion.");
@@ -87,11 +87,13 @@ export class RatingController {
                 id: member.id,
                 eventsPlayed: (member.id == host) ? 0 : 1,
                 eventsHosted: (member.id == host) ? 1 : 0,
+                minutesPlayed: duration
             });
             else await client.database.updatePlayer({
                 id: member.id, 
                 eventsPlayed: (member.id == host) ? player.eventsPlayed : player.eventsPlayed + 1,
-                eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted
+                eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted,
+                minutesPlayed: player.minutesPlayed + duration
             }); 
         }));
     }

@@ -27,6 +27,44 @@ export class DataBaseManager{
     public getServer = async(id: string) => await this.connection.manager.findOne(Server, {guild: id});
     /** @returns player by user id */
     public getPlayer = async (id: string) => await this.connection.manager.findOne(Player, {id: id});
+    /**@returns all players */
+    public getPlayers = async() => await this.connection.manager.getRepository(Player)
+    .createQueryBuilder("player")
+    .getMany()
+    .catch(err => {throw new DataBaseError(err)});
+    
+    public async getRanking() {
+        return await this.connection.manager.createQueryBuilder()
+        .select([
+            "id",
+            "eventsPlayed", 
+            "eventsHosted", 
+            "likescount",
+            "dislikecount"])
+        .from(subQuery => {
+            return subQuery
+            .select([
+                "id",
+                "eventsPlayed", 
+                "eventsHosted"
+            ])
+            .addSelect(likeQuery => {
+                return likeQuery
+                .select("COUNT(*)", "count")
+                .from(Commend, "commend")
+                .where("subjectId = id AND cheer = true")
+            }, "likescount")
+            .addSelect(dislikeQuery => {
+                return dislikeQuery
+                .select("COUNT(*)", "count")
+                .from(Commend, "commend")
+                .where("subjectId = id AND cheer = false")
+            }, "dislikecount")
+            .from(Player, "player")
+        }, "t")
+        .getMany();
+    }
+
     /**
      * @param authorId commend's author
      * @param subjectId subject of commend

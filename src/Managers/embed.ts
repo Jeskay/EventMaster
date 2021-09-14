@@ -80,8 +80,9 @@ export class EmbedManager{
     .addField("Members when started:", members.toString())
     .setColor("PURPLE");
 
-    public occasionFinished = (description: string, hostName: string, minutes: number, members: number) => new MessageEmbed()
+    public occasionFinished = (title: string, description: string, hostName: string, minutes: number, members: number) => new MessageEmbed()
     .setTitle(`Event finished`)
+    .addField("Title:", title)
     .setDescription(description)
     .addField("Host:", hostName)
     .addField("Members when finished:", members.toString())

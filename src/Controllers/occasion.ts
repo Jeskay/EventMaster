@@ -26,7 +26,7 @@ export class OccasionController {
         if(!occasion) return;
         client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
         await client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
-            state: OccasionState.playing,
+            state: OccasionState.waiting,
             host: candidate.id
         });
         textChannel.send({embeds: [client.embeds.electionFinished(candidate.user.username)]});
@@ -71,6 +71,7 @@ export class OccasionController {
         await client.database.updateOccasion(guild.id, occasion.voiceChannel, {
             Title: title, 
             startedAt: new Date,
+            state: OccasionState.playing,
             description: description
         });
         // Logging
@@ -98,16 +99,16 @@ export class OccasionController {
         const text = guild.channels.cache.get(occasion.textChannel);
         if(!text) throw Error("Text channel has been removed, personal statistic will not be updated.");
         if(!voice) throw Error("Voice channel has been removed, personal statistic will not be updated.");
-        await client.ratingController.updateMembers(client, voice as VoiceChannel);
+        const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
+        await client.ratingController.updateMembers(client, voice as VoiceChannel, duration);
         await client.database.removeOccasion(server.guild, occasion.voiceChannel);
         await (text as TextChannel).send({embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
         setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
         //logging 
-        const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
         if(server.settings.logging_channel) {
             const channel = guild.channels.cache.get(server.settings.logging_channel);
             if(!channel || !channel.isText) return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
-            (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(results, author.username, duration, (voice as VoiceChannel).members.size)]});
+            (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(occasion.Title, results, author.username, duration, (voice as VoiceChannel).members.size)]});
         }
         return client.embeds.occasionFinishResponse(occasion.Title, duration);
     }

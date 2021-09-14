@@ -28,6 +28,9 @@ export class Player{
     @OneToMany(() => Commend, commend => commend.subject)
     commendsAbout: Promise<Commend[]>;
 
+    @Column({nullable: true})
+    minutesPlayed: number = 0;
+
     @Column({type: 'timestamptz'})
     scoreTime: Date = new Date;
 
