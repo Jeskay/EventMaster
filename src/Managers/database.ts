@@ -1,7 +1,7 @@
 import { Connection, getConnection } from "typeorm";
 import { Server } from "../entities/server";
 import { Occasion } from "../entities/occasion";
-import { Player } from "../entities/player";
+import { Player, Rank } from "../entities/player";
 import { Commend } from "../entities/commend";
 import { Tag } from "../entities/tag";
 import { DataBaseError } from "../Error";
@@ -34,35 +34,31 @@ export class DataBaseManager{
     .catch(err => {throw new DataBaseError(err)});
     
     public async getRanking() {
-        return await this.connection.manager.createQueryBuilder()
-        .select([
-            "id",
-            "eventsPlayed", 
-            "eventsHosted", 
-            "likescount",
-            "dislikecount"])
-        .from(subQuery => {
-            return subQuery
-            .select([
-                "id",
-                "eventsPlayed", 
-                "eventsHosted"
-            ])
-            .addSelect(likeQuery => {
-                return likeQuery
-                .select("COUNT(*)", "count")
-                .from(Commend, "commend")
-                .where("subjectId = id AND cheer = true")
-            }, "likescount")
-            .addSelect(dislikeQuery => {
-                return dislikeQuery
-                .select("COUNT(*)", "count")
-                .from(Commend, "commend")
-                .where("subjectId = id AND cheer = false")
-            }, "dislikecount")
-            .from(Player, "player")
-        }, "t")
-        .getMany();
+        const sql = `
+    SELECT
+        id,
+        liked,
+        disliked,
+        ("eventsPlayed" * 0.5 + "eventsHosted" * 1) * (liked / (CASE WHEN disliked = 0 THEN 1 ELSE disliked END)) rank
+    FROM (
+        SELECT 
+            id,
+            "eventsPlayed",
+            "eventsHosted",
+            (
+                SELECT COUNT(*)
+                FROM commend
+                WHERE "subjectId" = id AND cheer = true
+            ) AS liked,
+            (
+                SELECT COUNT(*)
+                FROM commend
+                WHERE "subjectId" = id AND cheer = false
+        ) AS disliked
+        FROM player
+    ) t
+    ORDER BY rank DESC `;
+    return await this.connection.manager.query(sql) as Rank[];
     }
 
     /**

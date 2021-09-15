@@ -25,7 +25,7 @@ class ExtendedClient extends Client {
     public room: RoomManger = new RoomManger();
     public vote: VoteManager = new VoteManager(); 
     public embeds: EmbedManager = new EmbedManager();
-    public Lists: Collection<string, List> = new Collection();
+    public lists: Collection<string, List> = new Collection();
     public channelController: ChannelController = new ChannelController();
     public ratingController: RatingController = new RatingController();
     public occasionController: OccasionController = new OccasionController();
@@ -110,7 +110,7 @@ class ExtendedClient extends Client {
                 }
             }
         });
-        this.Lists.set('help', new List(30, this.helper.commandsList(this), 10));
+        this.lists.set('help', new List(30, this.helper.commandsList(this), 10));
         /* buttons */
         const buttonPath = path.join(__dirname, "..", "Buttons");
         readdirSync(buttonPath).forEach(dir => {

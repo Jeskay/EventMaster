@@ -38,3 +38,10 @@ export class Player{
     joinedAt: Date;
 
 }
+
+export interface Rank{
+    id: number;
+    liked: number;
+    disliked: number;
+    rank: number;
+}
