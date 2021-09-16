@@ -15,6 +15,7 @@ var OccasionState;
     OccasionState[OccasionState["voting"] = 0] = "voting";
     OccasionState[OccasionState["waiting"] = 1] = "waiting";
     OccasionState[OccasionState["playing"] = 2] = "playing";
+    OccasionState[OccasionState["finished"] = 3] = "finished";
 })(OccasionState = exports.OccasionState || (exports.OccasionState = {}));
 var MemberState;
 (function (MemberState) {

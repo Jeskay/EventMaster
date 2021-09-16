@@ -32,7 +32,7 @@ class OccasionController {
                 return;
             client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
             yield client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
-                state: room_1.OccasionState.playing,
+                state: room_1.OccasionState.waiting,
                 host: candidate.id
             });
             textChannel.send({ embeds: [client.embeds.electionFinished(candidate.user.username)] });
@@ -65,11 +65,14 @@ class OccasionController {
             const occasion = server.events.find(event => event.host == author.id);
             if (!occasion)
                 throw Error("Only host has permission to start an event");
+            if (occasion.state == room_1.OccasionState.playing)
+                throw new Error_1.CommandError("Occasion has already started.");
             if (!title)
                 throw Error("Event name must be provided");
             yield client.database.updateOccasion(guild.id, occasion.voiceChannel, {
                 Title: title,
                 startedAt: new Date,
+                state: room_1.OccasionState.playing,
                 description: description
             });
             if (server.settings.logging_channel) {
@@ -96,16 +99,16 @@ class OccasionController {
                 throw Error("Text channel has been removed, personal statistic will not be updated.");
             if (!voice)
                 throw Error("Voice channel has been removed, personal statistic will not be updated.");
-            yield client.ratingController.updateMembers(client, voice);
+            const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
+            yield client.ratingController.updateMembers(client, voice, duration);
             yield client.database.removeOccasion(server.guild, occasion.voiceChannel);
             yield text.send({ embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)] });
             setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
-            const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
             if (server.settings.logging_channel) {
                 const channel = guild.channels.cache.get(server.settings.logging_channel);
                 if (!channel || !channel.isText)
                     return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
-                channel.send({ embeds: [client.embeds.occasionFinished(results, author.username, duration, voice.members.size)] });
+                channel.send({ embeds: [client.embeds.occasionFinished(occasion.Title, results, author.username, duration, voice.members.size)] });
             }
             return client.embeds.occasionFinishResponse(occasion.Title, duration);
         });
@@ -115,7 +118,9 @@ class OccasionController {
             const server = yield client.database.getServerRelations(guild.id);
             const occasion = server.events.find(event => event.host == author.id);
             if (!occasion)
-                throw Error("Only host has permission to start an event.");
+                throw Error("Only host has permission to announce an event.");
+            if (occasion.announced)
+                throw new Error_1.CommandError("Announced has been already published.");
             if (!server.settings.notification_channel)
                 throw Error("Notification channel was not set up.");
             const channel = guild.channels.cache.get(server.settings.notification_channel);
@@ -132,6 +137,9 @@ class OccasionController {
                     this.notifyPlayers(client, tag, channel, title !== null && title !== void 0 ? title : tag, description);
                 });
             }
+            yield client.database.updateOccasion(occasion.server.guild, occasion.voiceChannel, {
+                announced: true
+            });
             return client.embeds.announcePublishedResponse(hashtags);
         });
     }

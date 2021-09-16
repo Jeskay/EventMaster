@@ -58,8 +58,9 @@ class EmbedManager {
             .addField("Host:", hostName)
             .addField("Members when started:", members.toString())
             .setColor("PURPLE");
-        this.occasionFinished = (description, hostName, minutes, members) => new discord_js_1.MessageEmbed()
+        this.occasionFinished = (title, description, hostName, minutes, members) => new discord_js_1.MessageEmbed()
             .setTitle(`Event finished`)
+            .addField("Title:", title)
             .setDescription(description)
             .addField("Host:", hostName)
             .addField("Members when finished:", members.toString())
@@ -158,6 +159,7 @@ class EmbedManager {
             .setTitle(user.username)
             .addField("Events played:", player.eventsPlayed.toString())
             .addField("Events hosted:", player.eventsHosted.toString())
+            .addField("Time spent in occasions:", `${player.minutesPlayed} minutes`)
             .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
             .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
             .addField("First event:", player.joinedAt.toLocaleString())

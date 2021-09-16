@@ -19,6 +19,7 @@ let Player = class Player {
         this.eventsHosted = 0;
         this.tournamentsPlayed = 0;
         this.tournamentsHosted = 0;
+        this.minutesPlayed = 0;
         this.scoreTime = new Date;
     }
 };
@@ -54,6 +55,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => commend_1.Commend, commend => commend.subject),
     __metadata("design:type", Promise)
 ], Player.prototype, "commendsAbout", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Player.prototype, "minutesPlayed", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamptz' }),
     __metadata("design:type", Date)

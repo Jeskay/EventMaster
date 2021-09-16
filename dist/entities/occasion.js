@@ -29,6 +29,10 @@ __decorate([
 ], Occasion.prototype, "state", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    __metadata("design:type", Boolean)
+], Occasion.prototype, "announced", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Occasion.prototype, "voiceChannel", void 0);
 __decorate([

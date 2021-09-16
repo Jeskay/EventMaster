@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.vote = exports.subscriptions = exports.unsubscribe = exports.subscribe = exports.profile = exports.help = exports.like = exports.dislike = void 0;
+exports.playerRating = exports.vote = exports.subscriptions = exports.unsubscribe = exports.subscribe = exports.profile = exports.help = exports.like = exports.dislike = void 0;
 const List_1 = require("../../List");
 const Error_1 = require("../../Error");
 function dislike(client, author, user) {
@@ -30,7 +30,7 @@ function help(client, author, channel) {
     return __awaiter(this, void 0, void 0, function* () {
         const prevId = `previousPage.${author.id} help`;
         const nextId = `nextPage.${author.id} help`;
-        const list = client.Lists.get('help');
+        const list = client.lists.get('help');
         if (!list)
             throw new Error_1.CommandError('Command list not found.');
         yield list.create(channel, client.embeds.ListMessage(prevId, nextId));
@@ -84,11 +84,11 @@ function subscriptions(client, author, channel) {
         if (!profile)
             throw new Error_1.CommandError("This user did not join events.");
         const subId = `subs${author.id}`;
-        if (client.Lists.get(subId))
-            client.Lists.delete(subId);
+        if (client.lists.get(subId))
+            client.lists.delete(subId);
         const tags = yield profile.subscriptions;
         const list = new List_1.List(30, client.helper.subscriptionList(tags), 5);
-        client.Lists.set(subId, list);
+        client.lists.set(subId, list);
         const prevId = `previousPage.${author.id} ${subId}`;
         const nextId = `nextPage.${author.id} ${subId}`;
         list.create(channel, client.embeds.ListMessage(prevId, nextId));
@@ -107,3 +107,17 @@ function vote(client, author, candidate) {
     });
 }
 exports.vote = vote;
+function playerRating(client, author, channel) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const rating = yield client.database.getRanking();
+        const rateId = `rate${author.id}`;
+        if (client.lists.get(rateId))
+            client.lists.delete(rateId);
+        const list = new List_1.List(30, client.helper.ratingList(rating), 5);
+        client.lists.set(rateId, list);
+        const prevId = `previousPage.${author.id} ${rateId}`;
+        const nextId = `nextPage.${author.id} ${rateId}`;
+        list.create(channel, client.embeds.ListMessage(prevId, nextId));
+    });
+}
+exports.playerRating = playerRating;

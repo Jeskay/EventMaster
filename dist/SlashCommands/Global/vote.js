@@ -17,7 +17,7 @@ exports.command = {
     options: [{ name: 'userid', type: "STRING", description: "Id of user you want to become a host.", required: true }],
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const candidateID = interaction.options.getString("userId", true);
+            const candidateID = interaction.options.getString("userid", true);
             const candidate = yield client.users.fetch(candidateID);
             const response = yield (0, DirectMessages_1.vote)(client, interaction.user, candidate);
             yield interaction.reply({ embeds: [response], ephemeral: true });

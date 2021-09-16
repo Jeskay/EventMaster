@@ -27,10 +27,45 @@ class DataBaseManager {
         this.tag = (tag) => this.connection.manager.create(tag_1.Tag, tag);
         this.getServer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(server_1.Server, { guild: id }); });
         this.getPlayer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(player_1.Player, { id: id }); });
+        this.getPlayers = () => __awaiter(this, void 0, void 0, function* () {
+            return yield this.connection.manager.getRepository(player_1.Player)
+                .createQueryBuilder("player")
+                .getMany()
+                .catch(err => { throw new Error_1.DataBaseError(err); });
+        });
         this.getCommend = (authorId, subjectId, hosting, cheer) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(commend_1.Commend, { authorId: authorId, subjectId: subjectId, host: hosting, cheer: cheer }); });
         this.getTag = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(tag_1.Tag, { title: id }); });
         this.getCommends = (params) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.find(commend_1.Commend, params); });
         this.connection = (0, typeorm_1.getConnection)();
+    }
+    getRanking() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sql = `
+    SELECT
+        id,
+        liked,
+        disliked,
+        ("eventsPlayed" * 0.5 + "eventsHosted" * 1) * (liked / (CASE WHEN disliked = 0 THEN 1 ELSE disliked END)) rank
+    FROM (
+        SELECT 
+            id,
+            "eventsPlayed",
+            "eventsHosted",
+            (
+                SELECT COUNT(*)
+                FROM commend
+                WHERE "subjectId" = id AND cheer = true
+            ) AS liked,
+            (
+                SELECT COUNT(*)
+                FROM commend
+                WHERE "subjectId" = id AND cheer = false
+        ) AS disliked
+        FROM player
+    ) t
+    ORDER BY rank DESC `;
+            return yield this.connection.manager.query(sql);
+        });
     }
     getServerRelations(serverID) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -61,7 +61,7 @@ class RatingController {
                 });
         });
     }
-    updateMembers(client, channel) {
+    updateMembers(client, channel, duration) {
         return __awaiter(this, void 0, void 0, function* () {
             const server = yield client.database.getServerRelations(channel.guild.id);
             const occasion = server.events.find(event => event.voiceChannel == channel.id);
@@ -75,12 +75,14 @@ class RatingController {
                         id: member.id,
                         eventsPlayed: (member.id == host) ? 0 : 1,
                         eventsHosted: (member.id == host) ? 1 : 0,
+                        minutesPlayed: duration
                     });
                 else
                     yield client.database.updatePlayer({
                         id: member.id,
                         eventsPlayed: (member.id == host) ? player.eventsPlayed : player.eventsPlayed + 1,
-                        eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted
+                        eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted,
+                        minutesPlayed: player.minutesPlayed + duration
                     });
             })));
         });

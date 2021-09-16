@@ -9,28 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.button = void 0;
-const Error_1 = require("../../Error");
-exports.button = {
-    name: 'nextPage',
-    description: "",
-    run: (client, button, args) => __awaiter(void 0, void 0, void 0, function* () {
+exports.command = void 0;
+const DirectMessages_1 = require("../../Commands/DirectMessages");
+exports.command = {
+    name: 'rating',
+    description: 'Shows global player rating.',
+    options: [],
+    aliases: ['rate', 'ranking'],
+    run: (client, message, _args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            if (args.length != 2)
-                throw new Error_1.CommandError("Not enough information.");
-            const author = args[0];
-            const list = client.lists.get(args[1]);
-            if (!list)
-                return;
-            if (author != button.user.id)
-                return;
-            const embed = yield list.next(button.message.id);
-            yield button.message.edit({ embeds: [embed] });
-            yield button.deferUpdate({ fetchReply: true });
+            yield (0, DirectMessages_1.playerRating)(client, message.author, message.channel);
         }
         catch (error) {
             if (error instanceof Error)
-                button.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
+                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
         }
     })
 };

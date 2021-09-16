@@ -71,6 +71,17 @@ class HelperManager {
             embed.addField(`${tags.length > 3 ? tags.length - 1 : 1}-${tags.length}`, field);
         return embed;
     }
+    ratingList(players) {
+        var embed = new discord_js_1.MessageEmbed()
+            .setTitle("Active users rating");
+        players.forEach((player, index) => {
+            embed.addField(`Tier ${index + 1}`, `id: ${player.id}
+            rank: ${player.rank}
+            liked by ${player.liked} players
+            disliked by ${player.disliked} players`);
+        });
+        return embed;
+    }
     findSubscriptions(text) {
         var _a;
         const matches = (_a = text.match('#(.*?) ')) !== null && _a !== void 0 ? _a : [];

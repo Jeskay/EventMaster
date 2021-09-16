@@ -24,6 +24,7 @@ class ChannelController {
                 textChannel: text.id,
                 initiator: member.id,
                 state: room_1.OccasionState.waiting,
+                announced: false,
                 server: server
             });
         });
