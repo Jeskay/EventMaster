@@ -41,5 +41,8 @@
     "url": "https://github.com/Jeskay/OnoBot/issues"
   },
   "homepage": "https://github.com/Jeskay/OnoBot#readme",
-  "description": ""
+  "description": "",
+  "engines": {
+    "node": "16.x"
+  }
 }
