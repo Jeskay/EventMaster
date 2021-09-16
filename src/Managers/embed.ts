@@ -125,6 +125,7 @@ export class EmbedManager{
         .setTitle(user.username)
         .addField("Events played:", player.eventsPlayed.toString())
         .addField("Events hosted:", player.eventsHosted.toString())
+        .addField("Time spent in occasions:", `${player.minutesPlayed} minutes`)
         .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
         .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
         .addField("First event:", player.joinedAt.toLocaleString())
