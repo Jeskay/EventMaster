@@ -3,7 +3,8 @@ import {GuildMember, User, CategoryChannel, VoiceState, VoiceChannel, Guild, Tex
 export enum OccasionState{
     voting,
     waiting,
-    playing
+    playing,
+    finished
 }
 
 export enum MemberState{

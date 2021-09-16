@@ -17,6 +17,7 @@ export class ChannelController {
             textChannel: text.id,
             initiator: member.id,
             state: OccasionState.waiting,
+            announced: false,
             server: server
         });
     }

@@ -1,7 +1,7 @@
 import { Connection, getConnection } from "typeorm";
 import { Server } from "../entities/server";
 import { Occasion } from "../entities/occasion";
-import { Player } from "../entities/player";
+import { Player, Rank } from "../entities/player";
 import { Commend } from "../entities/commend";
 import { Tag } from "../entities/tag";
 import { DataBaseError } from "../Error";
@@ -27,6 +27,40 @@ export class DataBaseManager{
     public getServer = async(id: string) => await this.connection.manager.findOne(Server, {guild: id});
     /** @returns player by user id */
     public getPlayer = async (id: string) => await this.connection.manager.findOne(Player, {id: id});
+    /**@returns all players */
+    public getPlayers = async() => await this.connection.manager.getRepository(Player)
+    .createQueryBuilder("player")
+    .getMany()
+    .catch(err => {throw new DataBaseError(err)});
+    
+    public async getRanking() {
+        const sql = `
+    SELECT
+        id,
+        liked,
+        disliked,
+        ("eventsPlayed" * 0.5 + "eventsHosted" * 1) * (liked / (CASE WHEN disliked = 0 THEN 1 ELSE disliked END)) rank
+    FROM (
+        SELECT 
+            id,
+            "eventsPlayed",
+            "eventsHosted",
+            (
+                SELECT COUNT(*)
+                FROM commend
+                WHERE "subjectId" = id AND cheer = true
+            ) AS liked,
+            (
+                SELECT COUNT(*)
+                FROM commend
+                WHERE "subjectId" = id AND cheer = false
+        ) AS disliked
+        FROM player
+    ) t
+    ORDER BY rank DESC `;
+    return await this.connection.manager.query(sql) as Rank[];
+    }
+
     /**
      * @param authorId commend's author
      * @param subjectId subject of commend

@@ -80,8 +80,9 @@ export class EmbedManager{
     .addField("Members when started:", members.toString())
     .setColor("PURPLE");
 
-    public occasionFinished = (description: string, hostName: string, minutes: number, members: number) => new MessageEmbed()
+    public occasionFinished = (title: string, description: string, hostName: string, minutes: number, members: number) => new MessageEmbed()
     .setTitle(`Event finished`)
+    .addField("Title:", title)
     .setDescription(description)
     .addField("Host:", hostName)
     .addField("Members when finished:", members.toString())
@@ -124,6 +125,7 @@ export class EmbedManager{
         .setTitle(user.username)
         .addField("Events played:", player.eventsPlayed.toString())
         .addField("Events hosted:", player.eventsHosted.toString())
+        .addField("Time spent in occasions:", `${player.minutesPlayed} minutes`)
         .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
         .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
         .addField("First event:", player.joinedAt.toLocaleString())

@@ -9,7 +9,7 @@ export const button: Button = {
         try{
             if(args.length != 2) throw new CommandError("Only one argument required.");
             const author = args[0];
-            const list = client.Lists.get(args[1]);
+            const list = client.lists.get(args[1]);
             if(!list) return;
             if(author != button.user.id) return;
             const embed = await list.previous(button.message.id);

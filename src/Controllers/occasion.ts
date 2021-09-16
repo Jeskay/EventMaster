@@ -26,7 +26,7 @@ export class OccasionController {
         if(!occasion) return;
         client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
         await client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
-            state: OccasionState.playing,
+            state: OccasionState.waiting,
             host: candidate.id
         });
         textChannel.send({embeds: [client.embeds.electionFinished(candidate.user.username)]});
@@ -66,10 +66,12 @@ export class OccasionController {
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to start an event");
+        if(occasion.state == OccasionState.playing) throw new CommandError("Occasion has already started.");
         if(!title) throw Error("Event name must be provided");
         await client.database.updateOccasion(guild.id, occasion.voiceChannel, {
             Title: title, 
             startedAt: new Date,
+            state: OccasionState.playing,
             description: description
         });
         // Logging
@@ -97,16 +99,16 @@ export class OccasionController {
         const text = guild.channels.cache.get(occasion.textChannel);
         if(!text) throw Error("Text channel has been removed, personal statistic will not be updated.");
         if(!voice) throw Error("Voice channel has been removed, personal statistic will not be updated.");
-        await client.ratingController.updateMembers(client, voice as VoiceChannel);
+        const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
+        await client.ratingController.updateMembers(client, voice as VoiceChannel, duration);
         await client.database.removeOccasion(server.guild, occasion.voiceChannel);
         await (text as TextChannel).send({embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
         setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
         //logging 
-        const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
         if(server.settings.logging_channel) {
             const channel = guild.channels.cache.get(server.settings.logging_channel);
             if(!channel || !channel.isText) return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
-            (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(results, author.username, duration, (voice as VoiceChannel).members.size)]});
+            (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(occasion.Title, results, author.username, duration, (voice as VoiceChannel).members.size)]});
         }
         return client.embeds.occasionFinishResponse(occasion.Title, duration);
     }
@@ -121,7 +123,8 @@ export class OccasionController {
     public async announce(client: ExtendedClient,  description: string, guild: Guild, author: User, title?: string, image?: string){
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
-        if(!occasion) throw Error("Only host has permission to start an event.");
+        if(!occasion) throw Error("Only host has permission to announce an event.");
+        if(occasion.announced) throw new CommandError("Announced has been already published.");
         if(!server.settings.notification_channel) throw Error("Notification channel was not set up.");
         const channel = guild.channels.cache.get(server.settings.notification_channel);
         const hashtags = client.helper.findSubscriptions(description);
@@ -136,6 +139,9 @@ export class OccasionController {
                 this.notifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);
             });
         }
+        await client.database.updateOccasion(occasion.server.guild, occasion.voiceChannel , {
+            announced: true
+        });
         return client.embeds.announcePublishedResponse(hashtags);
     }
     /**

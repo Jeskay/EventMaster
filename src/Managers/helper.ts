@@ -2,6 +2,7 @@ import { ApplicationCommandOption, CategoryChannel, Channel, Guild, MessageEmbed
 import {SlashCommandBuilder} from "@discordjs/builders";
 import { Tag } from "../entities/tag";
 import ExtendedClient from "../Client";
+import { Rank } from "../entities/player";
 
 export class HelperManager{
     /**
@@ -27,7 +28,6 @@ export class HelperManager{
         return extracted;
     }
     /**
-     * 
      * @param member1 first member of the channel
      * @param member2 second member of the channel
      * @param channel channel to check
@@ -57,6 +57,11 @@ export class HelperManager{
         });
         return embed;
     }
+    /**
+     * Creates a list of subscriptions
+     * @param tags subscription tags
+     * @returns 
+     */
     public subscriptionList(tags: Tag[]){
         var embed = new MessageEmbed()
         .setTitle("Subscriptions");
@@ -71,11 +76,31 @@ export class HelperManager{
         if(field != "") embed.addField(`${tags.length > 3 ? tags.length - 1 : 1}-${tags.length}`, field);
         return embed;
     }
+    public ratingList(players: Rank[]){
+        var embed = new MessageEmbed()
+        .setTitle("Active users rating")
+        players.forEach((player, index) => {
+            embed.addField(`Tier ${index + 1}`, 
+            `id: ${player.id}
+            rank: ${player.rank}
+            liked by ${player.liked} players
+            disliked by ${player.disliked} players`
+            );
+        });
+        return embed;
+    }
+    /**
+     * Search for tags in string
+     * @param text string to search from
+     * @returns array of subscription tags
+     */
     public findSubscriptions(text: string) {
         const matches = text.match('#(.*?) ') ?? [];
         return matches as Array<string>;
     }
-    /**Must be deprecated */
+    /**
+     * Adds option to slashCommand
+     */
     public createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder) {
         const setOption = (option: any) => 
             option.setName(interact_option.name)
