@@ -1,7 +1,7 @@
 import { Connection, getConnection } from "typeorm";
 import { Server } from "../entities/server";
 import { Occasion } from "../entities/occasion";
-import { Player, Rank } from "../entities/player";
+import { Player } from "../entities/player";
 import { Commend } from "../entities/commend";
 import { Tag } from "../entities/tag";
 import { DataBaseError } from "../Error";
@@ -34,31 +34,11 @@ export class DataBaseManager{
     .catch(err => {throw new DataBaseError(err)});
     
     public async getRanking() {
-        const sql = `
-    SELECT
-        id,
-        liked,
-        disliked,
-        ("eventsPlayed" * 0.5 + "eventsHosted" * 1) * (liked / (CASE WHEN disliked = 0 THEN 1 ELSE disliked END)) rank
-    FROM (
-        SELECT 
-            id,
-            "eventsPlayed",
-            "eventsHosted",
-            (
-                SELECT COUNT(*)
-                FROM commend
-                WHERE "subjectId" = id AND cheer = true
-            ) AS liked,
-            (
-                SELECT COUNT(*)
-                FROM commend
-                WHERE "subjectId" = id AND cheer = false
-        ) AS disliked
-        FROM player
-    ) t
-    ORDER BY rank DESC `;
-    return await this.connection.manager.query(sql) as Rank[];
+        return await this.connection.manager.getRepository(Player)
+        .createQueryBuilder("player")
+        .leftJoinAndSelect("player.commendsBy", "commend", "commend.author = id")
+        .leftJoinAndSelect("player.commendsAbout",  "commend2", "commend2.subject = id")
+        .getMany();
     }
 
     /**
@@ -92,7 +72,7 @@ export class DataBaseManager{
     }
     /**
      * @param userId 
-     * @returns player instance with commends
+     * @returns player instance with subscriptions
      */
     public async getPlayerRelation(userId: string) {
         const user = await this.connection.getRepository(Player)
@@ -234,26 +214,32 @@ export class DataBaseManager{
         await this.connection.manager.save(occasion);
     }
     
-    public async updatePlayer(instance: Player);
+    public async updatePlayer(instance: Player): Promise<void>;
     /**
      * Updates player instance
      * @param userID user id
      * @param instance object with fields and values which need to be updated
      */
-    public async updatePlayer(instance: object);
+    public async updatePlayer(instance: object): Promise<void>;
 
     public async updatePlayer(instance: object) {
+        let player: Player;
         if(instance instanceof Player) {
-            await this.connection.manager.save(instance);
+            player = instance;
         } 
         else {
             if(!Object.keys(instance).includes('id')) throw new DataBaseError("Player id must be provided.");
-            const player = await this.getPlayer(instance['id']);
-            if(!player) throw new DataBaseError("Cannot find the player.");
-            console.log(Object.keys(player));//debug
-            Object.keys(player).forEach(key => player[key] = key in instance ? instance[key] : player[key]);
-            await this.connection.manager.save(player);
+            const result = await this.getPlayer(instance['id']);
+            if(!result) throw new DataBaseError("Cannot find the player.");
+            console.log(Object.keys(result));//debug
+            Object.keys(result).forEach(key => result[key] = key in instance ? instance[key] : result[key]);
+            player = result;
         }
+        const likes = player.commendsAbout.filter(commend => commend.cheer).length;
+        const dislikes = player.commendsAbout.filter(commend => !commend.cheer).length;
+        player.score = (player.eventsPlayed * 0,5 + player.eventsHosted * 1,5) * (likes / (dislikes == 0 ? 1 : dislikes)) * player.minutesPlayed;
+        console.log(player);
+        await this.connection.manager.save(player);
     }
     /**
      * Updates commend instance

@@ -2,7 +2,7 @@ import { ApplicationCommandOption, CategoryChannel, Channel, Guild, MessageEmbed
 import {SlashCommandBuilder} from "@discordjs/builders";
 import { Tag } from "../entities/tag";
 import ExtendedClient from "../Client";
-import { Rank } from "../entities/player";
+import { Player } from "../entities/player";
 
 export class HelperManager{
     /**
@@ -76,15 +76,16 @@ export class HelperManager{
         if(field != "") embed.addField(`${tags.length > 3 ? tags.length - 1 : 1}-${tags.length}`, field);
         return embed;
     }
-    public ratingList(players: Rank[]){
+    public ratingList(players: Player[]){
         var embed = new MessageEmbed()
         .setTitle("Active users rating")
         players.forEach((player, index) => {
             embed.addField(`Tier ${index + 1}`, 
             `id: ${player.id}
-            rank: ${player.rank}
-            liked by ${player.liked} players
-            disliked by ${player.disliked} players`
+            rank: ${player.score}
+            commended by ${player.commendsAbout.length} players
+            minutes played: ${player.minutesPlayed}
+            `
             );
         });
         return embed;

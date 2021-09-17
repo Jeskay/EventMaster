@@ -21,9 +21,7 @@ export class RatingController {
             const difference = this.hoursDiference(new Date, second.scoreTime);
             if(difference < this.likeCoolDown) throw Error(`Wait ${Math.round(difference - this.likeCoolDown)} hours.`);
         }
-        const commendsBy = await second.commendsBy;
-        console.log(commendsBy);
-        const commend = commendsBy.find(commend => commend.subjectId == user && commend.host == hosting && commend.cheer == positive);
+        const commend = second.commendsBy.find(commend => commend.subjectId == user && commend.host == hosting && commend.cheer == positive);
         if(commend) {
             await client.database.updateCommend(commend, {
                 duplicates: commend.duplicates + 1,

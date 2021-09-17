@@ -99,11 +99,16 @@ export class EmbedManager{
     .addField("Lasted for",`${time} minutes`)
     .setColor("GREEN");
 
-    public announcePublishedResponse = (tags: string[]) => new MessageEmbed()
-    .setTitle(`Announce published`)
-    .addField("Users with these tags will be notified:", tags.join('\n'))
-    .setColor("GREEN");
-
+    public announcePublishedResponse(tags: string[]){
+        const embed = new MessageEmbed()
+        .setTitle(`Announce published`)
+        .setColor("GREEN");
+        if(tags.length > 0)
+            embed.addField("Users with these tags will be notified:", tags.join('\n'))
+        else
+            embed.setDescription("No occasion tags detected. To use them, write #YOUR_TAG anywhere in your message.")
+        return embed;
+    }
     public notification(title: string, description: string, url: string, banner: string | undefined){
         const embed = new MessageEmbed()
         .setTitle(`${title} is about to start.`)
@@ -129,6 +134,7 @@ export class EmbedManager{
         .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
         .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
         .addField("First event:", player.joinedAt.toLocaleString())
+        .addField("All time score:", player.score.toString())
         .setColor("PURPLE");
     }
     public playerCommended = (user: User) => new MessageEmbed()

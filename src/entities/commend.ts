@@ -20,11 +20,11 @@ export class Commend {
 
     @ManyToOne(() => Player, player => player.commendsBy, {primary: true})
     @JoinColumn({name: "authorId"})
-    author: Promise<Player>;
+    author: Player;
 
     @ManyToOne(() => Player, player => player.commendsAbout, {primary: true})
     @JoinColumn({name: "subjectId"})
-    subject: Promise<Player>;
+    subject: Player;
 
     @CreateDateColumn()
     firstCommend: Date;

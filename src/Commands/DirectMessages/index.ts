@@ -24,8 +24,7 @@ export async function help(client: ExtendedClient, author: User, channel: TextBa
 export async function profile(client: ExtendedClient, user: User) {
     const profile = await client.database.getPlayer(user.id);
     if(!profile) throw new CommandError("This user did not join events.");
-    const commends = await profile.commendsAbout;
-    return client.embeds.playerInfo(profile, user, commends);
+    return client.embeds.playerInfo(profile, user, profile.commendsAbout);
 }
 
 export async function subscribe(client: ExtendedClient, author: User, title: string) {
@@ -56,6 +55,7 @@ export async function subscriptions(client: ExtendedClient, author: User, channe
     const subId = `subs${author.id}`;
     if(client.lists.get(subId)) client.lists.delete(subId);
     const tags = await profile.subscriptions;
+    if(tags.length < 1) throw new CommandError("You have no subscriptions.");
     const list = new List(30, client.helper.subscriptionList(tags), 5);
     client.lists.set(subId, list);
     const prevId = `previousPage.${author.id} ${subId}`;

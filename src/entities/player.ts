@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
 import { Commend } from "./commend";
 import { Tag } from "./tag";
 
@@ -22,11 +22,11 @@ export class Player{
     @ManyToMany(() => Tag, tag => tag.subscribers)
     subscriptions: Promise<Tag[]>;
 
-    @OneToMany(() => Commend, commend => commend.author)
-    commendsBy: Promise<Commend[]>;
+    @OneToMany(() => Commend, commend => commend.author, {eager: true})
+    commendsBy: Commend[];
 
-    @OneToMany(() => Commend, commend => commend.subject)
-    commendsAbout: Promise<Commend[]>;
+    @OneToMany(() => Commend, commend => commend.subject, {eager: true})
+    commendsAbout: Commend[];
 
     @Column({nullable: true})
     minutesPlayed: number = 0;
@@ -34,14 +34,11 @@ export class Player{
     @Column({type: 'timestamptz'})
     scoreTime: Date = new Date;
 
+    @Index()
+    @Column({nullable: true})
+    score: number;
+
     @CreateDateColumn()
     joinedAt: Date;
 
-}
-
-export interface Rank{
-    id: number;
-    liked: number;
-    disliked: number;
-    rank: number;
 }
