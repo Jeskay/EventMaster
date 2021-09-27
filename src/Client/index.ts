@@ -6,11 +6,12 @@ import {promisify} from'util';
 import {createConnection} from "typeorm";
 import {Event, Button, TextCommand, InteractCommand, ContextCommand} from '../Interfaces';
 import {Config} from '../Config';
-import { DataBaseManager, VoteManager, HelperManager, RoomManger, EmbedManager } from '../Managers';
+import { DataBaseManager, VoteManager, RoomManger, EmbedManager } from '../Managers';
 import { ChannelController, RatingController, OccasionController } from '../Controllers';
-import { List } from '../List';
+import { List } from '../Utils';
 import { Routes } from "discord-api-types/v9";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { commandsList, createOption } from "../Utils";
 
 class ExtendedClient extends Client {
     public config: Config = new Config();
@@ -21,7 +22,6 @@ class ExtendedClient extends Client {
     public aliases: Collection<string, TextCommand> = new Collection();
     public buttons: Collection<string, Button> = new Collection();
     public database: DataBaseManager;
-    public helper: HelperManager = new HelperManager();
     public room: RoomManger = new RoomManger();
     public vote: VoteManager = new VoteManager(); 
     public embeds: EmbedManager = new EmbedManager();
@@ -38,7 +38,7 @@ class ExtendedClient extends Client {
             .setName(command.name)
             .setDescription(command.description);
             (command.options as ApplicationCommandOption[]).forEach(option => {
-                slash_command = this.helper.createOption(option, slash_command);
+                slash_command = createOption(option, slash_command);
             });
             if(!this.slashCommands.get(command.name)) this.slashCommands.set(command.name, command);
             commands.push(slash_command.toJSON());
@@ -110,7 +110,7 @@ class ExtendedClient extends Client {
                 }
             }
         });
-        this.lists.set('help', new List(30, this.helper.commandsList(this), 10));
+        this.lists.set('help', new List(30, commandsList(this), 10));
         /* buttons */
         const buttonPath = path.join(__dirname, "..", "Buttons");
         readdirSync(buttonPath).forEach(dir => {

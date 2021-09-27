@@ -1,5 +1,6 @@
 import {TextCommand} from '../../Interfaces';
 import {vote} from '../../Commands/DirectMessages';
+import { extractID } from '../../Utils';
 
 export const command: TextCommand = {
     name: 'vote',
@@ -10,7 +11,7 @@ export const command: TextCommand = {
         if(args.length != 1) return;
         let candidateID = args[0];
         if(message.guild)
-            candidateID = client.helper.extractID(args[0]);
+            candidateID = extractID(args[0]);
         const candidate = await client.users.fetch(candidateID);
         try {
             await vote(client, message.author, candidate);

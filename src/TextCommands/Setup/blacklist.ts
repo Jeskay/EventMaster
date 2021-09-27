@@ -1,5 +1,6 @@
 import { addToBlackList } from '../../Commands/Setup';
 import {TextCommand} from '../../Interfaces';
+import { extractID } from '../../Utils';
 
 export const command: TextCommand = {
     name: 'blacklist',
@@ -11,7 +12,7 @@ export const command: TextCommand = {
             const guild = message.guild;
             if(!guild) return;
             if(args.length != 1) return;
-            const userId = client.helper.extractID(args[0]);
+            const userId = extractID(args[0]);
             const user = await client.users.fetch(userId)
             const response = await addToBlackList(client, guild, message.author, user) 
             await message.channel.send({embeds: [response]});

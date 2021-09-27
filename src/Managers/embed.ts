@@ -1,4 +1,5 @@
 import { User, MessageEmbed, MessageButton, MessageActionRow } from "discord.js";
+import { GuildMember } from "src/entities/member";
 import { Commend } from "../entities/commend";
 import { Player } from "../entities/player";
 const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
@@ -136,6 +137,16 @@ export class EmbedManager{
         .addField("First event:", player.joinedAt.toLocaleString())
         .addField("All time score:", player.score.toString())
         .setColor("PURPLE");
+    }
+    public memberProfile(member: GuildMember){
+        return new MessageEmbed()
+        .addField("Member:", `<@!${member.id}>`)
+        .addField("Events played: ", member.eventsPlayed.toString())
+        .addField("Events hosted: ", member.eventsHosted.toString())
+        .addField("Time spent in occasions: ", `${member.minutesPlayed.toString()} minutes`)
+        .addField("Guild score: ", member.score.toString())
+        .addField("First participation: ", member.joinedAt.toLocaleDateString())
+        .setColor("DARK_PURPLE");
     }
     public playerCommended = (user: User) => new MessageEmbed()
     .setTitle(`${user.username}'s rating changed`)

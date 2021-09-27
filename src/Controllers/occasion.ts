@@ -4,6 +4,7 @@ import { Occasion } from "../entities/occasion";
 import ExtendedClient from "../Client";
 import { CommandError } from "../Error";
 import { OccasionState } from "../Managers/room";
+import { findSubscriptions } from "../Utils";
 
 export class OccasionController {
     private async notifyPlayer(client: ExtendedClient, userId: string, title: string, description: string, channel: GuildChannel) {
@@ -127,7 +128,7 @@ export class OccasionController {
         if(occasion.announced) throw new CommandError("Announced has been already published.");
         if(!server.settings.notification_channel) throw Error("Notification channel was not set up.");
         const channel = guild.channels.cache.get(server.settings.notification_channel);
-        const hashtags = client.helper.findSubscriptions(description);
+        const hashtags = findSubscriptions(description);
         if(!channel || !channel.isText) throw Error("Cannot find notification channel.");
         const eventRole = server.settings.event_role;
         await (channel as TextChannel).send({

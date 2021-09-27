@@ -1,4 +1,5 @@
 import {Entity, Column, CreateDateColumn, OneToMany, PrimaryColumn} from "typeorm"
+import { GuildMember } from "./member";
 import { Occasion } from "./occasion";
 import { Settings } from "./settings";
 
@@ -9,6 +10,9 @@ export class Server {
 
     @OneToMany(() => Occasion, occasion => occasion.server)
     events: Occasion[];
+    
+    @OneToMany(() => GuildMember, guildmember => guildmember.guild)
+    members: GuildMember[];
     
     @Column(() => Settings)
     settings!: Settings;

@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, Index, ManyToMany, OneToMany, PrimaryColumn } from "typeorm";
 import { Commend } from "./commend";
+import { GuildMember } from "./member";
 import { Tag } from "./tag";
 
 @Entity()
@@ -27,6 +28,9 @@ export class Player{
 
     @OneToMany(() => Commend, commend => commend.subject, {eager: true})
     commendsAbout: Commend[];
+
+    @OneToMany(() => GuildMember, member => member.player, {eager: true})
+    membership: GuildMember[];
 
     @Column({nullable: true})
     minutesPlayed: number = 0;
