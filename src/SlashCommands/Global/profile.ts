@@ -10,7 +10,7 @@ export const command: InteractCommand = {
         try {
             const user = interaction.options.getUser('user') ?? interaction.user;
             const response = await profile(client, user);
-            await interaction.reply({embeds: [response]});
+            await interaction.reply(response);
         } catch(error) {
             if(error instanceof Error)
                 interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)]});

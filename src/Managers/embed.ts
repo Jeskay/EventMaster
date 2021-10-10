@@ -5,12 +5,12 @@ import { Player } from "../entities/player";
 const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
 
 export class EmbedManager{
-    private LikeHost = (id: string) => new MessageButton()
+    private LikeButton = (id: string) => new MessageButton()
     .setStyle(3)
     .setCustomId(id)
     .setEmoji('👍');
 
-    private DislikeHost = (id: string) => new MessageButton()
+    private DislikeButton = (id: string) => new MessageButton()
     .setStyle(4)
     .setCustomId(id)
     .setLabel('👎');
@@ -25,11 +25,26 @@ export class EmbedManager{
     .setCustomId(id)
     .setLabel('◀️');
 
+    private GuildProfileButton = (id?: string) => new MessageButton()
+    .setStyle(1)
+    .setCustomId(id ?? "none")
+    .setDisabled(!id)
+    .setLabel('Guild Profile');
+
+    private GlobalProfileButton = (id?: string) => new MessageButton()
+    .setStyle(1)
+    .setCustomId(id ?? "none")
+    .setDisabled(!id)
+    .setLabel('Global Profile');
+
+    public Profiles = (playerId: string, guildId?: string) => new MessageActionRow()
+    .addComponents(this.GuildProfileButton(guildId ? `guildprofile.${playerId}` : undefined), this.GlobalProfileButton(`globalprofile.${playerId}`), this.LikeButton(`likePlayer.${playerId}`), this.DislikeButton(`dislikePlayer.${playerId}`));
+
     public ListMessage = (prevId: string, nextId: string) => new MessageActionRow()
     .addComponents(this.PreviusButton(prevId), this.NextButton(nextId));
     
     public HostCommend = (likeId: string, dislikeId: string) => new MessageActionRow()
-    .addComponents(this.LikeHost(likeId), this.DislikeHost(dislikeId));
+    .addComponents(this.LikeButton(likeId), this.DislikeButton(dislikeId));
 
     public InviteMessage(inviteUrl: string, guild: string) {
         const button = new MessageButton()
@@ -110,6 +125,7 @@ export class EmbedManager{
             embed.setDescription("No occasion tags detected. To use them, write #YOUR_TAG anywhere in your message.")
         return embed;
     }
+
     public notification(title: string, description: string, url: string, banner: string | undefined){
         const embed = new MessageEmbed()
         .setTitle(`${title} is about to start.`)
@@ -129,17 +145,20 @@ export class EmbedManager{
         
         return new MessageEmbed()
         .setTitle(user.username)
+        .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
         .addField("Events played:", player.eventsPlayed.toString())
         .addField("Events hosted:", player.eventsHosted.toString())
         .addField("Time spent in occasions:", `${player.minutesPlayed} minutes`)
         .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
         .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
-        .addField("First event:", player.joinedAt.toLocaleString())
-        .addField("All time score:", player.score.toString())
+        .addField("Global score:", player.score.toString())
+        .addField("First event:", player.joinedAt.toLocaleDateString())
         .setColor("PURPLE");
     }
-    public memberProfile(member: GuildMember){
+    public memberProfile(member: GuildMember, user: User ){
         return new MessageEmbed()
+        .setAuthor(user.username)
+        .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
         .addField("Member:", `<@!${member.id}>`)
         .addField("Events played: ", member.eventsPlayed.toString())
         .addField("Events hosted: ", member.eventsHosted.toString())

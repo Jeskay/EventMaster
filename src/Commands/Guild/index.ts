@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild, User } from 'discord.js';
+import { CommandInteraction, Guild, GuildMember, User } from 'discord.js';
 import { CommandError } from '../../Error';
 import { List, ratingList } from '../../Utils';
 import ExtendedClient from '../../Client';
@@ -14,9 +14,11 @@ export async function start(client: ExtendedClient, author: User, guild: Guild, 
 export async function finish(client: ExtendedClient, author: User, guild: Guild, results: string) {
     return await client.occasionController.finish(client, guild, author, results);
 }
-export async function guildProfile(client: ExtendedClient, author: User, guild: Guild) {
-    const member = await client.database.getMember(guild.id, author.id);
-    return client.embeds.memberProfile(member);
+export async function guildProfile(client: ExtendedClient, guildUser: User | GuildMember, guild: Guild) {
+    const member = await client.database.getMember(guild.id, guildUser.id);
+    const row = client.embeds.Profiles(guildUser.id, guild.id);
+    const embed = client.embeds.memberProfile(member, guildUser instanceof User ? guildUser : guildUser.user);
+    return {embeds: [embed], components: [row], ephemeral: true};
 }
 export async function guildRating(client: ExtendedClient, author: User, interaction: CommandInteraction) {
     if(!interaction.guildId) throw new CommandError("Available only in guild channels.");

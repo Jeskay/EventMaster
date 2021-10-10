@@ -1,4 +1,4 @@
-import { CommandInteraction, TextBasedChannels, User, VoiceChannel } from 'discord.js';
+import { CommandInteraction, Guild, TextBasedChannels, User, VoiceChannel } from 'discord.js';
 import { List } from '../../Utils';
 import ExtendedClient from '../../Client';
 import { CommandError } from '../../Error';
@@ -22,10 +22,12 @@ export async function help(client: ExtendedClient, author: User, channel: TextBa
     await list.create(channel, client.embeds.ListMessage(prevId, nextId));
 }
 
-export async function profile(client: ExtendedClient, user: User) {
+export async function profile(client: ExtendedClient, user: User, guild?: Guild) {
     const profile = await client.database.getPlayer(user.id);
     if(!profile) throw new CommandError("This user did not join events.");
-    return client.embeds.playerInfo(profile, user, profile.commendsAbout);
+    const row = client.embeds.Profiles(user.id, guild ? guild.id : undefined);
+    const embed = client.embeds.playerInfo(profile, user, profile.commendsAbout);
+    return {embeds: [embed], components: [row], ephemeral: true};
 }
 
 export async function subscribe(client: ExtendedClient, author: User, title: string) {

@@ -70,11 +70,11 @@ import { Commend } from "../entities/commend";
         for(let i = 1;i <= tags.length; i++){
             field += ` \`${tags[i-1].title}\``;
             if(i % 3 == 0) {
-                embed.addField(`${i > 2 ? i - 2 : 1}-${i}`, field);
+                embed.addField(`🔹`, field, true);
                 field = "";
             }
         }
-        if(field != "") embed.addField(`${tags.length > 3 ? tags.length - 1 : 1}-${tags.length}`, field);
+        if(field != "") embed.addField(`🔹`, field);
         return embed;
     }
     /**

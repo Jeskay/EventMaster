@@ -1,4 +1,4 @@
-import { GuildChannel, GuildMember, VoiceChannel } from "discord.js";
+import { GuildMember, VoiceChannel } from "discord.js";
 import { Guild, TextChannel, User } from "discord.js";
 import { Occasion } from "../entities/occasion";
 import ExtendedClient from "../Client";
@@ -7,7 +7,7 @@ import { OccasionState } from "../Managers/room";
 import { findSubscriptions } from "../Utils";
 
 export class OccasionController {
-    private async notifyPlayer(client: ExtendedClient, userId: string, title: string, description: string, channel: GuildChannel) {
+    private async notifyPlayer(client: ExtendedClient, userId: string, title: string, description: string, channel: VoiceChannel) {
         const user = await client.users.fetch(userId);
         const invite = await channel.guild.invites.create(channel);
         const dm = user.dmChannel ?? await user.createDM();
@@ -125,9 +125,11 @@ export class OccasionController {
         const server = await client.database.getServerRelations(guild.id);
         const occasion = server.events.find(event => event.host == author.id);
         if(!occasion) throw Error("Only host has permission to announce an event.");
-        if(occasion.announced) throw new CommandError("Announced has been already published.");
+        if(occasion.announced) throw new CommandError("Announce has been already published.");
         if(!server.settings.notification_channel) throw Error("Notification channel was not set up.");
         const channel = guild.channels.cache.get(server.settings.notification_channel);
+        const voiceChannel = await guild.channels.fetch(occasion.voiceChannel);
+        if(!(voiceChannel instanceof VoiceChannel)) throw new CommandError("Voice channel does not exist.");
         const hashtags = findSubscriptions(description);
         if(!channel || !channel.isText) throw Error("Cannot find notification channel.");
         const eventRole = server.settings.event_role;
@@ -137,10 +139,10 @@ export class OccasionController {
         });
         if(hashtags.length > 0) {
             hashtags.forEach(tag => {
-                this.notifyPlayers(client, tag, channel as GuildChannel, title ?? tag, description);
+                this.notifyPlayers(client, tag, voiceChannel, title ?? tag, description);
             });
         }
-        await client.database.updateOccasion(occasion.server.guild, occasion.voiceChannel , {
+        await client.database.updateOccasion(server.guild, occasion.voiceChannel , {
             announced: true
         });
         return client.embeds.announcePublishedResponse(hashtags);
@@ -153,10 +155,11 @@ export class OccasionController {
      * @param title occasion title
      * @param description occasion description
      */
-    public async notifyPlayers(client: ExtendedClient, tagId: string, channel: GuildChannel, title: string, description: string) {
+    public async notifyPlayers(client: ExtendedClient, tagId: string, channel: VoiceChannel, title: string, description: string) {
         const tag = await client.database.getTag(tagId);
         if(!tag) return;
         const players = await tag.subscribers;
+        console.log(channel.guild);
         await Promise.all(players.map(async (player) => 
             await this.notifyPlayer(client, player.id, title, description, channel))
         );

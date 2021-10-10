@@ -12,7 +12,7 @@ export const command: InteractCommand = {
             if(!interaction.guild) throw new CommandError("Available only in guild");
             const user = interaction.options.getUser('user') ?? interaction.user;
             const response = await guildProfile(client, user, interaction.guild);
-            await interaction.reply({embeds: [response]});
+            await interaction.reply(response);
         } catch(error) {
             if(error instanceof Error)
                 interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)]});

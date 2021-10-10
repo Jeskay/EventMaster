@@ -18,7 +18,7 @@ export const command: TextCommand = {
             const user = await client.users.cache.get(userId);
             if(!user) throw new CommandError("User does not exists.");
             const response = await profile(client, user);
-            await message.channel.send({embeds: [response]});
+            await message.channel.send(response);
         } catch(error) {
             if(error instanceof Error)
                 message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});
