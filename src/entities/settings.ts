@@ -8,6 +8,9 @@ export class Settings {
     @Column()
     limit: number;
 
+    @Column({nullable: true})
+    occasion_limit?: number;
+
     @Column({type: "text", nullable: true})
     notification_channel?: string;
 

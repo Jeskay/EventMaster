@@ -6,12 +6,14 @@ import ExtendedClient from "../Client";
 
 export class ChannelController {
 
-    private async createChannelJoined(member: GuildMember, server: Server, database: DataBaseManager, room: RoomManger){
+    private async createChannelJoined(member: GuildMember, server: Server, database: DataBaseManager, room: RoomManger, joinedChannel: VoiceChannel){
         const channel = member.guild.channels.cache.get(server.eventCategory) as CategoryChannel;
         if(channel == undefined) return;
-        const {voice, text} = await room.create(member.user, channel);
+        const {voice, text} = await room.create(member.user, channel, server.settings.black_list);
+        if(member.guild.channels.cache.size >= 499) throw new Error("Channel limit reached");
+        if(server.settings.occasion_limit && server.events.length + 1 >= server.settings.occasion_limit)
+            await joinedChannel.permissionOverwrites.edit(member.guild.roles.everyone, {'CONNECT': false});
         await member.voice.setChannel(voice);
-        /*Add text channel greeting*/
         await database.addOccasion(member.guild.id, {
             voiceChannel: voice.id,
             textChannel: text.id,
@@ -31,7 +33,7 @@ export class ChannelController {
         const server = await client.database.getServerRelations(member.guild.id);
         if(server == null) return;
         if(server.eventChannel == joinedChannel.id){ 
-            await this.createChannelJoined(member, server, client.database, client.room);
+            await this.createChannelJoined(member, server, client.database, client.room, joinedChannel);
             return;
         }
         const occasion = server.events.find(event => event.voiceChannel == joinedChannel.id);
@@ -60,6 +62,10 @@ export class ChannelController {
         if(leftChannel != null && leftChannel.members.size == 0){
             await client.database.removeOccasion(leftChannel.guild.id, occasion.voiceChannel);
             await client.room.delete(leftChannel.guild, occasion.voiceChannel, occasion.textChannel);
+            if(server.settings.occasion_limit && server.settings.occasion_limit == server.events.length) {
+                const joinChannel = await client.channels.fetch(server.eventChannel) as VoiceChannel;
+                await joinChannel.permissionOverwrites.edit(leftChannel.guild.roles.everyone, {'CONNECT': true});
+            }
         }
     }
 }

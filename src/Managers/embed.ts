@@ -25,20 +25,20 @@ export class EmbedManager{
     .setCustomId(id)
     .setLabel('◀️');
 
-    private GuildProfileButton = (id?: string) => new MessageButton()
+    private GuildProfileButton = (disabled: boolean, id?: string) => new MessageButton()
     .setStyle(1)
     .setCustomId(id ?? "none")
-    .setDisabled(!id)
+    .setDisabled(!id || disabled)
     .setLabel('Guild Profile');
 
-    private GlobalProfileButton = (id?: string) => new MessageButton()
+    private GlobalProfileButton = (disabled: boolean, id?: string) => new MessageButton()
     .setStyle(1)
     .setCustomId(id ?? "none")
-    .setDisabled(!id)
+    .setDisabled(!id || disabled)
     .setLabel('Global Profile');
 
-    public Profiles = (playerId: string, guildId?: string) => new MessageActionRow()
-    .addComponents(this.GuildProfileButton(guildId ? `guildprofile.${playerId}` : undefined), this.GlobalProfileButton(`globalprofile.${playerId}`), this.LikeButton(`likePlayer.${playerId}`), this.DislikeButton(`dislikePlayer.${playerId}`));
+    public Profiles = (guildShown: boolean, playerId: string, guildId?: string) => new MessageActionRow()
+    .addComponents(this.GuildProfileButton(guildShown, guildId ? `guildprofile.${playerId}` : undefined), this.GlobalProfileButton(!guildShown, `globalprofile.${playerId}`), this.LikeButton(`likePlayer.${playerId}`), this.DislikeButton(`dislikePlayer.${playerId}`));
 
     public ListMessage = (prevId: string, nextId: string) => new MessageActionRow()
     .addComponents(this.PreviusButton(prevId), this.NextButton(nextId));
@@ -143,7 +143,7 @@ export class EmbedManager{
         const hostLikes = commends.filter(commend => commend.cheer && commend.host).length;
         const hostDislikes = commends.filter(commend => !commend.cheer && commend.host).length;
         
-        return new MessageEmbed()
+        const embed =  new MessageEmbed()
         .setTitle(user.username)
         .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
         .addField("Events played:", player.eventsPlayed.toString())
@@ -154,9 +154,11 @@ export class EmbedManager{
         .addField("Global score:", player.score.toString())
         .addField("First event:", player.joinedAt.toLocaleDateString())
         .setColor("PURPLE");
+        if(player.banned > 0) embed.addField(`❌ Warning ❌`, `In blacklist of ${player.banned} servers.`)
+        return embed;
     }
     public memberProfile(member: GuildMember, user: User ){
-        return new MessageEmbed()
+        const embed =  new MessageEmbed()
         .setAuthor(user.username)
         .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
         .addField("Member:", `<@!${member.id}>`)
@@ -166,6 +168,8 @@ export class EmbedManager{
         .addField("Guild score: ", member.score.toString())
         .addField("First participation: ", member.joinedAt.toLocaleDateString())
         .setColor("DARK_PURPLE");
+        if(member.banned) embed.addField(`❌ Warning ❌`, `This user is prevented from joining events on this server.`)
+        return embed;
     }
     public playerCommended = (user: User) => new MessageEmbed()
     .setTitle(`${user.username}'s rating changed`)
@@ -179,13 +183,13 @@ export class EmbedManager{
 
     public addedToBlackList = (user: string) => new MessageEmbed()
     .setTitle("User added to event blacklist!")
-    .addField("Guild member was blacklisted in your server.", `Since that moment ${user} can't host or participate events in your server.`)
+    .setDescription(`Since that moment <@!${user}> can't host or participate events in your server.`)
     .addField("Special prescription", "Even though, host **can allow** users from blacklist join an occasion.\n Blacklisted users can't be hosts in any case.")
     .setColor("RED");
 
     public removedFromBlackList = (user: string) => new MessageEmbed()
     .setTitle("User removed from blacklist!")
-    .addField("Congratulations!", `Since that moment ${user} can participate any events in this server and nomimated as host.`)
+    .addField("Congratulations!", `Since that moment <@!${user}> can participate any events in this server and nomimated as host.`)
     .setColor("GREEN");
 
     public ownerAdded = (username: string) => new MessageEmbed()
@@ -202,6 +206,11 @@ export class EmbedManager{
     public limitChanged = (limit: number) => new MessageEmbed()
     .setTitle("Limit changed successfuly")
     .setDescription(`Minimum amount of members to start an occasion was changed to ${limit}`)
+    .setColor("GREEN");
+
+    public occasionLimitChanged = (limit: number) => new MessageEmbed()
+    .setTitle("Limit changed successfuly")
+    .setDescription(`Maximum amount of occasions at the same time is limited to ${limit}`)
     .setColor("GREEN");
 
     public unsubscribed = (tag: string) => new MessageEmbed()

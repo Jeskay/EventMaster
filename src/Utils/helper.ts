@@ -104,6 +104,12 @@ import { Commend } from "../entities/commend";
         });
         return embed;
     }
+    export function blackmembersList(players: string[]){
+        var embed = new MessageEmbed()
+        .setTitle("Players prevented from joining occasions")
+        players.forEach((playerId, index) => embed.addField(`${index + 1}.`, `<@!${playerId}>`, true));
+        return embed;
+    }
     /**
      * Search for tags in string
      * @param text string to search from

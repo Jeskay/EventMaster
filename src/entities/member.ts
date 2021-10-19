@@ -19,6 +19,9 @@ export class GuildMember{
     guild: Server;
 
     @Column()
+    banned?: boolean = false;
+
+    @Column()
     eventsPlayed: number = 0;
 
     @Column()

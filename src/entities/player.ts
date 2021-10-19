@@ -20,6 +20,9 @@ export class Player{
     @Column()
     tournamentsHosted: number = 0;
 
+    @Column()
+    banned: number = 0;
+
     @ManyToMany(() => Tag, tag => tag.subscribers)
     subscriptions: Promise<Tag[]>;
 

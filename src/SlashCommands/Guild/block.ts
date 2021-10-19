@@ -1,17 +1,17 @@
-import { setLimit } from '../../Commands/Setup';
 import { CommandError } from '../../Error';
+import { addToBlackList } from '../../Commands/Setup';
 import {InteractCommand} from '../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'setlimit',
-    description: 'set amount of users to start the host election',
-    aliases: ['sl', 'limit'],
-    options: [{name: 'amount', type: "INTEGER", description: "minimum amount of votes for host to start an occasion.", required: true}],
+    name: 'block',
+    description: 'add user to black list, so he cannot became host on this server',
+    aliases: ['bl'],
+    options: [{name: 'user', type: "USER", description: "User to add in blacklist.", required: true}],
     run: async(client, interaction) => {
         try {
-            const limit = interaction.options.getInteger("amount", true);
             if(!interaction.guild) throw new CommandError("Avaliable only in a guild.");
-            const response = await setLimit(client, interaction.guild, interaction.user, limit);
+            const user = interaction.options.getUser("user", true);
+            const response = await addToBlackList(client, interaction.guild, interaction.user, user); 
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)

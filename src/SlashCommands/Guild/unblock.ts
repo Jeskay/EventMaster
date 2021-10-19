@@ -3,9 +3,9 @@ import { CommandError } from '../../Error';
 import {InteractCommand} from '../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'whitelist',
+    name: 'unblock',
     description: 'removes a user from the black list',
-    aliases: ['wl'],
+    aliases: ['unbl'],
     options: [{name: 'user', type: "USER", required: true, description: "User to remove from black list."}],
     run: async(client,interaction) => {
         try {

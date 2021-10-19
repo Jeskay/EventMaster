@@ -25,7 +25,7 @@ export async function help(client: ExtendedClient, author: User, channel: TextBa
 export async function profile(client: ExtendedClient, user: User, guild?: Guild) {
     const profile = await client.database.getPlayer(user.id);
     if(!profile) throw new CommandError("This user did not join events.");
-    const row = client.embeds.Profiles(user.id, guild ? guild.id : undefined);
+    const row = client.embeds.Profiles(false, user.id, guild ? guild.id : undefined);
     const embed = client.embeds.playerInfo(profile, user, profile.commendsAbout);
     return {embeds: [embed], components: [row], ephemeral: true};
 }
