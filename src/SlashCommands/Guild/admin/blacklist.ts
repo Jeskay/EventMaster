@@ -1,6 +1,6 @@
-import { CommandError } from '../../Error';
-import { blackList } from '../../Commands/Guild';
-import {InteractCommand} from '../../Interfaces';
+import { CommandError } from '../../../Error';
+import { blackList } from '../../../Commands/Guild';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'blacklist',

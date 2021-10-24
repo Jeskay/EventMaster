@@ -1,5 +1,5 @@
 import { ApplicationCommandOption, CategoryChannel, Channel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
-import {SlashCommandBuilder} from "@discordjs/builders";
+import {SlashCommandBuilder, SlashCommandSubcommandBuilder} from "@discordjs/builders";
 import { Tag } from "../entities/tag";
 import ExtendedClient from "../Client";
 import { Player } from "../entities/player";
@@ -139,7 +139,13 @@ import { Commend } from "../entities/commend";
     /**
      * Adds option to slashCommand
      */
-    export function createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder) {
+    export function createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder): SlashCommandBuilder;
+    /**
+     * Adds option to subCommand
+     */
+    export function createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder;
+    
+    export function createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder | SlashCommandSubcommandBuilder) {
         const setOption = (option: any) => 
             option.setName(interact_option.name)
             .setDescription(interact_option.description)
@@ -160,9 +166,6 @@ import { Commend } from "../entities/commend";
                 break;
             case "NUMBER":
                 slashCommand.addIntegerOption(setOption);
-                break;
-            case "SUB_COMMAND":
-                slashCommand.addSubcommand(setOption);
                 break;
             case "ROLE":
                 slashCommand.addRoleOption(setOption);

@@ -1,7 +1,7 @@
 import { GuildChannel } from 'discord.js';
-import { setLog } from '../../Commands/Setup';
-import { CommandError } from '../../Error';
-import {InteractCommand} from '../../Interfaces';
+import { setLog } from '../../../Commands/Setup';
+import { CommandError } from '../../../Error';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'logging',

@@ -14,8 +14,11 @@ export const event: Event = {
             if(btn) (btn as Button).run(client, button, args);
         } else if(interaction.isCommand()) {
             const command = interaction as CommandInteraction;
+            const subCommand = command.options.getSubcommand();
             const cmd = client.slashCommands.get(command.commandName);
-            if(cmd) (cmd as InteractCommand).run(client, command);
+            if(!cmd) return;
+            const subcmd = cmd.get(subCommand);
+            if(subcmd) (subcmd as InteractCommand).run(client, command);
         } else if(interaction.isContextMenu()) {
             const command = interaction as ContextMenuInteraction;
             const cmd = client.contextMenu.get(command.commandName);

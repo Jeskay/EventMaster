@@ -1,6 +1,6 @@
-import { finish } from '../../Commands/Guild';
-import { CommandError } from '../../Error';
-import {InteractCommand} from '../../Interfaces';
+import { finish } from '../../../Commands/Guild';
+import { CommandError } from '../../../Error';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'finishgame',

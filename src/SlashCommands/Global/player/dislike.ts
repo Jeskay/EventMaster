@@ -1,5 +1,5 @@
-import {InteractCommand} from '../../Interfaces';
-import {dislike} from '../../Commands/DirectMessages';
+import {InteractCommand} from '../../../Interfaces';
+import {dislike} from '../../../Commands/DirectMessages';
 
 export const command: InteractCommand = {
     name: 'dislike',

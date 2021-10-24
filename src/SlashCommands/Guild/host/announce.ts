@@ -1,6 +1,6 @@
-import { announce } from '../../Commands/Guild';
-import { CommandError } from '../../Error';
-import {InteractCommand} from '../../Interfaces';
+import { announce } from '../../../Commands/Guild';
+import { CommandError } from '../../../Error';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'announce',

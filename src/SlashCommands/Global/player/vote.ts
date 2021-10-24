@@ -1,5 +1,5 @@
-import {InteractCommand} from '../../Interfaces';
-import { vote } from '../../Commands/DirectMessages';
+import {InteractCommand} from '../../../Interfaces';
+import { vote } from '../../../Commands/DirectMessages';
 
 export const command: InteractCommand = {
     name: 'voteid',

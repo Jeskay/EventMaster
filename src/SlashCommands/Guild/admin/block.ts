@@ -1,6 +1,6 @@
-import { CommandError } from '../../Error';
-import { addToBlackList } from '../../Commands/Setup';
-import {InteractCommand} from '../../Interfaces';
+import { CommandError } from '../../../Error';
+import { addToBlackList } from '../../../Commands/Setup';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'block',
