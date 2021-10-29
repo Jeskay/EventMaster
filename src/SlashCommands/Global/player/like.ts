@@ -1,6 +1,6 @@
-import { like } from '../../Commands/DirectMessages';
-import { CommandError } from '../../Error';
-import {InteractCommand} from '../../Interfaces';
+import { like } from '../../../Commands/DirectMessages';
+import { CommandError } from '../../../Error';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'like',

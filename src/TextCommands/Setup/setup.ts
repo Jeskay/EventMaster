@@ -1,6 +1,7 @@
 import { CommandError } from '../../Error';
 import {TextCommand} from '../../Interfaces';
 import {setOccasions} from '../../Commands/Setup/';
+import { getRelatedChannels } from '../../Utils';
 
 export const command: TextCommand = {
     name: 'setup',
@@ -12,7 +13,7 @@ export const command: TextCommand = {
             const guild = message.guild;
             if(!guild) return;
             if(args.length != 2) throw new CommandError("Invalid number of arguments.");
-            const {voice, category} = await client.helper.getRelatedChannels(args[0], args[1], guild);
+            const {voice, category} = await getRelatedChannels(args[0], args[1], guild);
             const response = await setOccasions(client, guild, message.author, voice, category);
             await message.channel.send(response);
         } catch(error) {

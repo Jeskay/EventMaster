@@ -1,6 +1,6 @@
-import { CommandError } from '../../Error';
-import {InteractCommand} from '../../Interfaces';
-import {setOccasions} from '../../Commands/Setup';
+import { CommandError } from '../../../Error';
+import {InteractCommand} from '../../../Interfaces';
+import {setOccasions} from '../../../Commands/Setup';
 import { CategoryChannel, GuildChannel, VoiceChannel } from 'discord.js';
 
 export const command: InteractCommand = {

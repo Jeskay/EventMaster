@@ -1,10 +1,10 @@
-import { setLimit } from '../../Commands/Setup';
-import { CommandError } from '../../Error';
-import {InteractCommand} from '../../Interfaces';
+import { setLimit } from '../../../Commands/Setup';
+import { CommandError } from '../../../Error';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'setlimit',
-    description: 'set amount of users to start the host election',
+    name: 'limitplayers',
+    description: 'set amount of votes to be achieved by user to finish the election',
     aliases: ['sl', 'limit'],
     options: [{name: 'amount', type: "INTEGER", description: "minimum amount of votes for host to start an occasion.", required: true}],
     run: async(client, interaction) => {

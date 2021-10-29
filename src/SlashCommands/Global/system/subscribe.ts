@@ -1,10 +1,9 @@
-import { subscribe } from '../../Commands/DirectMessages';
-import {InteractCommand} from '../../Interfaces';
+import { subscribe } from '../../../Commands/DirectMessages';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'subscribe',
     description: "subscribe for personal events notifications",
-    aliases: ['sub'],
     options: [{name: 'title', type: "STRING", description: "Title to subscribe for.", required: true}],
     run: async(client, interaction) => {
         try {

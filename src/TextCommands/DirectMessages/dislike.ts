@@ -1,6 +1,7 @@
 import { CommandError } from '../../Error';
 import {TextCommand} from '../../Interfaces';
 import {dislike} from '../../Commands/DirectMessages';
+import { extractID } from '../../Utils';
 
 export const command:  TextCommand= {
     name: 'dislike',
@@ -12,7 +13,7 @@ export const command:  TextCommand= {
         try {
             let userId = args[0];
             if(message.guild)
-                userId = client.helper.extractID(args[0]);
+                userId = extractID(args[0]);
             const user = await client.users.cache.get(userId);
             if(!user) throw new CommandError("User does not exists.");
             const reponse = await dislike(client, message.author, user);

@@ -1,9 +1,9 @@
-import { CommandError } from '../../Error';
-import { addToBlackList } from '../../Commands/Setup';
-import {InteractCommand} from '../../Interfaces';
+import { CommandError } from '../../../Error';
+import { addToBlackList } from '../../../Commands/Setup';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'blacklist',
+    name: 'block',
     description: 'add user to black list, so he cannot became host on this server',
     aliases: ['bl'],
     options: [{name: 'user', type: "USER", description: "User to add in blacklist.", required: true}],

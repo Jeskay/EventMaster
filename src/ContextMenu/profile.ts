@@ -10,7 +10,7 @@ export const command: ContextCommand = {
             const user = interaction.options.getUser('user');
             if(!user) throw new CommandError('Unable to find user.');
             const response = await profile(client, user);
-            await interaction.reply({embeds: [response], ephemeral: true});
+            await interaction.reply(response);
         } catch(error) {
             if(error instanceof Error)
                 interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});

@@ -1,7 +1,8 @@
-import { CommandInteraction, TextBasedChannels, User, VoiceChannel } from 'discord.js';
-import { List } from '../../List';
+import { CommandInteraction, Guild, TextBasedChannels, User, VoiceChannel } from 'discord.js';
+import { List } from '../../Utils';
 import ExtendedClient from '../../Client';
 import { CommandError } from '../../Error';
+import { checkChannel, ratingList, subscriptionList } from '../../Utils';
 
 export async function dislike(client: ExtendedClient, author: User, user: User) {
     await client.ratingController.dislikePlayer(client, user.id, author.id);
@@ -21,11 +22,12 @@ export async function help(client: ExtendedClient, author: User, channel: TextBa
     await list.create(channel, client.embeds.ListMessage(prevId, nextId));
 }
 
-export async function profile(client: ExtendedClient, user: User) {
+export async function profile(client: ExtendedClient, user: User, guild?: Guild) {
     const profile = await client.database.getPlayer(user.id);
     if(!profile) throw new CommandError("This user did not join events.");
-    const commends = await profile.commendsAbout;
-    return client.embeds.playerInfo(profile, user, commends);
+    const row = client.embeds.Profiles(false, user.id, guild ? guild.id : undefined);
+    const embed = client.embeds.playerInfo(profile, user, profile.commendsAbout);
+    return {embeds: [embed], components: [row], ephemeral: true};
 }
 
 export async function subscribe(client: ExtendedClient, author: User, title: string) {
@@ -56,7 +58,8 @@ export async function subscriptions(client: ExtendedClient, author: User, channe
     const subId = `subs${author.id}`;
     if(client.lists.get(subId)) client.lists.delete(subId);
     const tags = await profile.subscriptions;
-    const list = new List(30, client.helper.subscriptionList(tags), 5);
+    if(tags.length < 1) throw new CommandError("You have no subscriptions.");
+    const list = new List(30, subscriptionList(tags), 5);
     client.lists.set(subId, list);
     const prevId = `previousPage.${author.id} ${subId}`;
     const nextId = `nextPage.${author.id} ${subId}`;
@@ -64,7 +67,7 @@ export async function subscriptions(client: ExtendedClient, author: User, channe
 }
 export async function vote(client: ExtendedClient, author: User, candidate: User) {
     if(author.id == candidate.id) throw new CommandError("You can't vote for yourself.");
-    const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidate.id, channel)) as VoiceChannel;
+    const voiceChannel = client.channels.cache.find(channel => checkChannel(author.id, candidate.id, channel)) as VoiceChannel;
     if(!voiceChannel) throw new CommandError("Both voter and candidate must be in occasion channel.");
     await client.occasionController.vote(client, voiceChannel, author.id, candidate.id);
     return client.embeds.voteConfimation(candidate.username);
@@ -73,7 +76,7 @@ export async function playerRating(client: ExtendedClient, author: User, channel
     const rating = await client.database.getRanking();
     const rateId = `rate${author.id}`;
     if(client.lists.get(rateId)) client.lists.delete(rateId);
-    const list = new List(30, client.helper.ratingList(rating), 5);
+    const list = new List(30, ratingList(rating), 5);
     client.lists.set(rateId, list);
     const prevId = `previousPage.${author.id} ${rateId}`;
     const nextId = `nextPage.${author.id} ${rateId}`;

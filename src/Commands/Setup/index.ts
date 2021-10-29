@@ -1,7 +1,7 @@
 import { APIRole } from 'discord-api-types';
 import { CategoryChannel, Guild, GuildChannel, Role, User, VoiceChannel } from 'discord.js';
 import ExtendedClient from 'src/Client';
-import { CommandError } from '../../Error';
+import { CommandError, DataBaseError } from '../../Error';
 
 export async function addOwner(client: ExtendedClient, guild: Guild, author: User, user: User) {
     const server = await client.database.getServer(guild.id);
@@ -70,7 +70,14 @@ export async function addToBlackList(client: ExtendedClient, guild: Guild, autho
     if(!server) throw new CommandError("Server is not registered yet.");
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     const list = server.settings.black_list;
+    const player = await client.database.getPlayerRelation(user.id);
+    player.banned = player.banned ? player.banned + 1 : 1;
+    const member = player.membership.find(member => member.guildId == guild.id);
+    if(!member) throw new DataBaseError("User is not a member of this guild.");
+    member.banned = true;
     list.push(user.id);
+    await client.database.updateMember(member);
+    await client.database.updatePlayer(player);
     await client.database.updateSettings(guild.id, {black_list: list});
     return client.embeds.addedToBlackList(user.id);
 }
@@ -79,10 +86,28 @@ export async function removeFromBlackList(client: ExtendedClient, guild: Guild, 
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
+    const player = await client.database.getPlayerRelation(user.id);
+    if(player.banned)
+        player.banned--;
+    else throw new CommandError("Player was not banned on this server.");
+    const member = player.membership.find(member => member.guildId == guild.id);
+    if(!member) throw new DataBaseError("User is not a member of this guild.");
+    member.banned = false;
     const list = server.settings.black_list;
     list.splice(list.indexOf(user.id));
+    await client.database.updateMember(member);
+    await client.database.updatePlayer(player);
     await client.database.updateSettings(guild.id, {black_list: list});
     return client.embeds.removedFromBlackList(user.id);
+}
+
+export async function setOccasionLimit(client: ExtendedClient, guild: Guild, author: User, amount: number) {
+    const server = await client.database.getServer(guild.id);
+    if(!server) throw new CommandError("Server is not registered yet.");
+    if(amount < 1) throw new CommandError("You can only use positive non zero numbers.");
+    if(author.id != guild.ownerId) throw new CommandError("Permission denied.");
+    await client.database.updateSettings(guild.id, {occasion_limit: amount});
+    return client.embeds.occasionLimitChanged(amount);
 }
 
 export async function setOccasions(client: ExtendedClient, guild: Guild, author: User, channel: VoiceChannel, category: CategoryChannel) {

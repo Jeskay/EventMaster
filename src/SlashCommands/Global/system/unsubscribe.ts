@@ -1,10 +1,9 @@
-import { unsubscribe } from '../../Commands/DirectMessages';
-import {InteractCommand} from '../../Interfaces';
+import { unsubscribe } from '../../../Commands/DirectMessages';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'unsubscribe',
     description: "remove subscribtion for personal events notifications",
-    aliases: ['unsub'],
     options: [{name: 'title', type: "STRING", description: "Title which you don't want to be notified about.", required: true}],
     run: async(client, interaction) => {
         try {

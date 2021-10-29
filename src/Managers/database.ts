@@ -1,10 +1,12 @@
 import { Connection, getConnection } from "typeorm";
 import { Server } from "../entities/server";
 import { Occasion } from "../entities/occasion";
-import { Player, Rank } from "../entities/player";
+import { Player } from "../entities/player";
 import { Commend } from "../entities/commend";
 import { Tag } from "../entities/tag";
 import { DataBaseError } from "../Error";
+import { calculateScore } from "../Utils";
+import { GuildMember } from "../entities/member";
 
 export class DataBaseManager{
     private connection: Connection;
@@ -27,38 +29,45 @@ export class DataBaseManager{
     public getServer = async(id: string) => await this.connection.manager.findOne(Server, {guild: id});
     /** @returns player by user id */
     public getPlayer = async (id: string) => await this.connection.manager.findOne(Player, {id: id});
-    /**@returns all players */
-    public getPlayers = async() => await this.connection.manager.getRepository(Player)
-    .createQueryBuilder("player")
-    .getMany()
-    .catch(err => {throw new DataBaseError(err)});
-    
-    public async getRanking() {
-        const sql = `
-    SELECT
-        id,
-        liked,
-        disliked,
-        ("eventsPlayed" * 0.5 + "eventsHosted" * 1) * (liked / (CASE WHEN disliked = 0 THEN 1 ELSE disliked END)) rank
-    FROM (
-        SELECT 
-            id,
-            "eventsPlayed",
-            "eventsHosted",
-            (
-                SELECT COUNT(*)
-                FROM commend
-                WHERE "subjectId" = id AND cheer = true
-            ) AS liked,
-            (
-                SELECT COUNT(*)
-                FROM commend
-                WHERE "subjectId" = id AND cheer = false
-        ) AS disliked
-        FROM player
-    ) t
-    ORDER BY rank DESC `;
-    return await this.connection.manager.query(sql) as Rank[];
+    /**
+     * @param server guild which contains user
+     * @param user user to find
+     * @returns membership of user from a specific guild 
+     */
+    public async getMember(server: string | Server, user: string | Player) {
+        let member: GuildMember | undefined;
+        if(server instanceof Server) {
+            member = server.members.find((member) => user instanceof Player ? member.player == user : member.id == user);    
+        }
+        else if(user instanceof Player) {
+            member = user.membership.find((member) => member.guildId == server);
+        }
+        else {
+            const player = await this.getPlayerRelation(user);
+            member = player.membership.find(member => member.guildId == server);
+        }
+        if(!member) throw new DataBaseError("User is not a member of guild.");
+        return member;
+    }
+    /**
+     * @returns guild players ranking
+     */
+    public getRanking(guildId: string): Promise<GuildMember[]>;
+    /**
+     * @returns global players ranking
+     */
+    public getRanking(): Promise<Player[]>;
+
+    public async getRanking(guildId?: string) {
+        if(guildId) return await this.connection.manager.getRepository(GuildMember)
+            .createQueryBuilder("guild_member")
+            .where("guild_member.guildId = :guildId", {guildId: guildId})
+            .getMany();
+        else return await this.connection.manager.getRepository(Player)
+            .createQueryBuilder("player")
+            .leftJoinAndSelect("player.commendsBy", "commend", "commend.author = id")
+            .leftJoinAndSelect("player.commendsAbout",  "commend2", "commend2.subject = id")
+            .getMany();
     }
 
     /**
@@ -84,6 +93,7 @@ export class DataBaseManager{
             const server = await this.connection.getRepository(Server)
             .createQueryBuilder("server")
             .leftJoinAndSelect("server.events", "occasion")
+            .leftJoinAndSelect("server.members", "guild_member")
             .where("server.guild = :guild", {guild: serverID})
             .getOne()
             .catch(err => { throw err });
@@ -92,13 +102,14 @@ export class DataBaseManager{
     }
     /**
      * @param userId 
-     * @returns player instance with commends
+     * @returns player instance with subscriptions
      */
     public async getPlayerRelation(userId: string) {
         const user = await this.connection.getRepository(Player)
         .createQueryBuilder("player")
         .leftJoinAndSelect("player.subscriptions", "tag")
         .where("player.id = :id", {id: userId})
+        .leftJoinAndSelect("player.membership", "guild_member")
         .getOne()
         .catch(err => {throw err;});
         if(!user) throw new DataBaseError("Player with followed id is not registered.");
@@ -120,6 +131,12 @@ export class DataBaseManager{
      */
     public async addPlayer(player: object) {
         const post = this.player(player);
+        await this.connection.manager.save(post);
+        return post;
+    }
+    public async addMember(member: object) {
+        const post = this.connection.manager.create(GuildMember, member);
+        post.score = 0;
         await this.connection.manager.save(post);
     }
     /**
@@ -151,7 +168,6 @@ export class DataBaseManager{
         const post = this.tag(tag);
         await this.connection.manager.save(post);
     }
-
 
     /**
      * Removes server instance
@@ -185,6 +201,11 @@ export class DataBaseManager{
         const player = await this.getPlayer(userID);
         if(!player) throw new DataBaseError("Cannot find player");
         await this.connection.manager.remove(player);
+    }
+    public async removeMember(serverId: string, userId: string) {
+        const member = await this.getMember(serverId, userId);
+        if(!member) throw new DataBaseError("Cannot find player");
+        await this.connection.manager.remove(member);
     }
     /**
      * Removes tag
@@ -233,27 +254,39 @@ export class DataBaseManager{
         Object.keys(occasion).forEach(key => occasion[key] = key in params ? params[key] : occasion[key]);
         await this.connection.manager.save(occasion);
     }
-    
-    public async updatePlayer(instance: Player);
     /**
      * Updates player instance
-     * @param userID user id
+     * @param instance player instance to update
+     */
+    public async updatePlayer(instance: Player): Promise<void>;
+    /**
+     * Updates player instance
      * @param instance object with fields and values which need to be updated
      */
-    public async updatePlayer(instance: object);
+    public async updatePlayer(instance: object): Promise<void>;
 
     public async updatePlayer(instance: object) {
+        let player: Player;
         if(instance instanceof Player) {
-            await this.connection.manager.save(instance);
+            player = instance;
         } 
         else {
             if(!Object.keys(instance).includes('id')) throw new DataBaseError("Player id must be provided.");
-            const player = await this.getPlayer(instance['id']);
-            if(!player) throw new DataBaseError("Cannot find the player.");
-            console.log(Object.keys(player));//debug
-            Object.keys(player).forEach(key => player[key] = key in instance ? instance[key] : player[key]);
-            await this.connection.manager.save(player);
+            const result = await this.getPlayer(instance['id']);
+            if(!result) throw new DataBaseError("Cannot find the player.");
+            console.log(Object.keys(result));//debug
+            Object.keys(result).forEach(key => result[key] = key in instance ? instance[key] : result[key]);
+            player = result;
         }
+        player.score = calculateScore(player);
+        await this.connection.manager.save(player);
+    }
+    public async updateMember(instance: GuildMember): Promise<void>;
+    public async updateMember(instance: object): Promise<void>;
+    public async updateMember(instance: object){
+        const member = (instance instanceof GuildMember) ? instance : this.connection.manager.create(GuildMember, instance);
+        member.score = calculateScore(member);
+        await this.connection.manager.save(member);
     }
     /**
      * Updates commend instance

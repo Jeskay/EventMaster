@@ -1,3 +1,4 @@
+import { extractID } from '../../Utils';
 import { removeFromBlackList } from '../../Commands/Setup';
 import { CommandError } from '../../Error';
 import {TextCommand} from '../../Interfaces';
@@ -12,7 +13,7 @@ export const command: TextCommand = {
             const guild = message.guild;
             if(!guild) return;
             if(args.length != 1) throw new CommandError("User Id must be provided");
-            const userId = client.helper.extractID(args[0]);
+            const userId = extractID(args[0]);
             const user = await client.users.fetch(userId);
             const response = await removeFromBlackList(client, guild, message.author, user);
             await message.channel.send({embeds: [response]});

@@ -1,4 +1,4 @@
-import {GuildMember, User, CategoryChannel, VoiceState, VoiceChannel, Guild, TextChannel } from "discord.js";
+import {GuildMember, User, CategoryChannel, VoiceState, VoiceChannel, Guild, TextChannel, OverwriteResolvable, Permissions } from "discord.js";
 
 export enum OccasionState{
     voting,
@@ -26,12 +26,31 @@ export class RoomManger {
      * @param category category channel where channels will be created
      * @returns an object with text and voice channels
      */
-    public async create(initiator: User, category: CategoryChannel){
-        const voiceChnl = await category.guild.channels.create(initiator.username, {type: "GUILD_VOICE", parent: category});
+    public async create(initiator: User, category: CategoryChannel, blacklist: string[]){
+        let text_permissions: OverwriteResolvable[] = [];
+        let voice_permissions: OverwriteResolvable[] = [];
+        blacklist.forEach(user => {
+            text_permissions.push({
+                type: 'member',
+                id: user,
+                deny: [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.SEND_MESSAGES]
+            });
+            voice_permissions.push({
+                type: 'member',
+                id: user,
+                deny: [Permissions.FLAGS.VIEW_CHANNEL, Permissions.FLAGS.CONNECT]
+            });
+        });
+        const voiceChnl = await category.guild.channels.create(initiator.username, {
+            type: "GUILD_VOICE", 
+            parent: category,
+            permissionOverwrites: voice_permissions
+        });
         const textChnl = await category.guild.channels.create(initiator.username, {
             type: "GUILD_TEXT",
             parent: category,
-            rateLimitPerUser: 30
+            rateLimitPerUser: 30,
+            permissionOverwrites: text_permissions
         });
         return {voice: voiceChnl, text: textChnl};
     }
@@ -50,8 +69,6 @@ export class RoomManger {
         await textChannel.permissionOverwrites.edit(user, {
             MANAGE_CHANNELS: true
         });
-        const permissions = voiceChannel.permissionsFor(user);
-        console.log(`user permissions are ${permissions?.toJSON}`);
     }
     /**
      * Deletes channels from the guild

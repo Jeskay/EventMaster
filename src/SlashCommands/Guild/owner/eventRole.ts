@@ -1,6 +1,6 @@
-import { setEventRole } from '../../Commands/Setup';
-import { CommandError } from '../../Error';
-import {InteractCommand} from '../../Interfaces';
+import { setEventRole } from '../../../Commands/Setup';
+import { CommandError } from '../../../Error';
+import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
     name: 'eventrole',
