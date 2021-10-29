@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const DirectMessages_1 = require("../../Commands/DirectMessages");
+const Utils_1 = require("../../Utils");
 exports.command = {
     name: 'vote',
     description: "vote for event host",
@@ -21,7 +22,7 @@ exports.command = {
             return;
         let candidateID = args[0];
         if (message.guild)
-            candidateID = client.helper.extractID(args[0]);
+            candidateID = (0, Utils_1.extractID)(args[0]);
         const candidate = yield client.users.fetch(candidateID);
         try {
             yield (0, DirectMessages_1.vote)(client, message.author, candidate);

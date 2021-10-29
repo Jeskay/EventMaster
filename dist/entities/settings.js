@@ -27,6 +27,10 @@ __decorate([
     __metadata("design:type", Number)
 ], Settings.prototype, "limit", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Settings.prototype, "occasion_limit", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: "text", nullable: true }),
     __metadata("design:type", String)
 ], Settings.prototype, "notification_channel", void 0);

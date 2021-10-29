@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Error_1 = require("../../Error");
 const DirectMessages_1 = require("../../Commands/DirectMessages");
+const Utils_1 = require("../../Utils");
 exports.command = {
     name: 'like',
     description: "send a positive comment about user",
@@ -22,7 +23,7 @@ exports.command = {
                 return;
             let userId = args[0];
             if (message.guild)
-                userId = client.helper.extractID(args[0]);
+                userId = (0, Utils_1.extractID)(args[0]);
             const user = client.users.cache.get(userId);
             if (!user)
                 throw new Error_1.CommandError("User does not exists.");

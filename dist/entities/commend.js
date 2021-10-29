@@ -37,12 +37,12 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => player_1.Player, player => player.commendsBy, { primary: true }),
     (0, typeorm_1.JoinColumn)({ name: "authorId" }),
-    __metadata("design:type", Promise)
+    __metadata("design:type", player_1.Player)
 ], Commend.prototype, "author", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => player_1.Player, player => player.commendsAbout, { primary: true }),
     (0, typeorm_1.JoinColumn)({ name: "subjectId" }),
-    __metadata("design:type", Promise)
+    __metadata("design:type", player_1.Player)
 ], Commend.prototype, "subject", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),

@@ -12,13 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChannelController = void 0;
 const room_1 = require("../Managers/room");
 class ChannelController {
-    createChannelJoined(member, server, database, room) {
+    createChannelJoined(member, server, database, room, joinedChannel) {
         return __awaiter(this, void 0, void 0, function* () {
             const channel = member.guild.channels.cache.get(server.eventCategory);
             if (channel == undefined)
                 return;
-            const { voice, text } = yield room.create(member.user, channel);
-            yield member.voice.setChannel(voice);
+            const { voice, text } = yield room.create(member.user, channel, server.settings.black_list);
+            if (member.guild.channels.cache.size >= 499)
+                throw new Error("Channel limit reached");
+            if (server.settings.occasion_limit && server.events.length + 1 >= server.settings.occasion_limit)
+                yield joinedChannel.permissionOverwrites.edit(member.guild.roles.everyone, { 'CONNECT': false });
+            yield member.voice.setChannel(voice).catch(() => {
+                room.delete(voice.guild, voice.id, text.id);
+                return;
+            });
             yield database.addOccasion(member.guild.id, {
                 voiceChannel: voice.id,
                 textChannel: text.id,
@@ -35,7 +42,7 @@ class ChannelController {
             if (server == null)
                 return;
             if (server.eventChannel == joinedChannel.id) {
-                yield this.createChannelJoined(member, server, client.database, client.room);
+                yield this.createChannelJoined(member, server, client.database, client.room, joinedChannel);
                 return;
             }
             const occasion = server.events.find(event => event.voiceChannel == joinedChannel.id);
@@ -66,6 +73,10 @@ class ChannelController {
             if (leftChannel != null && leftChannel.members.size == 0) {
                 yield client.database.removeOccasion(leftChannel.guild.id, occasion.voiceChannel);
                 yield client.room.delete(leftChannel.guild, occasion.voiceChannel, occasion.textChannel);
+                if (server.settings.occasion_limit && server.settings.occasion_limit == server.events.length) {
+                    const joinChannel = yield client.channels.fetch(server.eventChannel);
+                    yield joinChannel.permissionOverwrites.edit(leftChannel.guild.roles.everyone, { 'CONNECT': true });
+                }
             }
         });
     }

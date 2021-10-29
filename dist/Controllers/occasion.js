@@ -10,8 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OccasionController = void 0;
+const discord_js_1 = require("discord.js");
 const Error_1 = require("../Error");
 const room_1 = require("../Managers/room");
+const Utils_1 = require("../Utils");
 class OccasionController {
     notifyPlayer(client, userId, title, description, channel) {
         var _a, _b;
@@ -102,6 +104,10 @@ class OccasionController {
             const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
             yield client.ratingController.updateMembers(client, voice, duration);
             yield client.database.removeOccasion(server.guild, occasion.voiceChannel);
+            if (server.settings.occasion_limit && server.settings.occasion_limit == server.events.length - 1) {
+                const joinChannel = yield client.channels.fetch(server.eventChannel);
+                yield joinChannel.permissionOverwrites.edit(guild.roles.everyone, { 'CONNECT': true });
+            }
             yield text.send({ embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)] });
             setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
             if (server.settings.logging_channel) {
@@ -120,11 +126,14 @@ class OccasionController {
             if (!occasion)
                 throw Error("Only host has permission to announce an event.");
             if (occasion.announced)
-                throw new Error_1.CommandError("Announced has been already published.");
+                throw new Error_1.CommandError("Announce has been already published.");
             if (!server.settings.notification_channel)
                 throw Error("Notification channel was not set up.");
             const channel = guild.channels.cache.get(server.settings.notification_channel);
-            const hashtags = client.helper.findSubscriptions(description);
+            const voiceChannel = yield guild.channels.fetch(occasion.voiceChannel);
+            if (!(voiceChannel instanceof discord_js_1.VoiceChannel))
+                throw new Error_1.CommandError("Voice channel does not exist.");
+            const hashtags = (0, Utils_1.findSubscriptions)(description);
             if (!channel || !channel.isText)
                 throw Error("Cannot find notification channel.");
             const eventRole = server.settings.event_role;
@@ -134,10 +143,10 @@ class OccasionController {
             });
             if (hashtags.length > 0) {
                 hashtags.forEach(tag => {
-                    this.notifyPlayers(client, tag, channel, title !== null && title !== void 0 ? title : tag, description);
+                    this.notifyPlayers(client, tag, voiceChannel, title !== null && title !== void 0 ? title : tag, description);
                 });
             }
-            yield client.database.updateOccasion(occasion.server.guild, occasion.voiceChannel, {
+            yield client.database.updateOccasion(server.guild, occasion.voiceChannel, {
                 announced: true
             });
             return client.embeds.announcePublishedResponse(hashtags);
@@ -149,6 +158,7 @@ class OccasionController {
             if (!tag)
                 return;
             const players = yield tag.subscribers;
+            console.log(channel.guild);
             yield Promise.all(players.map((player) => __awaiter(this, void 0, void 0, function* () { return yield this.notifyPlayer(client, player.id, title, description, channel); })));
         });
     }

@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Server = void 0;
 const typeorm_1 = require("typeorm");
+const member_1 = require("./member");
 const occasion_1 = require("./occasion");
 const settings_1 = require("./settings");
 let Server = class Server {
@@ -23,6 +24,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => occasion_1.Occasion, occasion => occasion.server),
     __metadata("design:type", Array)
 ], Server.prototype, "events", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => member_1.GuildMember, guildmember => guildmember.guild),
+    __metadata("design:type", Array)
+], Server.prototype, "members", void 0);
 __decorate([
     (0, typeorm_1.Column)(() => settings_1.Settings),
     __metadata("design:type", settings_1.Settings)

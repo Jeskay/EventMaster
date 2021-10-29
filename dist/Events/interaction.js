@@ -17,9 +17,13 @@ exports.event = {
         }
         else if (interaction.isCommand()) {
             const command = interaction;
+            const subCommand = command.options.getSubcommand();
             const cmd = client.slashCommands.get(command.commandName);
-            if (cmd)
-                cmd.run(client, command);
+            if (!cmd)
+                return;
+            const subcmd = cmd.get(subCommand);
+            if (subcmd)
+                subcmd.run(client, command);
         }
         else if (interaction.isContextMenu()) {
             const command = interaction;

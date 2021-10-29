@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Setup_1 = require("../../Commands/Setup");
 const Error_1 = require("../../Error");
+const Utils_1 = require("../../Utils");
 exports.command = {
     name: 'addowner',
     description: 'give user increased permissions for bot settings',
@@ -24,7 +25,7 @@ exports.command = {
                 return;
             if (args.length != 1)
                 return;
-            const userId = client.helper.extractID(args[0]);
+            const userId = (0, Utils_1.extractID)(args[0]);
             const user = yield client.users.fetch(userId);
             if (!user)
                 throw new Error_1.CommandError("Cannot find a user.");

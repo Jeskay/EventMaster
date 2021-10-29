@@ -17,6 +17,8 @@ const player_1 = require("../entities/player");
 const commend_1 = require("../entities/commend");
 const tag_1 = require("../entities/tag");
 const Error_1 = require("../Error");
+const Utils_1 = require("../Utils");
+const member_1 = require("../entities/member");
 class DataBaseManager {
     constructor() {
         this.connect = () => __awaiter(this, void 0, void 0, function* () { return yield this.connection.connect(); });
@@ -27,44 +29,42 @@ class DataBaseManager {
         this.tag = (tag) => this.connection.manager.create(tag_1.Tag, tag);
         this.getServer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(server_1.Server, { guild: id }); });
         this.getPlayer = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(player_1.Player, { id: id }); });
-        this.getPlayers = () => __awaiter(this, void 0, void 0, function* () {
-            return yield this.connection.manager.getRepository(player_1.Player)
-                .createQueryBuilder("player")
-                .getMany()
-                .catch(err => { throw new Error_1.DataBaseError(err); });
-        });
         this.getCommend = (authorId, subjectId, hosting, cheer) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(commend_1.Commend, { authorId: authorId, subjectId: subjectId, host: hosting, cheer: cheer }); });
         this.getTag = (id) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.findOne(tag_1.Tag, { title: id }); });
         this.getCommends = (params) => __awaiter(this, void 0, void 0, function* () { return yield this.connection.manager.find(commend_1.Commend, params); });
         this.connection = (0, typeorm_1.getConnection)();
     }
-    getRanking() {
+    getMember(server, user) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sql = `
-    SELECT
-        id,
-        liked,
-        disliked,
-        ("eventsPlayed" * 0.5 + "eventsHosted" * 1) * (liked / (CASE WHEN disliked = 0 THEN 1 ELSE disliked END)) rank
-    FROM (
-        SELECT 
-            id,
-            "eventsPlayed",
-            "eventsHosted",
-            (
-                SELECT COUNT(*)
-                FROM commend
-                WHERE "subjectId" = id AND cheer = true
-            ) AS liked,
-            (
-                SELECT COUNT(*)
-                FROM commend
-                WHERE "subjectId" = id AND cheer = false
-        ) AS disliked
-        FROM player
-    ) t
-    ORDER BY rank DESC `;
-            return yield this.connection.manager.query(sql);
+            let member;
+            if (server instanceof server_1.Server) {
+                member = server.members.find((member) => user instanceof player_1.Player ? member.player == user : member.id == user);
+            }
+            else if (user instanceof player_1.Player) {
+                member = user.membership.find((member) => member.guildId == server);
+            }
+            else {
+                const player = yield this.getPlayerRelation(user);
+                member = player.membership.find(member => member.guildId == server);
+            }
+            if (!member)
+                throw new Error_1.DataBaseError("User is not a member of guild.");
+            return member;
+        });
+    }
+    getRanking(guildId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (guildId)
+                return yield this.connection.manager.getRepository(member_1.GuildMember)
+                    .createQueryBuilder("guild_member")
+                    .where("guild_member.guildId = :guildId", { guildId: guildId })
+                    .getMany();
+            else
+                return yield this.connection.manager.getRepository(player_1.Player)
+                    .createQueryBuilder("player")
+                    .leftJoinAndSelect("player.commendsBy", "commend", "commend.author = id")
+                    .leftJoinAndSelect("player.commendsAbout", "commend2", "commend2.subject = id")
+                    .getMany();
         });
     }
     getServerRelations(serverID) {
@@ -72,6 +72,7 @@ class DataBaseManager {
             const server = yield this.connection.getRepository(server_1.Server)
                 .createQueryBuilder("server")
                 .leftJoinAndSelect("server.events", "occasion")
+                .leftJoinAndSelect("server.members", "guild_member")
                 .where("server.guild = :guild", { guild: serverID })
                 .getOne()
                 .catch(err => { throw err; });
@@ -86,6 +87,7 @@ class DataBaseManager {
                 .createQueryBuilder("player")
                 .leftJoinAndSelect("player.subscriptions", "tag")
                 .where("player.id = :id", { id: userId })
+                .leftJoinAndSelect("player.membership", "guild_member")
                 .getOne()
                 .catch(err => { throw err; });
             if (!user)
@@ -102,6 +104,14 @@ class DataBaseManager {
     addPlayer(player) {
         return __awaiter(this, void 0, void 0, function* () {
             const post = this.player(player);
+            yield this.connection.manager.save(post);
+            return post;
+        });
+    }
+    addMember(member) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const post = this.connection.manager.create(member_1.GuildMember, member);
+            post.score = 0;
             yield this.connection.manager.save(post);
         });
     }
@@ -156,6 +166,14 @@ class DataBaseManager {
             yield this.connection.manager.remove(player);
         });
     }
+    removeMember(serverId, userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const member = yield this.getMember(serverId, userId);
+            if (!member)
+                throw new Error_1.DataBaseError("Cannot find player");
+            yield this.connection.manager.remove(member);
+        });
+    }
     removeTag(tagId) {
         return __awaiter(this, void 0, void 0, function* () {
             const tag = yield this.getTag(tagId);
@@ -197,19 +215,29 @@ class DataBaseManager {
     }
     updatePlayer(instance) {
         return __awaiter(this, void 0, void 0, function* () {
+            let player;
             if (instance instanceof player_1.Player) {
-                yield this.connection.manager.save(instance);
+                player = instance;
             }
             else {
                 if (!Object.keys(instance).includes('id'))
                     throw new Error_1.DataBaseError("Player id must be provided.");
-                const player = yield this.getPlayer(instance['id']);
-                if (!player)
+                const result = yield this.getPlayer(instance['id']);
+                if (!result)
                     throw new Error_1.DataBaseError("Cannot find the player.");
-                console.log(Object.keys(player));
-                Object.keys(player).forEach(key => player[key] = key in instance ? instance[key] : player[key]);
-                yield this.connection.manager.save(player);
+                console.log(Object.keys(result));
+                Object.keys(result).forEach(key => result[key] = key in instance ? instance[key] : result[key]);
+                player = result;
             }
+            player.score = (0, Utils_1.calculateScore)(player);
+            yield this.connection.manager.save(player);
+        });
+    }
+    updateMember(instance) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const member = (instance instanceof member_1.GuildMember) ? instance : this.connection.manager.create(member_1.GuildMember, instance);
+            member.score = (0, Utils_1.calculateScore)(member);
+            yield this.connection.manager.save(member);
         });
     }
     updateCommend(commend, params) {

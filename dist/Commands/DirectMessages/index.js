@@ -10,8 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.playerRating = exports.vote = exports.subscriptions = exports.unsubscribe = exports.subscribe = exports.profile = exports.help = exports.like = exports.dislike = void 0;
-const List_1 = require("../../List");
+const Utils_1 = require("../../Utils");
 const Error_1 = require("../../Error");
+const Utils_2 = require("../../Utils");
 function dislike(client, author, user) {
     return __awaiter(this, void 0, void 0, function* () {
         yield client.ratingController.dislikePlayer(client, user.id, author.id);
@@ -37,13 +38,14 @@ function help(client, author, channel) {
     });
 }
 exports.help = help;
-function profile(client, user) {
+function profile(client, user, guild) {
     return __awaiter(this, void 0, void 0, function* () {
         const profile = yield client.database.getPlayer(user.id);
         if (!profile)
             throw new Error_1.CommandError("This user did not join events.");
-        const commends = yield profile.commendsAbout;
-        return client.embeds.playerInfo(profile, user, commends);
+        const row = client.embeds.Profiles(false, user.id, guild ? guild.id : undefined);
+        const embed = client.embeds.playerInfo(profile, user, profile.commendsAbout);
+        return { embeds: [embed], components: [row], ephemeral: true };
     });
 }
 exports.profile = profile;
@@ -87,7 +89,9 @@ function subscriptions(client, author, channel) {
         if (client.lists.get(subId))
             client.lists.delete(subId);
         const tags = yield profile.subscriptions;
-        const list = new List_1.List(30, client.helper.subscriptionList(tags), 5);
+        if (tags.length < 1)
+            throw new Error_1.CommandError("You have no subscriptions.");
+        const list = new Utils_1.List(30, (0, Utils_2.subscriptionList)(tags), 5);
         client.lists.set(subId, list);
         const prevId = `previousPage.${author.id} ${subId}`;
         const nextId = `nextPage.${author.id} ${subId}`;
@@ -99,7 +103,7 @@ function vote(client, author, candidate) {
     return __awaiter(this, void 0, void 0, function* () {
         if (author.id == candidate.id)
             throw new Error_1.CommandError("You can't vote for yourself.");
-        const voiceChannel = client.channels.cache.find(channel => client.helper.checkChannel(author.id, candidate.id, channel));
+        const voiceChannel = client.channels.cache.find(channel => (0, Utils_2.checkChannel)(author.id, candidate.id, channel));
         if (!voiceChannel)
             throw new Error_1.CommandError("Both voter and candidate must be in occasion channel.");
         yield client.occasionController.vote(client, voiceChannel, author.id, candidate.id);
@@ -113,7 +117,7 @@ function playerRating(client, author, channel) {
         const rateId = `rate${author.id}`;
         if (client.lists.get(rateId))
             client.lists.delete(rateId);
-        const list = new List_1.List(30, client.helper.ratingList(rating), 5);
+        const list = new Utils_1.List(30, (0, Utils_2.ratingList)(rating), 5);
         client.lists.set(rateId, list);
         const prevId = `previousPage.${author.id} ${rateId}`;
         const nextId = `nextPage.${author.id} ${rateId}`;

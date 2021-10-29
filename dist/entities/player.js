@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Player = void 0;
 const typeorm_1 = require("typeorm");
 const commend_1 = require("./commend");
+const member_1 = require("./member");
 const tag_1 = require("./tag");
 let Player = class Player {
     constructor() {
@@ -19,6 +20,7 @@ let Player = class Player {
         this.eventsHosted = 0;
         this.tournamentsPlayed = 0;
         this.tournamentsHosted = 0;
+        this.banned = 0;
         this.minutesPlayed = 0;
         this.scoreTime = new Date;
     }
@@ -44,17 +46,25 @@ __decorate([
     __metadata("design:type", Number)
 ], Player.prototype, "tournamentsHosted", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Player.prototype, "banned", void 0);
+__decorate([
     (0, typeorm_1.ManyToMany)(() => tag_1.Tag, tag => tag.subscribers),
     __metadata("design:type", Promise)
 ], Player.prototype, "subscriptions", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => commend_1.Commend, commend => commend.author),
-    __metadata("design:type", Promise)
+    (0, typeorm_1.OneToMany)(() => commend_1.Commend, commend => commend.author, { eager: true }),
+    __metadata("design:type", Array)
 ], Player.prototype, "commendsBy", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => commend_1.Commend, commend => commend.subject),
-    __metadata("design:type", Promise)
+    (0, typeorm_1.OneToMany)(() => commend_1.Commend, commend => commend.subject, { eager: true }),
+    __metadata("design:type", Array)
 ], Player.prototype, "commendsAbout", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => member_1.GuildMember, member => member.player, { eager: true }),
+    __metadata("design:type", Array)
+], Player.prototype, "membership", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
@@ -63,6 +73,11 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamptz' }),
     __metadata("design:type", Date)
 ], Player.prototype, "scoreTime", void 0);
+__decorate([
+    (0, typeorm_1.Index)(),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Player.prototype, "score", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

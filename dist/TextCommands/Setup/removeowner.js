@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Setup_1 = require("../../Commands/Setup");
+const Utils_1 = require("../../Utils");
 exports.command = {
     name: 'removeowner',
     description: 'deny user permissions for bot settings',
@@ -23,7 +24,7 @@ exports.command = {
                 return;
             if (args.length != 1)
                 return;
-            const userId = client.helper.extractID(args[0]);
+            const userId = (0, Utils_1.extractID)(args[0]);
             const user = yield client.users.fetch(userId);
             const response = yield (0, Setup_1.removeOwner)(client, guild, message.author, user);
             yield message.channel.send({ embeds: [response] });

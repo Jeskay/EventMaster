@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Error_1 = require("../../Error");
 const Setup_1 = require("../../Commands/Setup/");
+const Utils_1 = require("../../Utils");
 exports.command = {
     name: 'setup',
     description: 'set channel where to join for event and category where rooms will be created',
@@ -24,7 +25,7 @@ exports.command = {
                 return;
             if (args.length != 2)
                 throw new Error_1.CommandError("Invalid number of arguments.");
-            const { voice, category } = yield client.helper.getRelatedChannels(args[0], args[1], guild);
+            const { voice, category } = yield (0, Utils_1.getRelatedChannels)(args[0], args[1], guild);
             const response = yield (0, Setup_1.setOccasions)(client, guild, message.author, voice, category);
             yield message.channel.send(response);
         }

@@ -41,9 +41,7 @@ class RatingController {
                 if (difference < this.likeCoolDown)
                     throw Error(`Wait ${Math.round(difference - this.likeCoolDown)} hours.`);
             }
-            const commendsBy = yield second.commendsBy;
-            console.log(commendsBy);
-            const commend = commendsBy.find(commend => commend.subjectId == user && commend.host == hosting && commend.cheer == positive);
+            const commend = second.commendsBy.find(commend => commend.subjectId == user && commend.host == hosting && commend.cheer == positive);
             if (commend) {
                 yield client.database.updateCommend(commend, {
                     duplicates: commend.duplicates + 1,
@@ -70,20 +68,50 @@ class RatingController {
             const host = occasion.host;
             yield Promise.all(channel.members.map((member) => __awaiter(this, void 0, void 0, function* () {
                 const player = yield client.database.getPlayer(member.id);
-                if (!player)
-                    yield client.database.addPlayer({
+                if (!player) {
+                    const result = yield client.database.addPlayer({
                         id: member.id,
                         eventsPlayed: (member.id == host) ? 0 : 1,
                         eventsHosted: (member.id == host) ? 1 : 0,
                         minutesPlayed: duration
                     });
-                else
+                    yield client.database.addMember({
+                        player: result,
+                        guild: server,
+                        eventsPlayed: result.eventsPlayed,
+                        eventsHosted: result.eventsHosted,
+                        minutesPlayed: result.minutesPlayed
+                    });
+                }
+                else {
+                    let hosted = 0;
+                    let played = 0;
+                    if (player.id == host)
+                        hosted = 1;
+                    else
+                        played = 1;
+                    const user = player.membership.find(user => user.guild == server);
+                    if (!user)
+                        yield client.database.addMember({
+                            player: player,
+                            guild: server,
+                            eventsPlayed: played,
+                            eventsHosted: hosted,
+                            minutesPlayed: duration
+                        });
+                    else {
+                        user.eventsPlayed += played;
+                        user.eventsHosted += hosted;
+                        user.minutesPlayed += duration;
+                        yield client.database.updateMember(user);
+                    }
                     yield client.database.updatePlayer({
-                        id: member.id,
-                        eventsPlayed: (member.id == host) ? player.eventsPlayed : player.eventsPlayed + 1,
-                        eventsHosted: (member.id == host) ? player.eventsHosted + 1 : player.eventsHosted,
+                        id: player.id,
+                        eventsPlayed: player.eventsPlayed + played,
+                        eventsHosted: player.eventsHosted + hosted,
                         minutesPlayed: player.minutesPlayed + duration
                     });
+                }
             })));
         });
     }

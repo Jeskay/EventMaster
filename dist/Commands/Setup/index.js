@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setOccasions = exports.removeFromBlackList = exports.addToBlackList = exports.setNotification = exports.setEventRole = exports.setLog = exports.setLimit = exports.removeOwner = exports.addOwner = void 0;
+exports.setOccasions = exports.setOccasionLimit = exports.removeFromBlackList = exports.addToBlackList = exports.setNotification = exports.setEventRole = exports.setLog = exports.setLimit = exports.removeOwner = exports.addOwner = void 0;
 const Error_1 = require("../../Error");
 function addOwner(client, guild, author, user) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -111,7 +111,15 @@ function addToBlackList(client, guild, author, user) {
         if (!server.settings.owners.includes(author.id))
             throw new Error_1.CommandError("Permission denied.");
         const list = server.settings.black_list;
+        const player = yield client.database.getPlayerRelation(user.id);
+        player.banned = player.banned ? player.banned + 1 : 1;
+        const member = player.membership.find(member => member.guildId == guild.id);
+        if (!member)
+            throw new Error_1.DataBaseError("User is not a member of this guild.");
+        member.banned = true;
         list.push(user.id);
+        yield client.database.updateMember(member);
+        yield client.database.updatePlayer(player);
         yield client.database.updateSettings(guild.id, { black_list: list });
         return client.embeds.addedToBlackList(user.id);
     });
@@ -124,13 +132,38 @@ function removeFromBlackList(client, guild, author, user) {
             throw new Error_1.CommandError("Server is not registered yet.");
         if (!server.settings.owners.includes(author.id))
             throw new Error_1.CommandError("Permission denied.");
+        const player = yield client.database.getPlayerRelation(user.id);
+        if (player.banned)
+            player.banned--;
+        else
+            throw new Error_1.CommandError("Player was not banned on this server.");
+        const member = player.membership.find(member => member.guildId == guild.id);
+        if (!member)
+            throw new Error_1.DataBaseError("User is not a member of this guild.");
+        member.banned = false;
         const list = server.settings.black_list;
         list.splice(list.indexOf(user.id));
+        yield client.database.updateMember(member);
+        yield client.database.updatePlayer(player);
         yield client.database.updateSettings(guild.id, { black_list: list });
         return client.embeds.removedFromBlackList(user.id);
     });
 }
 exports.removeFromBlackList = removeFromBlackList;
+function setOccasionLimit(client, guild, author, amount) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const server = yield client.database.getServer(guild.id);
+        if (!server)
+            throw new Error_1.CommandError("Server is not registered yet.");
+        if (amount < 1)
+            throw new Error_1.CommandError("You can only use positive non zero numbers.");
+        if (author.id != guild.ownerId)
+            throw new Error_1.CommandError("Permission denied.");
+        yield client.database.updateSettings(guild.id, { occasion_limit: amount });
+        return client.embeds.occasionLimitChanged(amount);
+    });
+}
+exports.setOccasionLimit = setOccasionLimit;
 function setOccasions(client, guild, author, channel, category) {
     return __awaiter(this, void 0, void 0, function* () {
         const server = yield client.database.getServer(guild.id);

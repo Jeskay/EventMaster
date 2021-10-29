@@ -40,9 +40,10 @@ const typeorm_1 = require("typeorm");
 const Config_1 = require("../Config");
 const Managers_1 = require("../Managers");
 const Controllers_1 = require("../Controllers");
-const List_1 = require("../List");
+const Utils_1 = require("../Utils");
 const v9_1 = require("discord-api-types/v9");
 const builders_1 = require("@discordjs/builders");
+const Utils_2 = require("../Utils");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);
@@ -53,7 +54,6 @@ class ExtendedClient extends discord_js_1.Client {
         this.events = new discord_js_1.Collection();
         this.aliases = new discord_js_1.Collection();
         this.buttons = new discord_js_1.Collection();
-        this.helper = new Managers_1.HelperManager();
         this.room = new Managers_1.RoomManger();
         this.vote = new Managers_1.VoteManager();
         this.embeds = new Managers_1.EmbedManager();
@@ -62,19 +62,33 @@ class ExtendedClient extends discord_js_1.Client {
         this.ratingController = new Controllers_1.RatingController();
         this.occasionController = new Controllers_1.OccasionController();
     }
-    extractCommands(files, path) {
+    extractCommands(path) {
         return __awaiter(this, void 0, void 0, function* () {
             const commands = [];
-            yield Promise.all(files.map((file) => __awaiter(this, void 0, void 0, function* () {
-                const { command } = yield Promise.resolve().then(() => __importStar(require(`${path}/${file}`)));
+            const subCommands = new discord_js_1.Collection();
+            const readdirAsync = (0, util_1.promisify)(fs_1.readdir);
+            const dirs = yield readdirAsync(path);
+            yield Promise.all(dirs.map((dir) => __awaiter(this, void 0, void 0, function* () {
                 let slash_command = new builders_1.SlashCommandBuilder()
-                    .setName(command.name)
-                    .setDescription(command.description);
-                command.options.forEach(option => {
-                    slash_command = this.helper.createOption(option, slash_command);
-                });
-                if (!this.slashCommands.get(command.name))
-                    this.slashCommands.set(command.name, command);
+                    .setName(dir)
+                    .setDescription(`Commands ${dir} can use.`);
+                const files = yield readdirAsync(`${path}/${dir}`);
+                yield Promise.all(files.map((file) => __awaiter(this, void 0, void 0, function* () {
+                    const { command } = yield Promise.resolve().then(() => __importStar(require(`${path}/${dir}/${file}`)));
+                    slash_command.addSubcommand(subCommand => {
+                        subCommand
+                            .setName(command.name)
+                            .setDescription(command.description);
+                        command.options.forEach(option => {
+                            subCommand = (0, Utils_2.createOption)(option, subCommand);
+                        });
+                        if (!subCommands.get(command.name))
+                            subCommands.set(subCommand.name, command);
+                        return subCommand;
+                    });
+                })));
+                if (!this.slashCommands.get(slash_command.name))
+                    this.slashCommands.set(slash_command.name, subCommands);
                 commands.push(slash_command.toJSON());
             })));
             return commands;
@@ -104,10 +118,8 @@ class ExtendedClient extends discord_js_1.Client {
     registerGuildCommands(guilds, clientId) {
         return __awaiter(this, void 0, void 0, function* () {
             const rest = new rest_1.REST({ version: '9' }).setToken(this.config.token);
-            const readdirAsync = (0, util_1.promisify)(fs_1.readdir);
             const interactionPath = path_1.default.join(__dirname, "..", "SlashCommands/Guild");
-            const files = yield readdirAsync(`${interactionPath}`);
-            const commands = yield this.extractCommands(files, interactionPath);
+            const commands = yield this.extractCommands(interactionPath);
             const contextCommands = yield this.extractContextCommands();
             yield Promise.all(guilds.map((guild) => __awaiter(this, void 0, void 0, function* () {
                 yield rest.put(v9_1.Routes.applicationGuildCommands(clientId, guild), {
@@ -119,10 +131,8 @@ class ExtendedClient extends discord_js_1.Client {
     registerGlobalCommands() {
         return __awaiter(this, void 0, void 0, function* () {
             const rest = new rest_1.REST({ version: '9' }).setToken(this.config.token);
-            const readdirAsync = (0, util_1.promisify)(fs_1.readdir);
             const interactionPath = path_1.default.join(__dirname, "..", "SlashCommands/Global");
-            const files = yield readdirAsync(`${interactionPath}`);
-            const commands = yield this.extractCommands(files, interactionPath);
+            const commands = yield this.extractCommands(interactionPath);
             if (!this.user)
                 throw Error("Unable to access bot.");
             yield rest.put(v9_1.Routes.applicationCommands(this.user.id), {
@@ -149,7 +159,7 @@ class ExtendedClient extends discord_js_1.Client {
                     }
                 }
             });
-            this.lists.set('help', new List_1.List(30, this.helper.commandsList(this), 10));
+            this.lists.set('help', new Utils_1.List(30, (0, Utils_2.commandsList)(this), 10));
             const buttonPath = path_1.default.join(__dirname, "..", "Buttons");
             (0, fs_1.readdirSync)(buttonPath).forEach(dir => {
                 const buttons = (0, fs_1.readdirSync)(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));

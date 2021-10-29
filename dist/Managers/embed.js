@@ -5,11 +5,11 @@ const discord_js_1 = require("discord.js");
 const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
 class EmbedManager {
     constructor() {
-        this.LikeHost = (id) => new discord_js_1.MessageButton()
+        this.LikeButton = (id) => new discord_js_1.MessageButton()
             .setStyle(3)
             .setCustomId(id)
             .setEmoji('👍');
-        this.DislikeHost = (id) => new discord_js_1.MessageButton()
+        this.DislikeButton = (id) => new discord_js_1.MessageButton()
             .setStyle(4)
             .setCustomId(id)
             .setLabel('👎');
@@ -21,10 +21,22 @@ class EmbedManager {
             .setStyle(1)
             .setCustomId(id)
             .setLabel('◀️');
+        this.GuildProfileButton = (disabled, id) => new discord_js_1.MessageButton()
+            .setStyle(1)
+            .setCustomId(id !== null && id !== void 0 ? id : "none")
+            .setDisabled(!id || disabled)
+            .setLabel('Guild Profile');
+        this.GlobalProfileButton = (disabled, id) => new discord_js_1.MessageButton()
+            .setStyle(1)
+            .setCustomId(id !== null && id !== void 0 ? id : "none")
+            .setDisabled(!id || disabled)
+            .setLabel('Global Profile');
+        this.Profiles = (guildShown, playerId, guildId) => new discord_js_1.MessageActionRow()
+            .addComponents(this.GuildProfileButton(guildShown, guildId ? `guildprofile.${playerId}` : undefined), this.GlobalProfileButton(!guildShown, `globalprofile.${playerId}`), this.LikeButton(`likePlayer.${playerId}`), this.DislikeButton(`dislikePlayer.${playerId}`));
         this.ListMessage = (prevId, nextId) => new discord_js_1.MessageActionRow()
             .addComponents(this.PreviusButton(prevId), this.NextButton(nextId));
         this.HostCommend = (likeId, dislikeId) => new discord_js_1.MessageActionRow()
-            .addComponents(this.LikeHost(likeId), this.DislikeHost(dislikeId));
+            .addComponents(this.LikeButton(likeId), this.DislikeButton(dislikeId));
         this.startedOccasion = new discord_js_1.MessageEmbed()
             .setTitle("Event started!")
             .setFooter("Notification will be automatically posted to the notification channel.")
@@ -74,10 +86,6 @@ class EmbedManager {
             .setTitle(`Occasion ${title} finished`)
             .addField("Lasted for", `${time} minutes`)
             .setColor("GREEN");
-        this.announcePublishedResponse = (tags) => new discord_js_1.MessageEmbed()
-            .setTitle(`Announce published`)
-            .addField("Users with these tags will be notified:", tags.join('\n'))
-            .setColor("GREEN");
         this.playerCommended = (user) => new discord_js_1.MessageEmbed()
             .setTitle(`${user.username}'s rating changed`)
             .setFooter("Thank you for improving our community.")
@@ -88,12 +96,12 @@ class EmbedManager {
             .setColor("GREEN");
         this.addedToBlackList = (user) => new discord_js_1.MessageEmbed()
             .setTitle("User added to event blacklist!")
-            .addField("Guild member was blacklisted in your server.", `Since that moment ${user} can't host or participate events in your server.`)
+            .setDescription(`Since that moment <@!${user}> can't host or participate events in your server.`)
             .addField("Special prescription", "Even though, host **can allow** users from blacklist join an occasion.\n Blacklisted users can't be hosts in any case.")
             .setColor("RED");
         this.removedFromBlackList = (user) => new discord_js_1.MessageEmbed()
             .setTitle("User removed from blacklist!")
-            .addField("Congratulations!", `Since that moment ${user} can participate any events in this server and nomimated as host.`)
+            .addField("Congratulations!", `Since that moment <@!${user}> can participate any events in this server and nomimated as host.`)
             .setColor("GREEN");
         this.ownerAdded = (username) => new discord_js_1.MessageEmbed()
             .setTitle("User's permissions increased!")
@@ -107,6 +115,10 @@ class EmbedManager {
         this.limitChanged = (limit) => new discord_js_1.MessageEmbed()
             .setTitle("Limit changed successfuly")
             .setDescription(`Minimum amount of members to start an occasion was changed to ${limit}`)
+            .setColor("GREEN");
+        this.occasionLimitChanged = (limit) => new discord_js_1.MessageEmbed()
+            .setTitle("Limit changed successfuly")
+            .setDescription(`Maximum amount of occasions at the same time is limited to ${limit}`)
             .setColor("GREEN");
         this.unsubscribed = (tag) => new discord_js_1.MessageEmbed()
             .setTitle(`Tag ${tag} was successfuly removed from subscriptions`)
@@ -123,7 +135,7 @@ class EmbedManager {
         this.greeting = (guild, owner) => new discord_js_1.MessageEmbed()
             .setTitle("I will start my job right after you set me up.")
             .addField("Information", `Dear, ${owner}, thank you for inviting me to ${guild}`)
-            .setFooter("Use help command for detailes.")
+            .setDescription("First of all you need to choose a category and voice channel inside it. Bot will create new occasions when people join this channel.")
             .setColor("WHITE");
         this.farawell = (guild, owner) => new discord_js_1.MessageEmbed()
             .setTitle("Information about guild will be removed from our database.")
@@ -140,6 +152,16 @@ class EmbedManager {
             .addComponents(button);
         return row;
     }
+    announcePublishedResponse(tags) {
+        const embed = new discord_js_1.MessageEmbed()
+            .setTitle(`Announce published`)
+            .setColor("GREEN");
+        if (tags.length > 0)
+            embed.addField("Users with these tags will be notified:", tags.join('\n'));
+        else
+            embed.setDescription("No occasion tags detected. To use them, write #YOUR_TAG anywhere in your message.");
+        return embed;
+    }
     notification(title, description, url, banner) {
         const embed = new discord_js_1.MessageEmbed()
             .setTitle(`${title} is about to start.`)
@@ -151,19 +173,41 @@ class EmbedManager {
         return embed;
     }
     playerInfo(player, user, commends) {
+        var _a;
         const playerLikes = commends.filter(commend => commend.cheer && !commend.host).length;
         const playerDislikes = commends.filter(commend => !commend.cheer && !commend.host).length;
         const hostLikes = commends.filter(commend => commend.cheer && commend.host).length;
         const hostDislikes = commends.filter(commend => !commend.cheer && commend.host).length;
-        return new discord_js_1.MessageEmbed()
+        const embed = new discord_js_1.MessageEmbed()
             .setTitle(user.username)
+            .setThumbnail((_a = user.avatarURL()) !== null && _a !== void 0 ? _a : user.defaultAvatarURL)
             .addField("Events played:", player.eventsPlayed.toString())
             .addField("Events hosted:", player.eventsHosted.toString())
             .addField("Time spent in occasions:", `${player.minutesPlayed} minutes`)
             .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
             .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
-            .addField("First event:", player.joinedAt.toLocaleString())
+            .addField("Global score:", player.score.toString())
+            .addField("First event:", player.joinedAt.toLocaleDateString())
             .setColor("PURPLE");
+        if (player.banned > 0)
+            embed.addField(`❌ Warning ❌`, `In blacklist of ${player.banned} servers.`);
+        return embed;
+    }
+    memberProfile(member, user) {
+        var _a;
+        const embed = new discord_js_1.MessageEmbed()
+            .setAuthor(user.username)
+            .setThumbnail((_a = user.avatarURL()) !== null && _a !== void 0 ? _a : user.defaultAvatarURL)
+            .addField("Member:", `<@!${member.id}>`)
+            .addField("Events played: ", member.eventsPlayed.toString())
+            .addField("Events hosted: ", member.eventsHosted.toString())
+            .addField("Time spent in occasions: ", `${member.minutesPlayed.toString()} minutes`)
+            .addField("Guild score: ", member.score.toString())
+            .addField("First participation: ", member.joinedAt.toLocaleDateString())
+            .setColor("DARK_PURPLE");
+        if (member.banned)
+            embed.addField(`❌ Warning ❌`, `This user is prevented from joining events on this server.`);
+        return embed;
     }
 }
 exports.EmbedManager = EmbedManager;

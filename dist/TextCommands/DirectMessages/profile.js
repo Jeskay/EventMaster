@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Error_1 = require("../../Error");
 const DirectMessages_1 = require("../../Commands/DirectMessages");
+const Utils_1 = require("../../Utils");
 exports.command = {
     name: 'profile',
     description: "print user statistics",
@@ -25,12 +26,12 @@ exports.command = {
             if (args.length == 0)
                 userId = message.author.id;
             else if (message.guild)
-                userId = client.helper.extractID(args[0]);
+                userId = (0, Utils_1.extractID)(args[0]);
             const user = yield client.users.cache.get(userId);
             if (!user)
                 throw new Error_1.CommandError("User does not exists.");
             const response = yield (0, DirectMessages_1.profile)(client, user);
-            yield message.channel.send({ embeds: [response] });
+            yield message.channel.send(response);
         }
         catch (error) {
             if (error instanceof Error)
