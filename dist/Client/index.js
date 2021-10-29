@@ -142,7 +142,6 @@ class ExtendedClient extends discord_js_1.Client {
     }
     init() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.login(this.config.token);
             yield (0, typeorm_1.createConnection)();
             this.database = new Managers_1.DataBaseManager();
             const commandPath = path_1.default.join(__dirname, "..", "TextCommands");
@@ -175,6 +174,7 @@ class ExtendedClient extends discord_js_1.Client {
                 console.log(event);
                 this.on(event.name, event.run.bind(null, this));
             }));
+            this.login(this.config.token);
         });
     }
 }

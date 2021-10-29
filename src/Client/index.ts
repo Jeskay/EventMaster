@@ -100,7 +100,6 @@ class ExtendedClient extends Client {
         });
     }
     public async init() {
-        this.login(this.config.token);
         /* database */
         await createConnection();
         this.database = new DataBaseManager();
@@ -138,6 +137,8 @@ class ExtendedClient extends Client {
             console.log(event);
             this.on(event.name, event.run.bind(null, this));
         });
+        //log in bot account
+        this.login(this.config.token);
     }
 }
 
