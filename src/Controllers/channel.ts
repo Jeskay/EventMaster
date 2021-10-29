@@ -13,7 +13,10 @@ export class ChannelController {
         if(member.guild.channels.cache.size >= 499) throw new Error("Channel limit reached");
         if(server.settings.occasion_limit && server.events.length + 1 >= server.settings.occasion_limit)
             await joinedChannel.permissionOverwrites.edit(member.guild.roles.everyone, {'CONNECT': false});
-        await member.voice.setChannel(voice);
+        await member.voice.setChannel(voice).catch(() => {
+            room.delete(voice.guild, voice.id, text.id);
+            return;
+        });
         await database.addOccasion(member.guild.id, {
             voiceChannel: voice.id,
             textChannel: text.id,

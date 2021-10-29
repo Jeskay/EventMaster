@@ -169,7 +169,6 @@ export class DataBaseManager{
         await this.connection.manager.save(post);
     }
 
-
     /**
      * Removes server instance
      * @param serverID guild id

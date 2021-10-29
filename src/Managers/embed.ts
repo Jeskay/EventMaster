@@ -231,7 +231,7 @@ export class EmbedManager{
     public greeting = (guild: string, owner: string) => new MessageEmbed()
     .setTitle("I will start my job right after you set me up.")
     .addField("Information", `Dear, ${owner}, thank you for inviting me to ${guild}`)
-    .setFooter("Use help command for detailes.")
+    .setDescription("First of all you need to choose a category and voice channel inside it. Bot will create new occasions when people join this channel.")
     .setColor("WHITE");
 
     public farawell = (guild: string, owner: string) => new MessageEmbed()
