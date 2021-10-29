@@ -2,7 +2,7 @@ import { User, MessageEmbed, MessageButton, MessageActionRow } from "discord.js"
 import { GuildMember } from "src/entities/member";
 import { Commend } from "../entities/commend";
 import { Player } from "../entities/player";
-const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
+const defaultImageUrl = "https://i.pinimg.com/564x/7c/73/c2/7c73c263484564935023c892801d393c.jpg";
 
 export class EmbedManager{
     private LikeButton = (id: string) => new MessageButton()

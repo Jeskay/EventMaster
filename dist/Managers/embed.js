@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EmbedManager = void 0;
 const discord_js_1 = require("discord.js");
-const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
+const defaultImageUrl = "https://i.pinimg.com/564x/7c/73/c2/7c73c263484564935023c892801d393c.jpg";
 class EmbedManager {
     constructor() {
         this.LikeButton = (id) => new discord_js_1.MessageButton()
