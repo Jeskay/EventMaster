@@ -22,7 +22,7 @@
     "@mikro-orm/migrations": "^4.5.6",
     "@mikro-orm/postgresql": "^4.5.6",
     "discord-api-types": "^0.22.0",
-    "discord.js": "^13.1.0",
+    "discord.js": "^13.3.0",
     "dotenv": "^10.0.0",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",

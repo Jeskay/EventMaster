@@ -5,6 +5,7 @@ import ExtendedClient from "../Client";
 import { Player } from "../entities/player";
 import { GuildMember } from "../entities/member";
 import { Commend } from "../entities/commend";
+import { DataBaseError } from "../Error";
 
     /**
      * Resolves when given channel is located in category and guild
@@ -83,8 +84,9 @@ import { Commend } from "../entities/commend";
      * @returns embed
      */
     export function ratingList(players: Player[] | GuildMember[]){
+        if(players.length == 0) throw new DataBaseError("Empty list");
         var embed = new MessageEmbed()
-        .setTitle("Active users rating")
+        .setTitle("Active users rating");
         players.forEach((player: Player | GuildMember, index: number) => {
             if(player instanceof Player)
             embed.addField(`Tier ${index + 1}`, 
