@@ -3,14 +3,15 @@ import { List } from '../../Utils';
 import ExtendedClient from '../../Client';
 import { CommandError } from '../../Error';
 import { checkChannel, ratingList, subscriptionList } from '../../Utils';
+import * as Controller from '../../Controllers';
 
 export async function dislike(client: ExtendedClient, author: User, user: User) {
-    await client.ratingController.dislikePlayer(client, user.id, author.id);
+    await Controller.dislikePlayer(client, user.id, author.id);
     return client.embeds.playerCommended(user);
 }
 
 export async function like(client: ExtendedClient, author: User, user: User) {
-    await client.ratingController.likePlayer(client, user.id, author.id);
+    await Controller.likePlayer(client, user.id, author.id);
     return client.embeds.playerCommended(user);
 }
 
@@ -69,7 +70,7 @@ export async function vote(client: ExtendedClient, author: User, candidate: User
     if(author.id == candidate.id) throw new CommandError("You can't vote for yourself.");
     const voiceChannel = client.channels.cache.find(channel => checkChannel(author.id, candidate.id, channel)) as VoiceChannel;
     if(!voiceChannel) throw new CommandError("Both voter and candidate must be in occasion channel.");
-    await client.occasionController.vote(client, voiceChannel, author.id, candidate.id);
+    await Controller.vote(client, voiceChannel, author.id, candidate.id);
     return client.embeds.voteConfimation(candidate.username);
 }
 export async function playerRating(client: ExtendedClient, author: User, channel: TextBasedChannels | CommandInteraction) {

@@ -13,7 +13,7 @@ export enum MemberState{
     moved,
     other
 }
-/*Wrap in promise */
+
 export class RoomManger {
     private channels(guild: Guild, text: string, voice: string){
         const voiceChannel = guild.channels.cache.get(voice) as VoiceChannel;
@@ -80,7 +80,7 @@ export class RoomManger {
         await voiceChannel.delete();
         await textChannel.delete();
     }
-    
+    /**@returns channel's state */
     public checkState( oldState: VoiceState, newState: VoiceState){
         if(oldState.channel == newState.channel) return MemberState.other;
         if(newState.channel == null) return MemberState.left;

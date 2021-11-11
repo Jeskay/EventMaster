@@ -1,4 +1,4 @@
-import {ApplicationCommandOption, Client, Collection} from "discord.js";
+import {Client, Collection} from "discord.js";
 import {REST} from '@discordjs/rest';
 import path from 'path';
 import {readdirSync, readdir} from 'fs';
@@ -7,11 +7,11 @@ import {createConnection} from "typeorm";
 import {Event, Button, TextCommand, InteractCommand, ContextCommand} from '../Interfaces';
 import {Config} from '../Config';
 import { DataBaseManager, VoteManager, RoomManger, EmbedManager } from '../Managers';
-import { ChannelController, RatingController, OccasionController } from '../Controllers';
 import { List } from '../Utils';
 import { Routes } from "discord-api-types/v9";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { commandsList, createOption } from "../Utils";
+import { InteractCommandOption } from "../Interfaces/Command";
 
 class ExtendedClient extends Client {
     public config: Config = new Config();
@@ -26,9 +26,6 @@ class ExtendedClient extends Client {
     public vote: VoteManager = new VoteManager(); 
     public embeds: EmbedManager = new EmbedManager();
     public lists: Collection<string, List> = new Collection();
-    public channelController: ChannelController = new ChannelController();
-    public ratingController: RatingController = new RatingController();
-    public occasionController: OccasionController = new OccasionController();
 
     private async extractCommands(path: string) {
         const commands: Array<any> = [];
@@ -47,7 +44,7 @@ class ExtendedClient extends Client {
                     subCommand
                     .setName(command.name)
                     .setDescription(command.description);
-                    (command.options as ApplicationCommandOption[]).forEach(option => {
+                    (command.options as InteractCommandOption[]).forEach(option => {
                         subCommand = createOption(option, subCommand);
                     });
                     if(!subCommands.get(command.name))subCommands.set(subCommand.name, command);
@@ -100,7 +97,6 @@ class ExtendedClient extends Client {
         });
     }
     public async init() {
-        this.login(this.config.token);
         /* database */
         await createConnection();
         this.database = new DataBaseManager();
@@ -138,6 +134,7 @@ class ExtendedClient extends Client {
             console.log(event);
             this.on(event.name, event.run.bind(null, this));
         });
+        await this.login(this.config.token);
     }
 }
 

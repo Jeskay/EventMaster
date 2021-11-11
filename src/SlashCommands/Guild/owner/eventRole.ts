@@ -11,11 +11,11 @@ export const command: InteractCommand = {
             await interaction.deferReply({ephemeral: true});
             if(!interaction.guild) throw new CommandError("You can use this command only in guild");
             const role = interaction.options.getRole("role", true);
-            await setEventRole(client, interaction.guild, interaction.user, role);
-            await interaction.editReply("Role binded successfuly");
+            const response = await setEventRole(client, interaction.guild, interaction.user, role);
+            await interaction.editReply({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)
-                interaction.editReply({embeds: [client.embeds.errorInformation(error.name, error.message)]});
+                interaction.editReply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)]});
         }
     }
 };

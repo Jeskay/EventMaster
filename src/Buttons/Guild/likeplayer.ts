@@ -1,3 +1,4 @@
+import { likePlayer } from '../../Controllers';
 import { CommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
 
@@ -9,7 +10,7 @@ export const button: Button = {
             if(args.length != 1) throw new CommandError("Only one argument required.");
             const author = button.user.id;
             const player = args[0];
-            await client.ratingController.likePlayer(client, player, author);
+            await likePlayer(client, player, author);
             await button.reply({embeds: [client.embeds.hostCommended()], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)

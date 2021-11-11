@@ -281,7 +281,15 @@ export class DataBaseManager{
         player.score = calculateScore(player);
         await this.connection.manager.save(player);
     }
+    /**
+     * Updates member instance
+     * @param instance member instance to update
+     */
     public async updateMember(instance: GuildMember): Promise<void>;
+    /**
+     * Updates member instance
+     * @param instance object with fields and values which need to be updated
+     */
     public async updateMember(instance: object): Promise<void>;
     public async updateMember(instance: object){
         const member = (instance instanceof GuildMember) ? instance : this.connection.manager.create(GuildMember, instance);

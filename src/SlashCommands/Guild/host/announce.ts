@@ -21,7 +21,7 @@ export const command: InteractCommand = {
             await interaction.editReply({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)
-                interaction.editReply({embeds: [client.embeds.errorInformation(error.name, error.message)]});
+                interaction.editReply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)]});
         }
     }
 };

@@ -1,18 +1,19 @@
 import { CommandInteraction, Guild, GuildMember, TextBasedChannels, User } from 'discord.js';
 import { CommandError, DataBaseError } from '../../Error';
 import { blackmembersList, List, ratingList,  } from '../../Utils';
+import * as Controller from '../../Controllers'
 import ExtendedClient from '../../Client';
 
 export async function announce(client: ExtendedClient, author: User, guild: Guild, description: string, title?: string , image?: string) {
-    return await client.occasionController.announce(client, description, guild, author, title, image);
+    return await Controller.announce(client, description, guild, author, title, image);
 }
 
 export async function start(client: ExtendedClient, author: User, guild: Guild, title: string, description: string) {
-    return await client.occasionController.start(client, guild, author, title, description);
+    return await Controller.start(client, guild, author, title, description);
 }
 
 export async function finish(client: ExtendedClient, author: User, guild: Guild, results: string) {
-    return await client.occasionController.finish(client, guild, author, results);
+    return await Controller.finish(client, guild, author, results);
 }
 export async function guildProfile(client: ExtendedClient, guildUser: User | GuildMember, guild: Guild) {
     const member = await client.database.getMember(guild.id, guildUser.id);

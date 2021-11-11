@@ -1,5 +1,5 @@
 import Client from '../Client';
-import { ApplicationCommandOption, CommandInteraction, CommandInteractionOption, Message} from 'discord.js';
+import { ApplicationCommandChannelOption, ApplicationCommandChoicesOption, ApplicationCommandNonOptions, CommandInteraction, CommandInteractionOption, Message, } from 'discord.js';
 
 interface RunRaw {
     (client: Client, message: Message, args: string[]): any;
@@ -12,9 +12,10 @@ export interface TextCommand extends Command {
     run: RunRaw;
 }
 export interface InteractCommand extends Command {
-    options: ApplicationCommandOption[];
+    options: InteractCommandOption[];
     run: RunInteraction;
 }
+export type InteractCommandOption = ApplicationCommandNonOptions | ApplicationCommandChannelOption | ApplicationCommandChoicesOption;
 export interface Command {
     name: string;
     description?: string;

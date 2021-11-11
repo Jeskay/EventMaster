@@ -15,7 +15,7 @@ export const command: TextCommand = {
             if(args.length != 2) throw new CommandError("Invalid number of arguments.");
             const {voice, category} = await getRelatedChannels(args[0], args[1], guild);
             const response = await setOccasions(client, guild, message.author, voice, category);
-            await message.channel.send(response);
+            await message.channel.send({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)
                 message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});

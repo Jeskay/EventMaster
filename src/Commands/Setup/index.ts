@@ -45,7 +45,7 @@ export async function setLog(client: ExtendedClient, guild: Guild, author: User,
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     if(channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS') throw new CommandError("Only text or news channel allowed");
     await client.database.updateSettings(guild.id, {logging_channel: channel.id});
-    return `Channel ${channel.name} successfuly set for logging.`;
+    return client.embeds.logRiggedUp(channel.name);
 }
 
 export async function setEventRole(client: ExtendedClient, guild: Guild, author: User, role: Role | APIRole) {
@@ -53,7 +53,7 @@ export async function setEventRole(client: ExtendedClient, guild: Guild, author:
     if(!server) throw new CommandError("Server is not registered yet.");
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     await client.database.updateSettings(guild.id, {event_role: role.id});
-    return `Role ${role.name} will be mentioned in occasion notifications`;
+    return client.embeds.notificationRoleAccepted(role.name);
 }
 
 export async function setNotification(client: ExtendedClient, guild: Guild, author: User, channel: GuildChannel) {
@@ -62,7 +62,7 @@ export async function setNotification(client: ExtendedClient, guild: Guild, auth
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     if(channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS') throw new CommandError("Only text or news channel allowed");
     await client.database.updateSettings(guild.id, {notification_channel: channel.id});
-    return `Channel ${channel.name} successfuly set to notification.`;
+    return client.embeds.notificationChannelRiggedUp(channel.name);
 }
 
 export async function addToBlackList(client: ExtendedClient, guild: Guild, author: User, user: User) {
@@ -118,5 +118,5 @@ export async function setOccasions(client: ExtendedClient, guild: Guild, author:
         eventChannel: channel.id, 
         eventCategory: category.id
     });
-    return "channel and category successfuly binded.";
+    return client.embeds.occasionsRiggedUp(channel.name, category.name);
 }

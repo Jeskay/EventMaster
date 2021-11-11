@@ -1,10 +1,14 @@
-import { User, MessageEmbed, MessageButton, MessageActionRow } from "discord.js";
+import { User, MessageEmbed, MessageButton, MessageActionRow, ColorResolvable } from "discord.js";
 import { GuildMember } from "src/entities/member";
 import { Commend } from "../entities/commend";
 import { Player } from "../entities/player";
 const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
 
 export class EmbedManager{
+    private confirmColor: ColorResolvable = "GREEN";
+    private errorColor: ColorResolvable = "RED";
+    private infoColor: ColorResolvable = "YELLOW";
+
     private LikeButton = (id: string) => new MessageButton()
     .setStyle(3)
     .setCustomId(id)
@@ -59,12 +63,12 @@ export class EmbedManager{
     public startedOccasion = new MessageEmbed()
     .setTitle("Event started!")
     .setFooter("Notification will be automatically posted to the notification channel.")
-    .setColor("WHITE");
+    .setColor(this.infoColor);
 
     public finishedOccasion = new MessageEmbed()
     .setTitle("Event finished!")
     .setFooter("Don't forget to commend host. The room will be deleted 5 seconds later.")
-    .setColor("WHITE");
+    .setColor(this.infoColor);
 
     public voting = new MessageEmbed()
     .setTitle("Time for the election!")
@@ -74,27 +78,27 @@ export class EmbedManager{
     public voteConfimation = (candidate: string) => new MessageEmbed()
     .addField("Information", `Vote for ${candidate} was confirmed.`)
     .setFooter("We let you know when the election will be finished.")
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public electionFinished = (winner: string) => new MessageEmbed()
     .setTitle("The election is over!")
     .addField(`Welcome your new host - ${winner}`, "Since that moment he's responsible for **everything** that happens in this channel.")
     .setFooter("Don't forget to rate your host after the game.")
-    .setColor("PURPLE");
+    .setColor(this.infoColor);
 
     public occasionNotification = (name: string | undefined, description: string, host: string, image: string | undefined) => new MessageEmbed()
     .setTitle(name ?? "New occasion is about to start!")
     .setDescription(description)
     .setFooter(`announce by ${host}`)
     .setImage(image ?? defaultImageUrl)
-    .setColor("PURPLE");
+    .setColor(this.infoColor);
 
     public occasionStarted = (title: string, description: string, hostName: string, members: number) => new MessageEmbed()
     .setTitle(`Event ${title} started`)
     .setDescription(description)
     .addField("Host:", hostName)
     .addField("Members when started:", members.toString())
-    .setColor("PURPLE");
+    .setColor(this.infoColor);
 
     public occasionFinished = (title: string, description: string, hostName: string, minutes: number, members: number) => new MessageEmbed()
     .setTitle(`Event finished`)
@@ -103,22 +107,22 @@ export class EmbedManager{
     .addField("Host:", hostName)
     .addField("Members when finished:", members.toString())
     .addField("Minutes played:", minutes.toString())
-    .setColor("PURPLE");
+    .setColor(this.infoColor);
     
     public occasionStartResponse = (title: string, description: string) => new MessageEmbed()
     .setTitle(`Occasion ${title} started`)
     .setDescription(description)
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public occasionFinishResponse = (title: string, time: number) => new MessageEmbed()
     .setTitle(`Occasion ${title} finished`)
     .addField("Lasted for",`${time} minutes`)
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public announcePublishedResponse(tags: string[]){
         const embed = new MessageEmbed()
         .setTitle(`Announce published`)
-        .setColor("GREEN");
+        .setColor(this.confirmColor);
         if(tags.length > 0)
             embed.addField("Users with these tags will be notified:", tags.join('\n'))
         else
@@ -131,7 +135,7 @@ export class EmbedManager{
         .setTitle(`${title} is about to start.`)
         .setDescription(description)
         .setURL(url)
-        .setColor("GREEN");
+        .setColor(this.infoColor);
         if(banner) embed.setThumbnail(banner);
         return embed;
     }
@@ -153,7 +157,7 @@ export class EmbedManager{
         .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
         .addField("Global score:", player.score.toString())
         .addField("First event:", player.joinedAt.toLocaleDateString())
-        .setColor("PURPLE");
+        .setColor(this.infoColor);
         if(player.banned > 0) embed.addField(`❌ Warning ❌`, `In blacklist of ${player.banned} servers.`)
         return embed;
     }
@@ -167,7 +171,7 @@ export class EmbedManager{
         .addField("Time spent in occasions: ", `${member.minutesPlayed.toString()} minutes`)
         .addField("Guild score: ", member.score.toString())
         .addField("First participation: ", member.joinedAt.toLocaleDateString())
-        .setColor("DARK_PURPLE");
+        .setColor(this.infoColor);
         if(member.banned) embed.addField(`❌ Warning ❌`, `This user is prevented from joining events on this server.`)
         return embed;
     }
@@ -179,24 +183,24 @@ export class EmbedManager{
     public hostCommended = () => new MessageEmbed()
     .setTitle("Host's rating changed")
     .setFooter("Thank you for improving our community.")
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public addedToBlackList = (user: string) => new MessageEmbed()
     .setTitle("User added to event blacklist!")
     .setDescription(`Since that moment <@!${user}> can't host or participate events in your server.`)
     .addField("Special prescription", "Even though, host **can allow** users from blacklist join an occasion.\n Blacklisted users can't be hosts in any case.")
-    .setColor("RED");
+    .setColor(this.confirmColor);
 
     public removedFromBlackList = (user: string) => new MessageEmbed()
     .setTitle("User removed from blacklist!")
     .addField("Congratulations!", `Since that moment <@!${user}> can participate any events in this server and nomimated as host.`)
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public ownerAdded = (username: string) => new MessageEmbed()
     .setTitle("User's permissions increased!")
     .addField("Congratulations!", `Since that moment ${username} has access to all commands of the bot.`)
     .addField("Prescription", "However, **only** server owner can edit owners list.")
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public ownerRemoved = (username: string) => new MessageEmbed()
     .setTitle("User's permission denied!")
@@ -206,37 +210,57 @@ export class EmbedManager{
     public limitChanged = (limit: number) => new MessageEmbed()
     .setTitle("Limit changed successfuly")
     .setDescription(`Minimum amount of members to start an occasion was changed to ${limit}`)
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public occasionLimitChanged = (limit: number) => new MessageEmbed()
     .setTitle("Limit changed successfuly")
     .setDescription(`Maximum amount of occasions at the same time is limited to ${limit}`)
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
 
     public unsubscribed = (tag: string) => new MessageEmbed()
     .setTitle(`Tag ${tag} was successfuly removed from subscriptions`)
     .setDescription("You won't receive notifications about this type of occasions.")
-    .setColor("DARK_GREEN");
+    .setColor(this.confirmColor);
 
     public subscribed = (tag: string) => new MessageEmbed()
     .setTitle(`Tag ${tag} successfuly added to personal subscribtions.`)
     .setDescription("Bot will send you notification about this type of occasions.")
-    .setColor("GREEN");
+    .setColor(this.confirmColor);
     
-    public errorInformation = (error: string, message: string) => new MessageEmbed()
-    .addField(error, message)
+    public logRiggedUp = (channel: string) => new MessageEmbed()
+    .setTitle(`Channel ${channel} successfuly set for logging.`)
+    .setDescription("All information about occasions will be published in this channel.")
+    .setColor(this.confirmColor);
+    
+    public notificationRoleAccepted = (role: string) => new MessageEmbed()
+    .setTitle(`Role ${role} accepted as notification role.`)
+    .setDescription("Bot will mention it in announcement messages.")
+    .setColor(this.confirmColor);
+
+    public notificationChannelRiggedUp = (channel: string) => new MessageEmbed()
+    .setTitle(`Channel ${channel} successfuly set for notifications.`)
+    .setDescription("Bot will publish announcments about current events there.")
+    .setColor(this.confirmColor);
+    
+    public occasionsRiggedUp = (channel: string, category: string) => new MessageEmbed()
+    .setTitle(`Bot environment successfuly established.`)
+    .setDescription(`Bot will create voice and text channels in ${category} category every time someone joins ${channel} channel.`)
+    .setColor(this.confirmColor);
+    
+    public errorInformation = (error: string, message: string, stack?: string) => new MessageEmbed()
+    .addField(stack ? "Unexpected Error" : error, stack ? "Congratulations, you've found a bug, please contact with support and describe the situation." : message)
     .setFooter("Use help command for detailes.")
-    .setColor("RED");
+    .setColor(this.errorColor);
 
     public greeting = (guild: string, owner: string) => new MessageEmbed()
     .setTitle("I will start my job right after you set me up.")
     .addField("Information", `Dear, ${owner}, thank you for inviting me to ${guild}`)
     .setDescription("First of all you need to choose a category and voice channel inside it. Bot will create new occasions when people join this channel.")
-    .setColor("WHITE");
+    .setColor(this.infoColor);
 
     public farawell = (guild: string, owner: string) => new MessageEmbed()
     .setTitle("Information about guild will be removed from our database.")
     .addField("Information", `Dear, ${owner}, thank you for using our service in ${guild}`)
     .setFooter("Please, send us a letter to let us know why you decided to stop using our service. We will make neccessary improvements.")
-    .setColor("WHITE");
+    .setColor(this.infoColor);
 }
