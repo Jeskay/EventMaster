@@ -4,7 +4,7 @@ import { CategoryChannel, GuildMember, TextChannel, VoiceChannel } from "discord
 import { Server } from "../entities/server";
 import ExtendedClient from "../Client";
 
-async function createChannelJoined(member: GuildMember, server: Server, database: DataBaseManager, room: RoomManger, joinedChannel: VoiceChannel){
+async function createChannelJoined(client: ExtendedClient, member: GuildMember, server: Server, database: DataBaseManager, room: RoomManger, joinedChannel: VoiceChannel){
     const channel = member.guild.channels.cache.get(server.eventCategory) as CategoryChannel;
     if(channel == undefined) return;
     const {voice, text} = await room.create(member.user, channel, server.settings.black_list);
@@ -12,7 +12,7 @@ async function createChannelJoined(member: GuildMember, server: Server, database
     if(server.settings.occasion_limit && server.events.length + 1 >= server.settings.occasion_limit)
         await joinedChannel.permissionOverwrites.edit(member.guild.roles.everyone, {'CONNECT': false});
     await member.voice.setChannel(voice).catch(() => {
-        room.delete(voice.guild, voice.id, text.id);
+        room.delete(client, server, voice.guild, voice.id, text.id);
         return;
     });
     await database.addOccasion(member.guild.id, {
@@ -34,7 +34,7 @@ export async function joinHandler(client: ExtendedClient, member: GuildMember, j
     const server = await client.database.getServerRelations(member.guild.id);
     if(server == null) return;
     if(server.eventChannel == joinedChannel.id){ 
-        await createChannelJoined(member, server, client.database, client.room, joinedChannel);
+        await createChannelJoined(client, member, server, client.database, client.room, joinedChannel);
         return;
     }
     const occasion = server.events.find(event => event.voiceChannel == joinedChannel.id);
@@ -47,7 +47,7 @@ export async function joinHandler(client: ExtendedClient, member: GuildMember, j
         await client.database.updateOccasion(joinedChannel.guild.id, joinedChannel.id, {
             state: OccasionState.voting
         });
-        await text.send({embeds: [client.embeds.voting]});
+        await text.send({embeds: [client.embeds.voting(server.settings.limit)]});
     }
 }
 /**
@@ -62,10 +62,6 @@ export async function leftHandler(client: ExtendedClient, leftChannel: VoiceChan
     if(!occasion) return;
     if(leftChannel != null && leftChannel.members.size == 0){
         await client.database.removeOccasion(leftChannel.guild.id, occasion.voiceChannel);
-        await client.room.delete(leftChannel.guild, occasion.voiceChannel, occasion.textChannel);
-        if(server.settings.occasion_limit && server.settings.occasion_limit == server.events.length) {
-            const joinChannel = await client.channels.fetch(server.eventChannel) as VoiceChannel;
-            await joinChannel.permissionOverwrites.edit(leftChannel.guild.roles.everyone, {'CONNECT': true});
-        }
+        await client.room.delete(client, server, leftChannel.guild, occasion.voiceChannel, occasion.textChannel);
     }
 }

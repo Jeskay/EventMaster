@@ -3,7 +3,7 @@ import { CommandError } from '../../../Error';
 import { subscriptions } from '../../../Commands/DirectMessages';
 
 export const command: InteractCommand = {
-    name: 'subscribtions',
+    name: 'subscriptions',
     description: "shows your subscription list",
     options: [],
     run: async(client, interaction) => {

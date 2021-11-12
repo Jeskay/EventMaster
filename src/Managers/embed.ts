@@ -70,9 +70,21 @@ export class EmbedManager{
     .setFooter("Don't forget to commend host. The room will be deleted 5 seconds later.")
     .setColor(this.infoColor);
 
-    public voting = new MessageEmbed()
+    public voting = (limit: number) => new MessageEmbed()
     .setTitle("Time for the election!")
-    .setFooter("Use **.vote** command to vote for the host.")
+    .setDescription(`Participants need to choose a host - person who will be responsible for the event.
+    Host have **all** permissions in the text and voice channels, so you need to choose carefully. 
+    If you don't like the elected host feel free to leave the channel and create new event.`)
+    .addField("How I can vote for someone?", `Use \`/player vote\` and \`/player voteid\` commands or user's application menu \`vote\`.
+    If you really care about anonymous of your vote, you can use \`/player voteid\` command in bot's DM. 
+    Nobody will know you voted for that guy.
+    `)
+    .addField("How much votes I need to be a host?", ` A person needs to receive \`${limit}\` votes to **immidiately** become a host.
+    The amount of votes was set by server's administration.`)
+    .addField("What happens when host leave the voice channel?", 
+    `Host will keep his permissions even if he leave a voice channel. 
+    He will lose all permissions when event finishes. 
+    Event will be forced to finish if the host will stay alone in the channel for too long or there will be no people at the channel.`)
     .setColor("WHITE");
 
     public voteConfimation = (candidate: string) => new MessageEmbed()
@@ -80,10 +92,21 @@ export class EmbedManager{
     .setFooter("We let you know when the election will be finished.")
     .setColor(this.confirmColor);
 
-    public electionFinished = (winner: string) => new MessageEmbed()
+    public electionFinished = (winnerId: string) => new MessageEmbed()
     .setTitle("The election is over!")
-    .addField(`Welcome your new host - ${winner}`, "Since that moment he's responsible for **everything** that happens in this channel.")
-    .setFooter("Don't forget to rate your host after the game.")
+    .addField(`Welcome your new host - <@!${winnerId}>`, "Since that moment he's responsible for **everything** that happens in this channel.")
+    .addField("How a host should act?", 
+    `When everyone is ready you have to start an event \`/host start\`. 
+    When party is over don't forget to finish it \`/host finish\`, otherwise, the event won't be scored and players' statistics as well as the host's will **not** be changed.`)
+    .addField("We need more people to participate", 
+    `Host can use \`/host announce\` command or message's application menu to create announce about your activity!
+    Remember, you can use tags in the event description to notify subscribed users across the discord about the event.
+    Example: \`/host announce title:My cool party description:We gonna play #Uno #Alias and much more \`
+    To prevent spam abuse the command has a cooldown time, use it carefully.`)
+    .addField("How can I get notifications?", `All you need is subscribe for events you want to participate.
+    Use \`/system subscribe\` to add a new tag to your subscriptions \`/system subscriptions\`. You don't need to pass \`#\` symbol!
+    Example: \`/system subscribe tag:Uno\`
+    `)
     .setColor(this.infoColor);
 
     public occasionNotification = (name: string | undefined, description: string, host: string, image: string | undefined) => new MessageEmbed()
@@ -110,12 +133,12 @@ export class EmbedManager{
     .setColor(this.infoColor);
     
     public occasionStartResponse = (title: string, description: string) => new MessageEmbed()
-    .setTitle(`Occasion ${title} started`)
+    .setTitle(`Event ${title} started`)
     .setDescription(description)
     .setColor(this.confirmColor);
 
     public occasionFinishResponse = (title: string, time: number) => new MessageEmbed()
-    .setTitle(`Occasion ${title} finished`)
+    .setTitle(`Event ${title} finished`)
     .addField("Lasted for",`${time} minutes`)
     .setColor(this.confirmColor);
 
@@ -126,7 +149,7 @@ export class EmbedManager{
         if(tags.length > 0)
             embed.addField("Users with these tags will be notified:", tags.join('\n'))
         else
-            embed.setDescription("No occasion tags detected. To use them, write #YOUR_TAG anywhere in your message.")
+            embed.setDescription("No Event tags detected. To use them, write #YOUR_TAG anywhere in your message.")
         return embed;
     }
 
@@ -150,11 +173,11 @@ export class EmbedManager{
         const embed =  new MessageEmbed()
         .setTitle(user.username)
         .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
-        .addField("Events played:", player.eventsPlayed.toString())
-        .addField("Events hosted:", player.eventsHosted.toString())
+        .addField("Events played:", player.eventsPlayed.toString(), true)
+        .addField("Events hosted:", player.eventsHosted.toString(), true)
         .addField("Time spent in occasions:", `${player.minutesPlayed} minutes`)
-        .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`)
-        .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`)
+        .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`, true)
+        .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`, true)
         .addField("Global score:", player.score.toString())
         .addField("First event:", player.joinedAt.toLocaleDateString())
         .setColor(this.infoColor);
@@ -163,11 +186,10 @@ export class EmbedManager{
     }
     public memberProfile(member: GuildMember, user: User ){
         const embed =  new MessageEmbed()
-        .setAuthor(user.username)
+        .setAuthor(`<@!${member.id}>`)
         .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
-        .addField("Member:", `<@!${member.id}>`)
-        .addField("Events played: ", member.eventsPlayed.toString())
-        .addField("Events hosted: ", member.eventsHosted.toString())
+        .addField("Events played: ", member.eventsPlayed.toString(), true)
+        .addField("Events hosted: ", member.eventsHosted.toString(), true)
         .addField("Time spent in occasions: ", `${member.minutesPlayed.toString()} minutes`)
         .addField("Guild score: ", member.score.toString())
         .addField("First participation: ", member.joinedAt.toLocaleDateString())
@@ -209,27 +231,27 @@ export class EmbedManager{
 
     public limitChanged = (limit: number) => new MessageEmbed()
     .setTitle("Limit changed successfuly")
-    .setDescription(`Minimum amount of members to start an occasion was changed to ${limit}`)
+    .setDescription(`Minimum amount of members to start an event was changed to ${limit}`)
     .setColor(this.confirmColor);
 
     public occasionLimitChanged = (limit: number) => new MessageEmbed()
     .setTitle("Limit changed successfuly")
-    .setDescription(`Maximum amount of occasions at the same time is limited to ${limit}`)
+    .setDescription(`Maximum amount of events at the same time is limited to ${limit}`)
     .setColor(this.confirmColor);
 
     public unsubscribed = (tag: string) => new MessageEmbed()
     .setTitle(`Tag ${tag} was successfuly removed from subscriptions`)
-    .setDescription("You won't receive notifications about this type of occasions.")
+    .setDescription("You won't receive notifications about this type of events.")
     .setColor(this.confirmColor);
 
     public subscribed = (tag: string) => new MessageEmbed()
     .setTitle(`Tag ${tag} successfuly added to personal subscribtions.`)
-    .setDescription("Bot will send you notification about this type of occasions.")
+    .setDescription("Bot will send you notification about this type of events.")
     .setColor(this.confirmColor);
     
     public logRiggedUp = (channel: string) => new MessageEmbed()
     .setTitle(`Channel ${channel} successfuly set for logging.`)
-    .setDescription("All information about occasions will be published in this channel.")
+    .setDescription("All information about events will be published in this channel.")
     .setColor(this.confirmColor);
     
     public notificationRoleAccepted = (role: string) => new MessageEmbed()
@@ -255,7 +277,7 @@ export class EmbedManager{
     public greeting = (guild: string, owner: string) => new MessageEmbed()
     .setTitle("I will start my job right after you set me up.")
     .addField("Information", `Dear, ${owner}, thank you for inviting me to ${guild}`)
-    .setDescription("First of all you need to choose a category and voice channel inside it. Bot will create new occasions when people join this channel.")
+    .setDescription("First of all you need to choose a category and voice channel inside it. Bot initiates new events when people join this channel.")
     .setColor(this.infoColor);
 
     public farawell = (guild: string, owner: string) => new MessageEmbed()

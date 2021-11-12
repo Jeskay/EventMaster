@@ -102,14 +102,9 @@ export async function finish(client: ExtendedClient, guild: Guild, author: User,
     const duration = (new Date()).getMinutes() - occasion.startedAt.getMinutes();
     await updateMembers(client, voice as VoiceChannel, duration);
     await client.database.removeOccasion(server.guild, occasion.voiceChannel);
-    /*Opening join channel if was closed */
-    if(server.settings.occasion_limit && server.settings.occasion_limit == server.events.length - 1) {
-        const joinChannel = await client.channels.fetch(server.eventChannel) as VoiceChannel;
-        await joinChannel.permissionOverwrites.edit(guild.roles.everyone, {'CONNECT': true});
-    }
     // Closing event
     await (text as TextChannel).send({embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
-    setTimeout(() => client.room.delete(guild, occasion.voiceChannel, occasion.textChannel), 10000);
+    setTimeout(() => client.room.delete(client, server, guild, occasion.voiceChannel, occasion.textChannel), 10000);
     //logging 
     if(server.settings.logging_channel) {
         const channel = guild.channels.cache.get(server.settings.logging_channel);
