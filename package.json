@@ -23,7 +23,7 @@
     "dotenv": "^10.0.0",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "^0.2.39",
+    "typeorm": "^0.2.40",
     "typescript": "^4.4.4"
   },
   "repository": "git+https://github.com/Jeskay/OnoBot.git",
