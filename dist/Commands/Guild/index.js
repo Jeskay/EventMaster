@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,21 +32,22 @@ exports.guildRating = exports.blackList = exports.guildProfile = exports.finish 
 const discord_js_1 = require("discord.js");
 const Error_1 = require("../../Error");
 const Utils_1 = require("../../Utils");
+const Controller = __importStar(require("../../Controllers"));
 function announce(client, author, guild, description, title, image) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield client.occasionController.announce(client, description, guild, author, title, image);
+        return yield Controller.announce(client, description, guild, author, title, image);
     });
 }
 exports.announce = announce;
 function start(client, author, guild, title, description) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield client.occasionController.start(client, guild, author, title, description);
+        return yield Controller.start(client, guild, author, title, description);
     });
 }
 exports.start = start;
 function finish(client, author, guild, results) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield client.occasionController.finish(client, guild, author, results);
+        return yield Controller.finish(client, guild, author, results);
     });
 }
 exports.finish = finish;

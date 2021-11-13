@@ -10,23 +10,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
-const DirectMessages_1 = require("../../../Commands/DirectMessages");
+const Setup_1 = require("../../../Commands/Setup");
 const Error_1 = require("../../../Error");
 exports.command = {
-    name: 'like',
-    description: "send a positive comment about user",
-    options: [{ name: 'user', type: "USER", description: "User to like", required: true }],
+    name: 'limit_events',
+    description: 'set maximum amount of events at the same time',
+    options: [{ name: 'amount', type: "INTEGER", description: "maximum amount of occasions which can exist at the same moment.", required: true }],
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const user = interaction.options.getUser("user", true);
-            if (!user)
-                throw new Error_1.CommandError("User does not exists.");
-            const response = yield (0, DirectMessages_1.like)(client, interaction.user, user);
+            const limit = interaction.options.getInteger("amount", true);
+            if (!interaction.guild)
+                throw new Error_1.CommandError("Avaliable only in a guild.");
+            const response = yield (0, Setup_1.setOccasionLimit)(client, interaction.guild, interaction.user, limit);
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {
             if (error instanceof Error)
-                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)] });
+                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true });
         }
     })
 };

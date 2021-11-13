@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.event = void 0;
 const room_1 = require("../Managers/room");
+const Controllers_1 = require("../Controllers");
 exports.event = {
     name: 'voiceStateUpdate',
     run: (client, oldState, newState) => __awaiter(void 0, void 0, void 0, function* () {
@@ -22,14 +23,14 @@ exports.event = {
                 case room_1.MemberState.other:
                     break;
                 case room_1.MemberState.joined:
-                    yield client.channelController.joinHandler(client, newState.member, newState.channel);
+                    yield (0, Controllers_1.joinHandler)(client, newState.member, newState.channel);
                     break;
                 case room_1.MemberState.left:
-                    yield client.channelController.leftHandler(client, oldState.channel);
+                    yield (0, Controllers_1.leftHandler)(client, oldState.channel);
                     break;
                 case room_1.MemberState.moved:
-                    yield client.channelController.joinHandler(client, newState.member, newState.channel);
-                    yield client.channelController.leftHandler(client, oldState.channel);
+                    yield (0, Controllers_1.joinHandler)(client, newState.member, newState.channel);
+                    yield (0, Controllers_1.leftHandler)(client, oldState.channel);
                     break;
             }
         }

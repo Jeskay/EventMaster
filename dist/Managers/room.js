@@ -72,11 +72,15 @@ class RoomManger {
             });
         });
     }
-    delete(guild, voice, text) {
+    delete(client, server, guild, voice, text) {
         return __awaiter(this, void 0, void 0, function* () {
             const { voiceChannel, textChannel } = this.channels(guild, text, voice);
             yield voiceChannel.delete();
             yield textChannel.delete();
+            if (server.settings.occasion_limit && (server.settings.occasion_limit == server.events.length)) {
+                const joinChannel = yield client.channels.fetch(server.eventChannel);
+                yield joinChannel.permissionOverwrites.edit(guild.roles.everyone, { 'CONNECT': true });
+            }
         });
     }
     checkState(oldState, newState) {

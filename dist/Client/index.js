@@ -39,7 +39,6 @@ const util_1 = require("util");
 const typeorm_1 = require("typeorm");
 const Config_1 = require("../Config");
 const Managers_1 = require("../Managers");
-const Controllers_1 = require("../Controllers");
 const Utils_1 = require("../Utils");
 const v9_1 = require("discord-api-types/v9");
 const builders_1 = require("@discordjs/builders");
@@ -58,9 +57,6 @@ class ExtendedClient extends discord_js_1.Client {
         this.vote = new Managers_1.VoteManager();
         this.embeds = new Managers_1.EmbedManager();
         this.lists = new discord_js_1.Collection();
-        this.channelController = new Controllers_1.ChannelController();
-        this.ratingController = new Controllers_1.RatingController();
-        this.occasionController = new Controllers_1.OccasionController();
     }
     extractCommands(path) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -174,7 +170,7 @@ class ExtendedClient extends discord_js_1.Client {
                 console.log(event);
                 this.on(event.name, event.run.bind(null, this));
             }));
-            this.login(this.config.token);
+            yield this.login(this.config.token);
         });
     }
 }

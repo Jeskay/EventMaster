@@ -13,7 +13,7 @@ exports.command = void 0;
 const Error_1 = require("../../../Error");
 const DirectMessages_1 = require("../../../Commands/DirectMessages");
 exports.command = {
-    name: 'subscribtions',
+    name: 'subscriptions',
     description: "shows your subscription list",
     options: [],
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,7 +24,7 @@ exports.command = {
         }
         catch (error) {
             if (error instanceof Error)
-                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
+                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)] });
         }
     })
 };

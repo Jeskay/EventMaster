@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createOption = exports.calculateScore = exports.findSubscriptions = exports.blackmembersList = exports.ratingList = exports.subscriptionList = exports.commandsList = exports.checkChannel = exports.extractID = exports.getRelatedChannels = void 0;
 const discord_js_1 = require("discord.js");
 const player_1 = require("../entities/player");
+const Error_1 = require("../Error");
 function getRelatedChannels(channelID, categoryID, guild) {
     return __awaiter(this, void 0, void 0, function* () {
         const channel = yield guild.channels.fetch(channelID);
@@ -62,6 +63,7 @@ function commandsList(client) {
 exports.commandsList = commandsList;
 function subscriptionList(tags) {
     var embed = new discord_js_1.MessageEmbed()
+        .setColor("GREEN")
         .setTitle("Subscriptions");
     let field = "";
     for (let i = 1; i <= tags.length; i++) {
@@ -77,18 +79,19 @@ function subscriptionList(tags) {
 }
 exports.subscriptionList = subscriptionList;
 function ratingList(players) {
+    if (players.length == 0)
+        throw new Error_1.DataBaseError("Empty list");
     var embed = new discord_js_1.MessageEmbed()
+        .setColor("GOLD")
         .setTitle("Active users rating");
     players.forEach((player, index) => {
         if (player instanceof player_1.Player)
-            embed.addField(`Tier ${index + 1}`, `id: ${player.id}
-            rank: ${player.score}
+            embed.addField(`${index + 1}. ${player.id}`, `rank: ${player.score}
             commended by ${player.commendsAbout.length} players
             minutes played: ${player.minutesPlayed}
             `);
         else
-            embed.addField(`Guild tier ${index + 1}`, `username: <@!${player.id}>
-            rank:${player.score}
+            embed.addField(`${index + 1}. <@!${player.id}>`, `rank:${player.score}
             minutes played in guild: ${player.minutesPlayed}
             joined guild: ${player.joinedAt.toLocaleDateString()}
             `);
@@ -98,6 +101,7 @@ function ratingList(players) {
 exports.ratingList = ratingList;
 function blackmembersList(players) {
     var embed = new discord_js_1.MessageEmbed()
+        .setColor("NOT_QUITE_BLACK")
         .setTitle("Players prevented from joining occasions");
     players.forEach((playerId, index) => embed.addField(`${index + 1}.`, `<@!${playerId}>`, true));
     return embed;

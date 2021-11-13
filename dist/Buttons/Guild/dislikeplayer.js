@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = void 0;
+const Controllers_1 = require("../../Controllers");
 const Error_1 = require("../../Error");
 exports.button = {
     name: 'dislikePlayer',
@@ -20,7 +21,7 @@ exports.button = {
                 throw new Error_1.CommandError("Only one argument required.");
             const author = button.user.id;
             const player = args[0];
-            yield client.ratingController.likePlayer(client, player, author);
+            yield (0, Controllers_1.likePlayer)(client, player, author);
             yield button.reply({ embeds: [client.embeds.hostCommended()], ephemeral: true });
         }
         catch (error) {

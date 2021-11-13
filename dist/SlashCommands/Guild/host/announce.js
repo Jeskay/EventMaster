@@ -34,7 +34,7 @@ exports.command = {
         }
         catch (error) {
             if (error instanceof Error)
-                interaction.editReply({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
+                interaction.editReply({ embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)] });
         }
     })
 };

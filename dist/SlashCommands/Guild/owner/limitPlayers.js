@@ -13,7 +13,7 @@ exports.command = void 0;
 const Setup_1 = require("../../../Commands/Setup");
 const Error_1 = require("../../../Error");
 exports.command = {
-    name: 'limitplayers',
+    name: 'limit_votes',
     description: 'set amount of votes to be achieved by user to finish the election',
     aliases: ['sl', 'limit'],
     options: [{ name: 'amount', type: "INTEGER", description: "minimum amount of votes for host to start an occasion.", required: true }],
@@ -27,7 +27,7 @@ exports.command = {
         }
         catch (error) {
             if (error instanceof Error)
-                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
+                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true });
         }
     })
 };

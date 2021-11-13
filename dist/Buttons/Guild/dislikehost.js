@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = void 0;
+const Controllers_1 = require("../../Controllers");
 const Error_1 = require("../../Error");
 exports.button = {
     name: 'dislikeHost',
@@ -20,7 +21,7 @@ exports.button = {
                 throw new Error_1.CommandError("Too much arguments");
             const author = button.user.id;
             const host = args[0];
-            yield client.ratingController.dislikeHost(client, host, author);
+            yield (0, Controllers_1.dislikeHost)(client, host, author);
             yield button.reply({ embeds: [client.embeds.hostCommended()], ephemeral: true });
         }
         catch (error) {

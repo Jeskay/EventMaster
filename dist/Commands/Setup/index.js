@@ -73,7 +73,7 @@ function setLog(client, guild, author, channel) {
         if (channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS')
             throw new Error_1.CommandError("Only text or news channel allowed");
         yield client.database.updateSettings(guild.id, { logging_channel: channel.id });
-        return `Channel ${channel.name} successfuly set for logging.`;
+        return client.embeds.logRiggedUp(channel.name);
     });
 }
 exports.setLog = setLog;
@@ -85,7 +85,7 @@ function setEventRole(client, guild, author, role) {
         if (!server.settings.owners.includes(author.id))
             throw new Error_1.CommandError("Permission denied.");
         yield client.database.updateSettings(guild.id, { event_role: role.id });
-        return `Role ${role.name} will be mentioned in occasion notifications`;
+        return client.embeds.notificationRoleAccepted(role.name);
     });
 }
 exports.setEventRole = setEventRole;
@@ -99,7 +99,7 @@ function setNotification(client, guild, author, channel) {
         if (channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS')
             throw new Error_1.CommandError("Only text or news channel allowed");
         yield client.database.updateSettings(guild.id, { notification_channel: channel.id });
-        return `Channel ${channel.name} successfuly set to notification.`;
+        return client.embeds.notificationChannelRiggedUp(channel.name);
     });
 }
 exports.setNotification = setNotification;
@@ -175,7 +175,7 @@ function setOccasions(client, guild, author, channel, category) {
             eventChannel: channel.id,
             eventCategory: category.id
         });
-        return "channel and category successfuly binded.";
+        return client.embeds.occasionsRiggedUp(channel.name, category.name);
     });
 }
 exports.setOccasions = setOccasions;

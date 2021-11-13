@@ -27,7 +27,7 @@ exports.command = {
                 throw new Error_1.CommandError("Invalid number of arguments.");
             const { voice, category } = yield (0, Utils_1.getRelatedChannels)(args[0], args[1], guild);
             const response = yield (0, Setup_1.setOccasions)(client, guild, message.author, voice, category);
-            yield message.channel.send(response);
+            yield message.channel.send({ embeds: [response] });
         }
         catch (error) {
             if (error instanceof Error)

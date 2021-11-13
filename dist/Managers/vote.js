@@ -9,52 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VoteManager = exports.Election = void 0;
-class Election {
-    constructor(goal) {
-        this.goal = goal;
-        this.votes = new Map();
-        this.score = new Map();
-    }
-    check(candidate) {
-        if (this.score[candidate] >= this.goal) {
-            this.leader = candidate;
-            return true;
-        }
-        return false;
-    }
-    add(voter, candidate) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (this.votes.has(voter))
-                throw Error("Person has already voted");
-            if (this.score[candidate] == undefined)
-                this.score[candidate] = 1;
-            else
-                this.score[candidate]++;
-            this.votes[voter] = candidate;
-            if (this.check(candidate))
-                return true;
-            return false;
-        });
-    }
-    remove(voter) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.votes.has(voter))
-                throw Error("Person has not voted yet");
-            const candidate = this.votes[voter];
-            this.score[candidate]--;
-            this.votes.delete(voter);
-        });
-    }
-}
-exports.Election = Election;
+exports.VoteManager = void 0;
+const Utils_1 = require("../Utils");
 class VoteManager {
     constructor() {
         this.elections = new Map();
     }
     start(occasion, goal) {
-        this.elections[occasion] = new Election(goal);
-        console.log(`election in voice ${occasion} started`);
+        this.elections[occasion] = new Utils_1.Election(goal);
     }
     finish(occasion) {
         this.elections.delete(occasion);

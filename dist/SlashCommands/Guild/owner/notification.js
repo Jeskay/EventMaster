@@ -13,7 +13,7 @@ exports.command = void 0;
 const Setup_1 = require("../../../Commands/Setup");
 const Error_1 = require("../../../Error");
 exports.command = {
-    name: 'notification',
+    name: 'notifications',
     description: "set notification channel where bot will notify users about current events",
     aliases: ['notify'],
     options: [{ name: 'channel', type: "CHANNEL", description: "Channel where bot will post announces about occasions.", required: true }],
@@ -23,11 +23,11 @@ exports.command = {
                 throw new Error_1.CommandError("Available only in a guild.");
             const channel = interaction.options.getChannel("channel", true);
             const response = yield (0, Setup_1.setNotification)(client, interaction.guild, interaction.user, channel);
-            yield interaction.reply({ content: response, ephemeral: true });
+            yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {
             if (error instanceof Error)
-                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true });
+                interaction.reply({ embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true });
         }
     })
 };

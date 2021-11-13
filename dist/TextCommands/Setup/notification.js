@@ -28,7 +28,7 @@ exports.command = {
             if (!channel)
                 throw new Error_1.CommandError("Invalid channel id.");
             const response = yield (0, Setup_1.setNotification)(client, guild, message.author, channel);
-            yield message.channel.send(response);
+            yield message.channel.send({ embeds: [response] });
         }
         catch (error) {
             if (error instanceof Error)
