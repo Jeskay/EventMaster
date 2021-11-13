@@ -4,7 +4,7 @@ import { CommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'notification',
+    name: 'notifications',
     description: "set notification channel where bot will notify users about current events",
     aliases: ['notify'],
     options: [{name: 'channel', type: "CHANNEL", description: "Channel where bot will post announces about occasions.", required: true}],

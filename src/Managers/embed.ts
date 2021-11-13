@@ -277,7 +277,16 @@ export class EmbedManager{
     public greeting = (guild: string, owner: string) => new MessageEmbed()
     .setTitle("I will start my job right after you set me up.")
     .addField("Information", `Dear, ${owner}, thank you for inviting me to ${guild}`)
-    .setDescription("First of all you need to choose a category and voice channel inside it. Bot initiates new events when people join this channel.")
+    .addField("Setting up", 
+    `First of all players need a room to play. 
+    Use command \`/owner setup\` to select category where bot will create voice and text channels for players and voice channel where people will join to initiate an event.
+    That's all you need to help guild members organize their own events!`)
+    .addField("Useful commands", 
+    ` Commmands in \`/owner\` section are the ones only server owner can use.
+    They allow you to change bot settings such as amount of current events, minimum votes for host election, log channel, channel for announces, role to mention in announces etc.
+    Also, you can give someone administrator rights - \`/owner setadmin\`.
+    Administrator has permission to block members from playing events (hosts have permission to open channel for blocked users) or unblock them.
+    Blocked users have a special badge in profile and receive less rank points from playing events even on other servers.`)
     .setColor(this.infoColor);
 
     public farawell = (guild: string, owner: string) => new MessageEmbed()

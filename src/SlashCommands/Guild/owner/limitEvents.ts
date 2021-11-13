@@ -3,7 +3,7 @@ import { CommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'limitoccasions',
+    name: 'limit_events',
     description: 'set maximum amount of events at the same time',
     options: [{name: 'amount', type: "INTEGER", description: "maximum amount of occasions which can exist at the same moment.", required: true}],
     run: async(client, interaction) => {
