@@ -16,7 +16,7 @@ export const command: TextCommand = {
             const channel = await guild.channels.fetch(args[0]);
             if(!channel) throw new CommandError("Invalid channel id.");
             const response = await setLog(client, guild, message.author, channel as GuildChannel);
-            await message.channel.send(response);
+            await message.channel.send({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)
                 message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});

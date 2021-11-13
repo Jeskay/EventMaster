@@ -3,8 +3,8 @@ import { removeOwner } from '../../../Commands/Setup';
 import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'removeowner',
-    description: 'deny user permissions for bot settings',
+    name: 'remove_admin',
+    description: 'deny user permissions to edit blacklist',
     aliases: ['deleteowner'],
     options: [{name: 'user', type: "USER", description: "Owner who will lose his permissions.", required: true}],
     run: async(client, interaction) => {
@@ -15,7 +15,7 @@ export const command: InteractCommand = {
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true});
         }
     }
 };

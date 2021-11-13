@@ -1,10 +1,12 @@
-import { ApplicationCommandOption, CategoryChannel, Channel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
+import { CategoryChannel, Channel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
 import {SlashCommandBuilder, SlashCommandSubcommandBuilder} from "@discordjs/builders";
 import { Tag } from "../entities/tag";
 import ExtendedClient from "../Client";
 import { Player } from "../entities/player";
 import { GuildMember } from "../entities/member";
 import { Commend } from "../entities/commend";
+import { DataBaseError } from "../Error";
+import { InteractCommandOption } from "../Interfaces/Command";
 
     /**
      * Resolves when given channel is located in category and guild
@@ -65,6 +67,7 @@ import { Commend } from "../entities/commend";
      */
     export function subscriptionList(tags: Tag[]){
         var embed = new MessageEmbed()
+        .setColor("GREEN")
         .setTitle("Subscriptions");
         let field = "";
         for(let i = 1;i <= tags.length; i++){
@@ -83,21 +86,21 @@ import { Commend } from "../entities/commend";
      * @returns embed
      */
     export function ratingList(players: Player[] | GuildMember[]){
+        if(players.length == 0) throw new DataBaseError("Empty list");
         var embed = new MessageEmbed()
-        .setTitle("Active users rating")
+        .setColor("GOLD")
+        .setTitle("Active users rating");
         players.forEach((player: Player | GuildMember, index: number) => {
             if(player instanceof Player)
-            embed.addField(`Tier ${index + 1}`, 
-            `id: ${player.id}
-            rank: ${player.score}
+            embed.addField(`${index + 1}. ${player.id}`, 
+            `rank: ${player.score}
             commended by ${player.commendsAbout.length} players
             minutes played: ${player.minutesPlayed}
             `
             );
             else
-            embed.addField(`Guild tier ${index + 1}`,
-            `username: <@!${player.id}>
-            rank:${player.score}
+            embed.addField(`${index + 1}. <@!${player.id}>`,
+            `rank:${player.score}
             minutes played in guild: ${player.minutesPlayed}
             joined guild: ${player.joinedAt.toLocaleDateString()}
             `);
@@ -106,6 +109,7 @@ import { Commend } from "../entities/commend";
     }
     export function blackmembersList(players: string[]){
         var embed = new MessageEmbed()
+        .setColor("NOT_QUITE_BLACK")
         .setTitle("Players prevented from joining occasions")
         players.forEach((playerId, index) => embed.addField(`${index + 1}.`, `<@!${playerId}>`, true));
         return embed;
@@ -139,13 +143,13 @@ import { Commend } from "../entities/commend";
     /**
      * Adds option to slashCommand
      */
-    export function createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder): SlashCommandBuilder;
+    export function createOption(interact_option: InteractCommandOption, slashCommand: SlashCommandBuilder): SlashCommandBuilder;
     /**
      * Adds option to subCommand
      */
-    export function createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder;
+    export function createOption(interact_option: InteractCommandOption, slashCommand: SlashCommandSubcommandBuilder): SlashCommandSubcommandBuilder;
     
-    export function createOption(interact_option: ApplicationCommandOption, slashCommand: SlashCommandBuilder | SlashCommandSubcommandBuilder) {
+    export function createOption(interact_option: InteractCommandOption, slashCommand: SlashCommandBuilder | SlashCommandSubcommandBuilder) {
         const setOption = (option: any) => 
             option.setName(interact_option.name)
             .setDescription(interact_option.description)

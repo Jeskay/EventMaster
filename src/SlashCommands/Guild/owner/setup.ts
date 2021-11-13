@@ -18,10 +18,10 @@ export const command: InteractCommand = {
             const category = interaction.options.getChannel('category', true) as GuildChannel;
             if(!(voice instanceof VoiceChannel && category instanceof CategoryChannel)) throw new CommandError("Invalid channel type.");
             const response = await setOccasions(client, interaction.guild, interaction.user, voice as VoiceChannel, category as CategoryChannel);
-            await interaction.reply({content: response, ephemeral: true});
+            await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true});
         }
     }
 };

@@ -3,7 +3,7 @@ import { CommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
 
 export const command: InteractCommand = {
-    name: 'limitoccasions',
+    name: 'limit_events',
     description: 'set maximum amount of events at the same time',
     options: [{name: 'amount', type: "INTEGER", description: "maximum amount of occasions which can exist at the same moment.", required: true}],
     run: async(client, interaction) => {
@@ -14,7 +14,7 @@ export const command: InteractCommand = {
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true});
         }
     }
 };

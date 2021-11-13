@@ -1,4 +1,6 @@
 import {GuildMember, User, CategoryChannel, VoiceState, VoiceChannel, Guild, TextChannel, OverwriteResolvable, Permissions } from "discord.js";
+import ExtendedClient from "../Client";
+import { Server } from "../entities/server";
 
 export enum OccasionState{
     voting,
@@ -13,7 +15,7 @@ export enum MemberState{
     moved,
     other
 }
-/*Wrap in promise */
+
 export class RoomManger {
     private channels(guild: Guild, text: string, voice: string){
         const voiceChannel = guild.channels.cache.get(voice) as VoiceChannel;
@@ -75,12 +77,16 @@ export class RoomManger {
      * @param voice voice channel id
      * @param text text channel id
      */
-    public async delete(guild: Guild, voice: string, text: string){
+    public async delete(client: ExtendedClient, server: Server, guild: Guild, voice: string, text: string){
         const {voiceChannel, textChannel} = this.channels(guild, text, voice);
         await voiceChannel.delete();
         await textChannel.delete();
+        if(server.settings.occasion_limit && (server.settings.occasion_limit == server.events.length)) {
+            const joinChannel = await client.channels.fetch(server.eventChannel) as VoiceChannel;
+            await joinChannel.permissionOverwrites.edit(guild.roles.everyone, {'CONNECT': true});
+        }
     }
-    
+    /**@returns channel's state */
     public checkState( oldState: VoiceState, newState: VoiceState){
         if(oldState.channel == newState.channel) return MemberState.other;
         if(newState.channel == null) return MemberState.left;
