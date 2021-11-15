@@ -2,7 +2,7 @@ import { User, MessageEmbed, MessageButton, MessageActionRow, ColorResolvable } 
 import { GuildMember } from "src/entities/member";
 import { Commend } from "../entities/commend";
 import { Player } from "../entities/player";
-const defaultImageUrl = "https://cdn.theatlantic.com/thumbor/b-GfuBo5WHQpYMuN_mjlLHw5xO4=/461x265:1541x1345/1080x1080/media/img/mt/2018/03/AP_325360162607/original.jpg";
+const defaultImageUrl = "http://images.gofreedownload.net/3/party-background-joyful-people-flag-ribbon-cartoon-design-262438.jpg";
 
 export class EmbedManager{
     private confirmColor: ColorResolvable = "GREEN";
