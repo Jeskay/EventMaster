@@ -46,17 +46,18 @@ function checkChannel(member1, member2, channel) {
 exports.checkChannel = checkChannel;
 function commandsList(client) {
     const embed = new discord_js_1.MessageEmbed()
-        .setTitle("Commands");
+        .setTitle("Commands")
+        .setColor("WHITE");
     client.commands.forEach(command => {
         var _a;
-        var options = "";
+        var options = Array.from(command.options, option => `${option.name}`).join(' ');
         var line = "";
-        if (command.options)
-            options = Array.from(command.options, option => `${option.name}`).join(' ') + '\n';
-        line += `${options}${(_a = command.description) !== null && _a !== void 0 ? _a : "no description"}`;
+        if (options.length > 0)
+            options = " `" + options + "`" + '\n';
+        line += `> ${(_a = command.description) !== null && _a !== void 0 ? _a : "no description"}`;
         if (command.aliases)
-            line += "\nAliases:" + command.aliases.join(', ');
-        embed.addField(command.name, line);
+            line += "\n> Aliases: `" + command.aliases.join(', ') + "`";
+        embed.addField(client.config.prefix + command.name + options, line);
     });
     return embed;
 }

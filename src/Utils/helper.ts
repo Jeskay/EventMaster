@@ -49,14 +49,15 @@ import { InteractCommandOption } from "../Interfaces/Command";
      */
     export function commandsList(client: ExtendedClient): MessageEmbed {
         const embed = new MessageEmbed()
-        .setTitle("Commands");
+        .setTitle("Commands")
+        .setColor("WHITE");
         client.commands.forEach(command => {
-            var options: string = "";
+            var options: string = Array.from(command.options, option => `${option.name}`).join(' ');
             var line = "";
-            if(command.options) options = Array.from(command.options, option => `${option.name}`).join(' ') + '\n';
-            line += `${options}${command.description ?? "no description"}`;
-            if(command.aliases) line += "\nAliases:" + command.aliases.join(', ');
-            embed.addField(command.name, line);
+            if(options.length > 0) options = " `" + options + "`" + '\n';
+            line += `> ${command.description ?? "no description"}`;
+            if(command.aliases) line += "\n> Aliases: `" + command.aliases.join(', ') + "`";
+            embed.addField(client.config.prefix + command.name + options, line);
         });
         return embed;
     }

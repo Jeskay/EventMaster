@@ -179,7 +179,7 @@ export class EmbedManager{
         .addField("Player stats:", `${playerLikes} 👍   ${playerDislikes} 👎`, true)
         .addField("Host stats:", `${hostLikes} 👍   ${hostDislikes} 👎`, true)
         .addField("Global score:", player.score.toString())
-        .addField("First event:", player.joinedAt.toLocaleDateString())
+        .addField("First event:", `<t:${player.joinedAt.getTime() / 1000}>`)
         .setColor(this.infoColor);
         if(player.banned > 0) embed.addField(`❌ Warning ❌`, `In blacklist of ${player.banned} servers.`)
         return embed;
@@ -192,7 +192,7 @@ export class EmbedManager{
         .addField("Events hosted: ", member.eventsHosted.toString(), true)
         .addField("Time spent in occasions: ", `${member.minutesPlayed.toString()} minutes`)
         .addField("Guild score: ", member.score.toString())
-        .addField("First participation: ", member.joinedAt.toLocaleDateString())
+        .addField("First participation: ", `<t:${member.joinedAt.getTime() / 1000}>`)
         .setColor(this.infoColor);
         if(member.banned) embed.addField(`❌ Warning ❌`, `This user is prevented from joining events on this server.`)
         return embed;

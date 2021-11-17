@@ -1,11 +1,10 @@
-import { setLimit } from '../../Commands/Setup';
+import { setOccasionLimit } from '../../Commands/Setup';
 import { CommandError } from '../../Error';
-import {TextCommand} from '../../Interfaces';
+import { TextCommand } from '../../Interfaces';
 
 export const command: TextCommand = {
-    name: 'setlimit',
-    description: 'set amount of users to start the host election',
-    aliases: ['sl', 'limit'],
+    name: 'limit_events',
+    description: 'set maximum amount of events at the same time',
     options: [{name: 'amount', type: "NUMBER"}],
     run: async(client, message, args) => {
         try {
@@ -13,10 +12,11 @@ export const command: TextCommand = {
             if(!guild) return;
             if(args.length != 1) throw new CommandError("Users amount must be provided.");
             const limit = parseInt(args[0]);
-            await setLimit(client, guild, message.author, limit);
+            const response = await setOccasionLimit(client, guild, message.author, limit);
+            await message.reply({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)
-                message.channel.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});
+                message.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)]});
         }
     }
 };

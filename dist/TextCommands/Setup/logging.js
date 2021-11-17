@@ -13,7 +13,7 @@ exports.command = void 0;
 const Setup_1 = require("../../Commands/Setup");
 const Error_1 = require("../../Error");
 exports.command = {
-    name: 'logging',
+    name: 'set_log',
     description: "set log channel where bot will post information about passed events",
     aliases: ['log'],
     options: [{ name: 'channel', type: "CHANNEL" }],

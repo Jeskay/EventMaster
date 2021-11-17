@@ -4,9 +4,9 @@ import { CommandError } from '../../Error';
 import {TextCommand} from '../../Interfaces';
 
 export const command: TextCommand = {
-    name: 'notification',
+    name: 'set_notification',
     description: "set notification channel where bot will notify users about current events",
-    aliases: ['notify'],
+    aliases: ['set_notify'],
     options: [{name: 'channel', type: "CHANNEL"}],
     run: async(client, message, args) => {
         try {

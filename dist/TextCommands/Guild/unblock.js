@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
+const Utils_1 = require("../../Utils");
 const Setup_1 = require("../../Commands/Setup");
 const Error_1 = require("../../Error");
-const Utils_1 = require("../../Utils");
 exports.command = {
-    name: 'addowner',
-    description: 'give user increased permissions for bot settings',
-    aliases: ['setowner'],
+    name: 'unblock_user',
+    description: 'removes a user from the black list',
+    aliases: ['unblock'],
     options: [{ name: 'user', type: "USER" }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -24,12 +24,10 @@ exports.command = {
             if (!guild)
                 return;
             if (args.length != 1)
-                return;
+                throw new Error_1.CommandError("User Id must be provided");
             const userId = (0, Utils_1.extractID)(args[0]);
             const user = yield client.users.fetch(userId);
-            if (!user)
-                throw new Error_1.CommandError("Cannot find a user.");
-            const response = yield (0, Setup_1.addOwner)(client, guild, message.author, user);
+            const response = yield (0, Setup_1.removeFromBlackList)(client, guild, message.author, user);
             yield message.channel.send({ embeds: [response] });
         }
         catch (error) {

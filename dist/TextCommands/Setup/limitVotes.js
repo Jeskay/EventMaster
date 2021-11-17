@@ -13,9 +13,9 @@ exports.command = void 0;
 const Setup_1 = require("../../Commands/Setup");
 const Error_1 = require("../../Error");
 exports.command = {
-    name: 'setlimit',
-    description: 'set amount of users to start the host election',
-    aliases: ['sl', 'limit'],
+    name: 'limit_votes',
+    description: 'set amount of votes to be achieved by user to finish the election.',
+    aliases: ['setlimit', 'limit'],
     options: [{ name: 'amount', type: "NUMBER" }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {

@@ -116,7 +116,7 @@ class ExtendedClient extends Client {
                 }
             }
         });
-        this.lists.set('help', new List(30, commandsList(this), 10));
+        this.lists.set('help', new List(60, commandsList(this), 10));
         /* buttons */
         const buttonPath = path.join(__dirname, "..", "Buttons");
         readdirSync(buttonPath).forEach(dir => {

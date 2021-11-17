@@ -4,7 +4,7 @@ import { CommandError } from '../../Error';
 import {TextCommand} from '../../Interfaces';
 
 export const command: TextCommand = {
-    name: 'logging',
+    name: 'set_log',
     description: "set log channel where bot will post information about passed events",
     aliases: ['log'],
     options: [{name: 'channel', type: "CHANNEL"}],

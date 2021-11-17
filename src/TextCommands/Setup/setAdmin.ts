@@ -1,21 +1,22 @@
-import { extractID } from '../../Utils';
-import { removeFromBlackList } from '../../Commands/Setup';
+import { addOwner } from '../../Commands/Setup';
 import { CommandError } from '../../Error';
 import {TextCommand} from '../../Interfaces';
+import { extractID } from '../../Utils';
 
 export const command: TextCommand = {
-    name: 'whitelist',
-    description: 'removes a user from the black list',
-    aliases: ['wl'],
+    name: 'set_admin',
+    description: 'give user increased permissions for bot settings',
+    aliases: ['setowner'],
     options: [{name: 'user', type: "USER"}],
     run: async(client, message, args) => {
         try {
             const guild = message.guild;
             if(!guild) return;
-            if(args.length != 1) throw new CommandError("User Id must be provided");
+            if(args.length != 1) return;
             const userId = extractID(args[0]);
             const user = await client.users.fetch(userId);
-            const response = await removeFromBlackList(client, guild, message.author, user);
+            if(!user) throw new CommandError("Cannot find a user.");
+            const response = await addOwner(client, guild, message.author, user);
             await message.channel.send({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)

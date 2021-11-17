@@ -13,9 +13,9 @@ exports.command = void 0;
 const Setup_1 = require("../../Commands/Setup");
 const Error_1 = require("../../Error");
 exports.command = {
-    name: 'notification',
+    name: 'set_notification',
     description: "set notification channel where bot will notify users about current events",
-    aliases: ['notify'],
+    aliases: ['set_notify'],
     options: [{ name: 'channel', type: "CHANNEL" }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {

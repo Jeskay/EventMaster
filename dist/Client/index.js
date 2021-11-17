@@ -154,7 +154,7 @@ class ExtendedClient extends discord_js_1.Client {
                     }
                 }
             });
-            this.lists.set('help', new Utils_1.List(30, (0, Utils_2.commandsList)(this), 10));
+            this.lists.set('help', new Utils_1.List(60, (0, Utils_2.commandsList)(this), 10));
             const buttonPath = path_1.default.join(__dirname, "..", "Buttons");
             (0, fs_1.readdirSync)(buttonPath).forEach(dir => {
                 const buttons = (0, fs_1.readdirSync)(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));

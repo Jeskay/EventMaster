@@ -4,9 +4,9 @@ import {setOccasions} from '../../Commands/Setup/';
 import { getRelatedChannels } from '../../Utils';
 
 export const command: TextCommand = {
-    name: 'setup',
+    name: 'setup_channels',
     description: 'set channel where to join for event and category where rooms will be created',
-    aliases: ['s'],
+    aliases: ['setup'],
     options: [{name: 'channel', type: "CHANNEL"}, {name: 'category', type: "CHANNEL"}],
     run: async(client, message, args) => {
         try {

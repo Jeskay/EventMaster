@@ -13,9 +13,9 @@ exports.command = void 0;
 const Setup_1 = require("../../Commands/Setup");
 const Utils_1 = require("../../Utils");
 exports.command = {
-    name: 'removeowner',
-    description: 'deny user permissions for bot settings',
-    aliases: ['deleteowner'],
+    name: 'block_user',
+    description: 'add user to black list, so he cannot became host on this server',
+    aliases: ['block'],
     options: [{ name: 'user', type: "USER" }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -26,7 +26,7 @@ exports.command = {
                 return;
             const userId = (0, Utils_1.extractID)(args[0]);
             const user = yield client.users.fetch(userId);
-            const response = yield (0, Setup_1.removeOwner)(client, guild, message.author, user);
+            const response = yield (0, Setup_1.addToBlackList)(client, guild, message.author, user);
             yield message.channel.send({ embeds: [response] });
         }
         catch (error) {

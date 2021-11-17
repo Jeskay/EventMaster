@@ -10,29 +10,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
-const Utils_1 = require("../../Utils");
 const Setup_1 = require("../../Commands/Setup");
 const Error_1 = require("../../Error");
+const Utils_1 = require("../../Utils");
 exports.command = {
-    name: 'whitelist',
-    description: 'removes a user from the black list',
-    aliases: ['wl'],
-    options: [{ name: 'user', type: "USER" }],
+    name: 'event_role',
+    description: 'set up a role which will be mentioned in notifications.',
+    options: [{ name: 'role', type: "ROLE" }],
     run: (client, message, args) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const guild = message.guild;
             if (!guild)
                 return;
             if (args.length != 1)
-                throw new Error_1.CommandError("User Id must be provided");
-            const userId = (0, Utils_1.extractID)(args[0]);
-            const user = yield client.users.fetch(userId);
-            const response = yield (0, Setup_1.removeFromBlackList)(client, guild, message.author, user);
-            yield message.channel.send({ embeds: [response] });
+                return;
+            const roleId = (0, Utils_1.extractID)(args[0]);
+            const role = yield guild.roles.fetch(roleId);
+            if (!role)
+                throw new Error_1.CommandError("Invalid role id.");
+            const response = yield (0, Setup_1.setEventRole)(client, guild, message.author, role);
+            yield message.reply({ embeds: [response] });
         }
         catch (error) {
             if (error instanceof Error)
-                message.channel.send({ embeds: [client.embeds.errorInformation(error.name, error.message)] });
+                message.reply({ embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)] });
         }
     })
 };
