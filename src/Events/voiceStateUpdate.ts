@@ -1,5 +1,5 @@
 import { VoiceChannel, VoiceState } from 'discord.js';
-import { MemberState } from '../Managers/room';
+import { checkState, MemberState } from '../Controllers';
 import { Event } from '../Interfaces';
 import { joinHandler, leftHandler } from '../Controllers';
 
@@ -8,7 +8,7 @@ export const event: Event = {
     run: async (client, oldState: VoiceState, newState: VoiceState) => {
         if(newState.member == null || newState.member.user.bot) return;
         try {   
-            const state = client.room.checkState(oldState, newState);
+            const state = checkState(oldState, newState);
             switch(state){
                 case MemberState.other:
                     break;

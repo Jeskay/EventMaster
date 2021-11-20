@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn } from "typeorm";
 import {Server} from "./server";
-import {OccasionState} from "../Managers/room";
+import {OccasionState} from "../Controllers";
 
 @Entity()
 export class Occasion {

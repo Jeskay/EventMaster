@@ -3,9 +3,10 @@ import { Guild, TextChannel, User } from "discord.js";
 import { Occasion } from "../entities/occasion";
 import ExtendedClient from "../Client";
 import { CommandError } from "../Error";
-import { OccasionState } from "../Managers/room";
+import { givePermissions, OccasionState } from "../Controllers";
 import { findSubscriptions } from "../Utils";
 import { updateMembers } from ".";
+import { deleteChannels } from "./channel";
 
 async function notifyPlayer(client: ExtendedClient, userId: string, title: string, description: string, channel: VoiceChannel) {
     const user = await client.users.fetch(userId);
@@ -25,7 +26,7 @@ async function notifyPlayer(client: ExtendedClient, userId: string, title: strin
 export async function declareHost(client: ExtendedClient, occasion: Occasion, candidate: GuildMember, voiceChannel: VoiceChannel, textChannel: TextChannel) {
     client.vote.finish(voiceChannel.id);
     if(!occasion) return;
-    client.room.givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
+    givePermissions(voiceChannel.guild, occasion.textChannel, occasion.voiceChannel, candidate);
     await client.database.updateOccasion(voiceChannel.guild.id, voiceChannel.id, {
         state: OccasionState.waiting,
         host: candidate.id
@@ -104,7 +105,7 @@ export async function finish(client: ExtendedClient, guild: Guild, author: User,
     await client.database.removeOccasion(server.guild, occasion.voiceChannel);
     // Closing event
     await (text as TextChannel).send({embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
-    setTimeout(() => client.room.delete(client, server, guild, occasion.voiceChannel, occasion.textChannel), 10000);
+    setTimeout(() => deleteChannels(client, server, guild, occasion.voiceChannel, occasion.textChannel), 10000);
     //logging 
     if(server.settings.logging_channel) {
         const channel = guild.channels.cache.get(server.settings.logging_channel);

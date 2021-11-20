@@ -6,7 +6,7 @@ import {promisify} from'util';
 import {createConnection} from "typeorm";
 import {Event, Button, TextCommand, InteractCommand, ContextCommand} from '../Interfaces';
 import {Config} from '../Config';
-import { DataBaseManager, VoteManager, RoomManger, EmbedManager } from '../Managers';
+import { DataBaseManager, VoteManager, EmbedManager } from '../Managers';
 import { List } from '../Utils';
 import { Routes } from "discord-api-types/v9";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -22,7 +22,6 @@ class ExtendedClient extends Client {
     public aliases: Collection<string, TextCommand> = new Collection();
     public buttons: Collection<string, Button> = new Collection();
     public database: DataBaseManager;
-    public room: RoomManger = new RoomManger();
     public vote: VoteManager = new VoteManager(); 
     public embeds: EmbedManager = new EmbedManager();
     public lists: Collection<string, List> = new Collection();
