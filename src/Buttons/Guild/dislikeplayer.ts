@@ -1,6 +1,7 @@
 import { likePlayer } from '../../Controllers';
 import { CommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
+import { errorInformation, hostCommended } from '../../Embeds';
 
 export const button: Button = {
     name: 'dislikePlayer',
@@ -11,10 +12,10 @@ export const button: Button = {
             const author = button.user.id;
             const player = args[0];
             await likePlayer(client, player, author);
-            await button.reply({embeds: [client.embeds.hostCommended()], ephemeral: true});
+            await button.reply({embeds: [hostCommended()], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
-                button.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                button.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
         }
     }
 };

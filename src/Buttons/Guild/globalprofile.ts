@@ -1,6 +1,7 @@
 import { profile } from '../../Commands/DirectMessages';
 import { CommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
+import { errorInformation } from '../../Embeds';
 
 export const button: Button = {
     name: 'globalprofile',
@@ -13,7 +14,7 @@ export const button: Button = {
             await button.update(response);
         } catch(error) {
             if(error instanceof Error)
-                button.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                button.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
         }
     }
 };

@@ -1,6 +1,7 @@
 import {InteractCommand} from '../../../Interfaces';
 import { CommandError } from '../../../Error';
 import { playerRating } from '../../../Commands/DirectMessages';
+import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'rating',
@@ -12,7 +13,7 @@ export const command: InteractCommand = {
             await playerRating(client, interaction.user, interaction);
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)]});
+                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)]});
         }
     }
 }; 

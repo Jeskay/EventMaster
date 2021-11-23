@@ -1,6 +1,8 @@
 import { CommandError } from '../../../Error';
 import { blackList } from '../../../Commands/Guild';
 import {InteractCommand} from '../../../Interfaces';
+import { errorInformation } from '../../../Embeds';
+
 
 export const command: InteractCommand = {
     name: 'blacklist',
@@ -12,7 +14,7 @@ export const command: InteractCommand = {
             await blackList(client, interaction, interaction.user, interaction.guild);
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true});
+                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)], ephemeral: true});
         }
     }
 };

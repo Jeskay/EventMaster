@@ -1,6 +1,7 @@
 import { CommandError } from '../../../Error';
 import { guildProfile } from '../../../Commands/Guild';
 import {InteractCommand} from '../../../Interfaces';
+import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'guildprofile',
@@ -15,7 +16,7 @@ export const command: InteractCommand = {
             await interaction.reply(response);
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)]});
+                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)]});
         }
     }
 }; 

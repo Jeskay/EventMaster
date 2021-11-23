@@ -7,14 +7,15 @@ import { givePermissions, OccasionState } from "../Controllers";
 import { findSubscriptions } from "../Utils";
 import { updateMembers } from ".";
 import { deleteChannels } from "./channel";
+import { announcePublishedResponse, electionFinished, finishedOccasion, HostCommend, InviteMessage, notification, occasionFinished, occasionFinishResponse, occasionNotification, occasionStarted, occasionStartResponse, voteConfimation } from "../Embeds";
 
 async function notifyPlayer(client: ExtendedClient, userId: string, title: string, description: string, channel: VoiceChannel) {
     const user = await client.users.fetch(userId);
     const invite = await channel.guild.invites.create(channel);
     const dm = user.dmChannel ?? await user.createDM();
     dm.send({
-        embeds: [client.embeds.notification(title, description, invite.url, channel.guild.bannerURL() ?? undefined)], 
-        components: [client.embeds.InviteMessage(invite.url, channel.guild.name)]
+        embeds: [notification(title, description, invite.url, channel.guild.bannerURL() ?? undefined)], 
+        components: [InviteMessage(invite.url, channel.guild.name)]
     });
 }
 /**
@@ -31,7 +32,7 @@ export async function declareHost(client: ExtendedClient, occasion: Occasion, ca
         state: OccasionState.waiting,
         host: candidate.id
     });
-    textChannel.send({embeds: [client.embeds.electionFinished(candidate.user.username)]});
+    textChannel.send({embeds: [electionFinished(candidate.user.username)]});
 }
 /**
  * Performing vote for occasion host
@@ -52,7 +53,7 @@ export async function vote(client: ExtendedClient, voiceChannel: VoiceChannel, v
     const finished = await client.vote.vote(voiceChannel.id, voterId, candidateId);
         if(finished){
             declareHost(client, occasion, candidate, voiceChannel as VoiceChannel, textChannel as TextChannel);
-        } else await (textChannel as TextChannel).send({embeds: [client.embeds.voteConfimation(candidate.user.username)]});
+        } else await (textChannel as TextChannel).send({embeds: [voteConfimation(candidate.user.username)]});
 }
 
 /**
@@ -78,12 +79,12 @@ export async function start(client: ExtendedClient, guild: Guild, author: User, 
     // Logging
     if(server.settings.logging_channel) {
         const channel = guild.channels.cache.get(server.settings.logging_channel);
-        if(!channel || !channel.isText) return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
+        if(!channel || !channel.isText) return occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
         const voiceChannel = guild.channels.cache.get(occasion.voiceChannel) as VoiceChannel;
         if(!voiceChannel) throw Error("Cannot find voice channel");
-        await (channel as TextChannel).send({embeds: [client.embeds.occasionStarted(title, description, author.username, voiceChannel.members.size)]});
+        await (channel as TextChannel).send({embeds: [occasionStarted(title, description, author.username, voiceChannel.members.size)]});
     }
-    return client.embeds.occasionStartResponse(title, description);
+    return occasionStartResponse(title, description);
 }
 /**
  * Finishes current occasion
@@ -104,15 +105,15 @@ export async function finish(client: ExtendedClient, guild: Guild, author: User,
     await updateMembers(client, voice as VoiceChannel, duration);
     await client.database.removeOccasion(server.guild, occasion.voiceChannel);
     // Closing event
-    await (text as TextChannel).send({embeds: [client.embeds.finishedOccasion], components: [client.embeds.HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
+    await (text as TextChannel).send({embeds: [finishedOccasion], components: [HostCommend(`likeHost.${occasion.host}`, `dislikeHost.${occasion.host}`)]});
     setTimeout(() => deleteChannels(client, server, guild, occasion.voiceChannel, occasion.textChannel), 10000);
     //logging 
     if(server.settings.logging_channel) {
         const channel = guild.channels.cache.get(server.settings.logging_channel);
-        if(!channel || !channel.isText) return client.embeds.occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
-        (channel as TextChannel).send({embeds: [client.embeds.occasionFinished(occasion.Title, results, author.username, duration, (voice as VoiceChannel).members.size)]});
+        if(!channel || !channel.isText) return occasionFinishResponse(occasion.Title, (new Date()).getMinutes() - occasion.startedAt.getMinutes());
+        (channel as TextChannel).send({embeds: [occasionFinished(occasion.Title, results, author.username, duration, (voice as VoiceChannel).members.size)]});
     }
-    return client.embeds.occasionFinishResponse(occasion.Title, duration);
+    return occasionFinishResponse(occasion.Title, duration);
 }
 /**
  * Announce the occasion
@@ -136,7 +137,7 @@ export async function announce(client: ExtendedClient,  description: string, gui
     const eventRole = server.settings.event_role;
     await (channel as TextChannel).send({
         content: eventRole ? `<@&${eventRole}>` : "",
-         embeds:[client.embeds.occasionNotification(title, description, author.username, image)]
+         embeds:[occasionNotification(title, description, author.username, image)]
     });
     if(hashtags.length > 0) {
         hashtags.forEach(tag => {
@@ -146,7 +147,7 @@ export async function announce(client: ExtendedClient,  description: string, gui
     await client.database.updateOccasion(server.guild, occasion.voiceChannel , {
         announced: true
     });
-    return client.embeds.announcePublishedResponse(hashtags);
+    return announcePublishedResponse(hashtags);
 }
 /**
  * Sends personal notifications about occasion

@@ -1,6 +1,7 @@
 import { APIRole } from 'discord-api-types';
 import { CategoryChannel, Guild, GuildChannel, Role, User, VoiceChannel } from 'discord.js';
 import ExtendedClient from 'src/Client';
+import { ownerAdded, ownerRemoved, limitChanged, logRiggedUp, notificationRoleAccepted, notificationChannelRiggedUp, addedToBlackList, removedFromBlackList, occasionLimitChanged, occasionsRiggedUp } from '../../Embeds';
 import { CommandError, DataBaseError } from '../../Error';
 
 export async function addOwner(client: ExtendedClient, guild: Guild, author: User, user: User) {
@@ -14,7 +15,7 @@ export async function addOwner(client: ExtendedClient, guild: Guild, author: Use
     await client.database.updateSettings(server.guild, {
         owners: settings.owners
     });
-    return client.embeds.ownerAdded(user.username);
+    return ownerAdded(user.username);
 }
 
 export async function removeOwner(client: ExtendedClient, guild: Guild, author: User, user: User) {
@@ -28,7 +29,7 @@ export async function removeOwner(client: ExtendedClient, guild: Guild, author: 
     await client.database.updateSettings(server.guild, {
         owners: settings.owners
     });
-    return client.embeds.ownerRemoved(user.username);
+    return ownerRemoved(user.username);
 }
 
 export async function setLimit(client: ExtendedClient, guild: Guild, author: User, limit: number) {
@@ -36,7 +37,7 @@ export async function setLimit(client: ExtendedClient, guild: Guild, author: Use
     if(!server) throw new CommandError("Server is not registered yet.");
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     await client.database.updateSettings(guild.id, {limit: limit});
-    return client.embeds.limitChanged(limit);
+    return limitChanged(limit);
 }
 
 export async function setLog(client: ExtendedClient, guild: Guild, author: User, channel: GuildChannel) {
@@ -45,7 +46,7 @@ export async function setLog(client: ExtendedClient, guild: Guild, author: User,
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     if(channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS') throw new CommandError("Only text or news channel allowed");
     await client.database.updateSettings(guild.id, {logging_channel: channel.id});
-    return client.embeds.logRiggedUp(channel.name);
+    return logRiggedUp(channel.name);
 }
 
 export async function setEventRole(client: ExtendedClient, guild: Guild, author: User, role: Role | APIRole) {
@@ -53,7 +54,7 @@ export async function setEventRole(client: ExtendedClient, guild: Guild, author:
     if(!server) throw new CommandError("Server is not registered yet.");
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     await client.database.updateSettings(guild.id, {event_role: role.id});
-    return client.embeds.notificationRoleAccepted(role.name);
+    return notificationRoleAccepted(role.name);
 }
 
 export async function setNotification(client: ExtendedClient, guild: Guild, author: User, channel: GuildChannel) {
@@ -62,7 +63,7 @@ export async function setNotification(client: ExtendedClient, guild: Guild, auth
     if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
     if(channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS') throw new CommandError("Only text or news channel allowed");
     await client.database.updateSettings(guild.id, {notification_channel: channel.id});
-    return client.embeds.notificationChannelRiggedUp(channel.name);
+    return notificationChannelRiggedUp(channel.name);
 }
 
 export async function addToBlackList(client: ExtendedClient, guild: Guild, author: User, user: User) {
@@ -79,7 +80,7 @@ export async function addToBlackList(client: ExtendedClient, guild: Guild, autho
     await client.database.updateMember(member);
     await client.database.updatePlayer(player);
     await client.database.updateSettings(guild.id, {black_list: list});
-    return client.embeds.addedToBlackList(user.id);
+    return addedToBlackList(user.id);
 }
 
 export async function removeFromBlackList(client: ExtendedClient, guild: Guild, author: User, user: User) {
@@ -98,7 +99,7 @@ export async function removeFromBlackList(client: ExtendedClient, guild: Guild, 
     await client.database.updateMember(member);
     await client.database.updatePlayer(player);
     await client.database.updateSettings(guild.id, {black_list: list});
-    return client.embeds.removedFromBlackList(user.id);
+    return removedFromBlackList(user.id);
 }
 
 export async function setOccasionLimit(client: ExtendedClient, guild: Guild, author: User, amount: number) {
@@ -107,7 +108,7 @@ export async function setOccasionLimit(client: ExtendedClient, guild: Guild, aut
     if(amount < 1) throw new CommandError("You can only use positive non zero numbers.");
     if(author.id != guild.ownerId) throw new CommandError("Permission denied.");
     await client.database.updateSettings(guild.id, {occasion_limit: amount});
-    return client.embeds.occasionLimitChanged(amount);
+    return occasionLimitChanged(amount);
 }
 
 export async function setOccasions(client: ExtendedClient, guild: Guild, author: User, channel: VoiceChannel, category: CategoryChannel) {
@@ -118,5 +119,5 @@ export async function setOccasions(client: ExtendedClient, guild: Guild, author:
         eventChannel: channel.id, 
         eventCategory: category.id
     });
-    return client.embeds.occasionsRiggedUp(channel.name, category.name);
+    return occasionsRiggedUp(channel.name, category.name);
 }

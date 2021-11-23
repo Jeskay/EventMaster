@@ -1,6 +1,7 @@
 import { Guild } from 'discord.js';
 import { Event } from '../Interfaces';
 import {Settings} from "../entities/settings"
+import { errorInformation, greeting } from '../Embeds';
 
 export const event: Event = {
     name: 'guildCreate',
@@ -20,10 +21,10 @@ export const event: Event = {
             });
             if(!client.user) throw Error("Unable to find bot's client.");
             await client.registerGuildCommands([guild.id], client.user.id);
-            await dm.send({embeds: [client.embeds.greeting(guild.name, owner.user.username)]});
+            await dm.send({embeds: [greeting(guild.name, owner.user.username)]});
         } catch(error) {
             if(error instanceof Error)
-                await dm.send({embeds: [client.embeds.errorInformation(error.name, error.message)]});
+                await dm.send({embeds: [errorInformation(error.name, error.message)]});
         }
     }
 }

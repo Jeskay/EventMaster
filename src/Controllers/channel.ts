@@ -2,6 +2,7 @@ import { DataBaseManager } from "../Managers/database";
 import { CategoryChannel, Guild, GuildMember, OverwriteResolvable, TextChannel, User, VoiceChannel, VoiceState, Permissions } from "discord.js";
 import { Server } from "../entities/server";
 import ExtendedClient from "../Client";
+import { voting } from "../Embeds";
 
 export enum OccasionState{
     voting,
@@ -137,7 +138,7 @@ export async function joinHandler(client: ExtendedClient, member: GuildMember, j
         await client.database.updateOccasion(joinedChannel.guild.id, joinedChannel.id, {
             state: OccasionState.voting
         });
-        await text.send({embeds: [client.embeds.voting(server.settings.limit)]});
+        await text.send({embeds: [voting(server.settings.limit)]});
     }
 }
 /**

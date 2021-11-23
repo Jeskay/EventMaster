@@ -1,6 +1,7 @@
 import { start } from '../../../Commands/Guild';
 import { CommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
+import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'start',
@@ -20,7 +21,7 @@ export const command: InteractCommand = {
         }
         catch(error){
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true});
+                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)], ephemeral: true});
         };
     }
 };

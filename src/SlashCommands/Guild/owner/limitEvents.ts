@@ -1,6 +1,7 @@
 import { setOccasionLimit } from '../../../Commands/Setup';
 import { CommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
+import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'limit_events',
@@ -14,7 +15,7 @@ export const command: InteractCommand = {
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true});
+                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)], ephemeral: true});
         }
     }
 };

@@ -1,6 +1,7 @@
 import { CommandError } from '../Error';
 import { profile } from '../Commands/DirectMessages';
 import {ContextCommand, ContextType} from '../Interfaces';
+import { errorInformation } from '../Embeds';
 
 export const command: ContextCommand = {
     name: 'profile_menu',
@@ -13,7 +14,7 @@ export const command: ContextCommand = {
             await interaction.reply(response);
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                interaction.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
         }
     }
 }; 

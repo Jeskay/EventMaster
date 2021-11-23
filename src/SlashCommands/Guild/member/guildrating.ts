@@ -1,6 +1,7 @@
 import {InteractCommand} from '../../../Interfaces';
 import { CommandError } from '../../../Error';
 import { guildRating } from '../../../Commands/Guild';
+import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'guildrating',
@@ -12,7 +13,7 @@ export const command: InteractCommand = {
             await guildRating(client, interaction.user, interaction);
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)]});
+                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)]});
         }
     }
 }; 

@@ -1,6 +1,7 @@
 import { setEventRole } from '../../../Commands/Setup';
 import { CommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
+import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'event_role',
@@ -15,7 +16,7 @@ export const command: InteractCommand = {
             await interaction.editReply({embeds: [response]});
         } catch(error) {
             if(error instanceof Error)
-                interaction.editReply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)]});
+                interaction.editReply({embeds: [errorInformation(error.name, error.message, error.stack)]});
         }
     }
 };

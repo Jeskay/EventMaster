@@ -1,5 +1,6 @@
 import {InteractCommand} from '../../../Interfaces';
 import {dislike} from '../../../Commands/DirectMessages';
+import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'dislike',
@@ -13,7 +14,7 @@ export const command: InteractCommand = {
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message, error.stack)], ephemeral: true});
+                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)], ephemeral: true});
         }
     }
 }; 

@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
 import { CommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
+import { errorInformation } from '../../Embeds';
 
 export const button: Button = {
     name: 'previousPage',
@@ -17,7 +18,7 @@ export const button: Button = {
             await button.deferUpdate({fetchReply: true});
         } catch(error) {
             if(error instanceof Error)
-                button.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                button.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
         }
     }
 };

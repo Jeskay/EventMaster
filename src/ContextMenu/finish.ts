@@ -1,6 +1,7 @@
 import { finish } from '../Commands/Guild';
 import { CommandError } from '../Error';
 import {ContextCommand, ContextType} from '../Interfaces';
+import { errorInformation } from '../Embeds';
 
 export const command: ContextCommand = {
     name: 'finish message',
@@ -13,7 +14,7 @@ export const command: ContextCommand = {
             await finish(client, interaction.user, interaction.guild, result.content);
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                interaction.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
         }
     }
 };

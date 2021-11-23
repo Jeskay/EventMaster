@@ -1,6 +1,7 @@
 import {ContextCommand, ContextType} from '../Interfaces';
 import {vote} from '../Commands/DirectMessages';
 import { CommandError } from '../Error';
+import { errorInformation } from '../Embeds';
 
 export const command: ContextCommand = {
     name: 'vote_menu',
@@ -13,7 +14,7 @@ export const command: ContextCommand = {
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
             if(error instanceof Error)
-                interaction.reply({embeds: [client.embeds.errorInformation(error.name, error.message)], ephemeral: true});
+                interaction.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
         }
     }
 }; 
