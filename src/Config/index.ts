@@ -1,5 +1,6 @@
 export class Config{
     public token: string;
+    /**@deprecated use slash commands instead*/
     public prefix: string;
     public state: "dev" | "prod";
     constructor(){
