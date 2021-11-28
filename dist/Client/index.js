@@ -42,7 +42,7 @@ const Managers_1 = require("../Managers");
 const v9_1 = require("discord-api-types/v9");
 const builders_1 = require("@discordjs/builders");
 const Utils_1 = require("../Utils");
-const settings_1 = require("src/entities/settings");
+const settings_1 = require("../entities/settings");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);

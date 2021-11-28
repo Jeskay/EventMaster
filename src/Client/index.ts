@@ -12,7 +12,7 @@ import { Routes } from "discord-api-types/v9";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { createOption } from "../Utils";
 import { InteractCommandOption } from "../Interfaces/Command";
-import { Settings } from "src/entities/settings";
+import { Settings } from "../entities/settings";
 
 class ExtendedClient extends Client {
     public config: Config = new Config();
