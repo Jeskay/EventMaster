@@ -19,7 +19,7 @@ function addOwner(client, guild, author, user) {
             throw new Error_1.CommandError("Server is not registered yet.");
         const settings = server.settings;
         if (author.id != guild.ownerId)
-            throw new Error_1.CommandError("Permission denied.");
+            throw new Error_1.PermissionError("Permission denied.");
         if (!user)
             throw new Error_1.CommandError("Cannot find a user.");
         if (settings.owners.includes(user.id))
@@ -39,7 +39,7 @@ function removeOwner(client, guild, author, user) {
             throw new Error_1.CommandError("Server is not registered yet.");
         const settings = server.settings;
         if (author.id != guild.ownerId)
-            throw new Error_1.CommandError("Permission denied.");
+            throw new Error_1.PermissionError("Permission denied.");
         if (!user)
             throw new Error_1.CommandError("Cannot find a user.");
         if (!settings.owners.includes(user.id))
@@ -70,7 +70,7 @@ function setLog(client, guild, author, channel) {
         if (!server)
             throw new Error_1.CommandError("Server is not registered yet.");
         if (!server.settings.owners.includes(author.id))
-            throw new Error_1.CommandError("Permission denied.");
+            throw new Error_1.PermissionError("Permission denied.");
         if (channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS')
             throw new Error_1.CommandError("Only text or news channel allowed");
         yield client.database.updateSettings(guild.id, { logging_channel: channel.id });
@@ -96,7 +96,7 @@ function setNotification(client, guild, author, channel) {
         if (!server)
             throw new Error_1.CommandError("Server is not registered yet.");
         if (!server.settings.owners.includes(author.id))
-            throw new Error_1.CommandError("Permission denied.");
+            throw new Error_1.PermissionError("Permission denied.");
         if (channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS')
             throw new Error_1.CommandError("Only text or news channel allowed");
         yield client.database.updateSettings(guild.id, { notification_channel: channel.id });
@@ -110,7 +110,7 @@ function addToBlackList(client, guild, author, user) {
         if (!server)
             throw new Error_1.CommandError("Server is not registered yet.");
         if (!server.settings.owners.includes(author.id))
-            throw new Error_1.CommandError("Permission denied.");
+            throw new Error_1.PermissionError("Permission denied.");
         const list = server.settings.black_list;
         const player = yield client.database.getPlayerRelation(user.id);
         player.banned = player.banned ? player.banned + 1 : 1;
@@ -132,7 +132,7 @@ function removeFromBlackList(client, guild, author, user) {
         if (!server)
             throw new Error_1.CommandError("Server is not registered yet.");
         if (!server.settings.owners.includes(author.id))
-            throw new Error_1.CommandError("Permission denied.");
+            throw new Error_1.PermissionError("Permission denied.");
         const player = yield client.database.getPlayerRelation(user.id);
         if (player.banned)
             player.banned--;
@@ -159,7 +159,7 @@ function setOccasionLimit(client, guild, author, amount) {
         if (amount < 1)
             throw new Error_1.CommandError("You can only use positive non zero numbers.");
         if (author.id != guild.ownerId)
-            throw new Error_1.CommandError("Permission denied.");
+            throw new Error_1.PermissionError("Permission denied.");
         yield client.database.updateSettings(guild.id, { occasion_limit: amount });
         return (0, Embeds_1.occasionLimitChanged)(amount);
     });
@@ -170,8 +170,8 @@ function setOccasions(client, guild, author, channel, category) {
         const server = yield client.database.getServer(guild.id);
         if (!server)
             throw new Error_1.CommandError("Server is not registered yet.");
-        if (!server.settings.owners.includes(author.id))
-            throw new Error_1.CommandError("Permission denied.");
+        if (author.id != guild.ownerId)
+            throw new Error_1.PermissionError("Permission denied.");
         yield client.database.updateServer(guild.id, {
             eventChannel: channel.id,
             eventCategory: category.id

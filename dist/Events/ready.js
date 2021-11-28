@@ -19,7 +19,7 @@ exports.event = {
         const clientId = client.user.id;
         ;
         console.log(`${client.user.tag} is online`);
-        yield client.registerGuildCommands(client.guilds.cache.map(guild => guild.id), clientId);
+        yield client.registerGuildCommands(client, client.guilds.cache, clientId);
         yield client.registerGlobalCommands();
     })
 };

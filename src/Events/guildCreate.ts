@@ -1,4 +1,4 @@
-import { Guild } from 'discord.js';
+import { Collection, Guild } from 'discord.js';
 import { Event } from '../Interfaces';
 import {Settings} from "../entities/settings"
 import { errorInformation, greeting } from '../Embeds';
@@ -20,7 +20,7 @@ export const event: Event = {
                 description: "empty"
             });
             if(!client.user) throw Error("Unable to find bot's client.");
-            await client.registerGuildCommands([guild.id], client.user.id);
+            await client.registerGuildCommands(client, new Collection<string, Guild>([[guild.id, guild]]), client.user.id);
             await dm.send({embeds: [greeting(guild.name, owner.user.username)]});
         } catch(error) {
             if(error instanceof Error)

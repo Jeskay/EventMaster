@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.event = void 0;
+const discord_js_1 = require("discord.js");
 const settings_1 = require("../entities/settings");
 const Embeds_1 = require("../Embeds");
 exports.event = {
@@ -32,7 +33,7 @@ exports.event = {
             });
             if (!client.user)
                 throw Error("Unable to find bot's client.");
-            yield client.registerGuildCommands([guild.id], client.user.id);
+            yield client.registerGuildCommands(client, new discord_js_1.Collection([[guild.id, guild]]), client.user.id);
             yield dm.send({ embeds: [(0, Embeds_1.greeting)(guild.name, owner.user.username)] });
         }
         catch (error) {

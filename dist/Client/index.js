@@ -42,6 +42,7 @@ const Managers_1 = require("../Managers");
 const v9_1 = require("discord-api-types/v9");
 const builders_1 = require("@discordjs/builders");
 const Utils_1 = require("../Utils");
+const settings_1 = require("src/entities/settings");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);
@@ -108,21 +109,31 @@ class ExtendedClient extends discord_js_1.Client {
             return commands;
         });
     }
-    registerGuildCommands(guilds, clientId) {
+    registerGuildCommands(client, guilds, clientId) {
         return __awaiter(this, void 0, void 0, function* () {
             const rest = new rest_1.REST({ version: '9' }).setToken(this.config.token);
             const interactionPath = path_1.default.join(__dirname, "..", "SlashCommands/Guild");
             const commands = yield this.extractCommands(interactionPath);
             const contextCommands = yield this.extractContextCommands();
             yield Promise.all(guilds.map((guild) => __awaiter(this, void 0, void 0, function* () {
-                yield rest.put(v9_1.Routes.applicationGuildCommands(clientId, guild), {
+                yield rest.put(v9_1.Routes.applicationGuildCommands(clientId, guild.id), {
                     body: commands.concat(contextCommands)
                 }).catch(err => {
                     console.log(`Unable to register because of ${err}`);
                 });
+                const server = yield client.database.getServer(guild.id);
+                if (!server) {
+                    console.log(`Guild ${guild} not found in database.`);
+                    client.database.addServer({
+                        settings: new settings_1.Settings(guild.ownerId, 2, []),
+                        events: [],
+                        guild: guild.id,
+                        description: "empty"
+                    });
+                }
                 console.log(`Registered at ${guild}`);
             })));
-            console.log(`Amount of guilds: ${guilds.length}`);
+            console.log(`Amount of guilds: ${guilds.size}`);
         });
     }
     registerGlobalCommands() {

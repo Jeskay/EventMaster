@@ -2,13 +2,13 @@ import { APIRole } from 'discord-api-types';
 import { CategoryChannel, Guild, GuildChannel, Role, User, VoiceChannel } from 'discord.js';
 import ExtendedClient from 'src/Client';
 import { ownerAdded, ownerRemoved, limitChanged, logRiggedUp, notificationRoleAccepted, notificationChannelRiggedUp, addedToBlackList, removedFromBlackList, occasionLimitChanged, occasionsRiggedUp } from '../../Embeds';
-import { CommandError, DataBaseError } from '../../Error';
+import { CommandError, DataBaseError, PermissionError } from '../../Error';
 
 export async function addOwner(client: ExtendedClient, guild: Guild, author: User, user: User) {
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
     const settings = server.settings;
-    if(author.id != guild.ownerId) throw new CommandError("Permission denied.");
+    if(author.id != guild.ownerId) throw new PermissionError("Permission denied.");
     if(!user) throw new CommandError("Cannot find a user.");
     if(settings.owners.includes(user.id)) throw new CommandError("This user already has owner permissions")
     settings.owners.push(user.id);
@@ -22,7 +22,7 @@ export async function removeOwner(client: ExtendedClient, guild: Guild, author: 
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
     const settings = server.settings;
-    if(author.id != guild.ownerId) throw new CommandError("Permission denied.");
+    if(author.id != guild.ownerId) throw new PermissionError("Permission denied.");
     if(!user) throw new CommandError("Cannot find a user.");
     if(!settings.owners.includes(user.id)) throw new CommandError("This user does not have owner permissions")
     settings.owners.filter(id => id != user.id);
@@ -43,7 +43,7 @@ export async function setLimit(client: ExtendedClient, guild: Guild, author: Use
 export async function setLog(client: ExtendedClient, guild: Guild, author: User, channel: GuildChannel) {
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
-    if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
+    if(!server.settings.owners.includes(author.id)) throw new PermissionError("Permission denied.");
     if(channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS') throw new CommandError("Only text or news channel allowed");
     await client.database.updateSettings(guild.id, {logging_channel: channel.id});
     return logRiggedUp(channel.name);
@@ -60,7 +60,7 @@ export async function setEventRole(client: ExtendedClient, guild: Guild, author:
 export async function setNotification(client: ExtendedClient, guild: Guild, author: User, channel: GuildChannel) {
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
-    if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
+    if(!server.settings.owners.includes(author.id)) throw new PermissionError("Permission denied.");
     if(channel.type != 'GUILD_TEXT' && channel.type != 'GUILD_NEWS') throw new CommandError("Only text or news channel allowed");
     await client.database.updateSettings(guild.id, {notification_channel: channel.id});
     return notificationChannelRiggedUp(channel.name);
@@ -69,7 +69,7 @@ export async function setNotification(client: ExtendedClient, guild: Guild, auth
 export async function addToBlackList(client: ExtendedClient, guild: Guild, author: User, user: User) {
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
-    if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
+    if(!server.settings.owners.includes(author.id)) throw new PermissionError("Permission denied.");
     const list = server.settings.black_list;
     const player = await client.database.getPlayerRelation(user.id);
     player.banned = player.banned ? player.banned + 1 : 1;
@@ -86,7 +86,7 @@ export async function addToBlackList(client: ExtendedClient, guild: Guild, autho
 export async function removeFromBlackList(client: ExtendedClient, guild: Guild, author: User, user: User) {
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
-    if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
+    if(!server.settings.owners.includes(author.id)) throw new PermissionError("Permission denied.");
     const player = await client.database.getPlayerRelation(user.id);
     if(player.banned)
         player.banned--;
@@ -106,7 +106,7 @@ export async function setOccasionLimit(client: ExtendedClient, guild: Guild, aut
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
     if(amount < 1) throw new CommandError("You can only use positive non zero numbers.");
-    if(author.id != guild.ownerId) throw new CommandError("Permission denied.");
+    if(author.id != guild.ownerId) throw new PermissionError("Permission denied.");
     await client.database.updateSettings(guild.id, {occasion_limit: amount});
     return occasionLimitChanged(amount);
 }
@@ -114,7 +114,7 @@ export async function setOccasionLimit(client: ExtendedClient, guild: Guild, aut
 export async function setOccasions(client: ExtendedClient, guild: Guild, author: User, channel: VoiceChannel, category: CategoryChannel) {
     const server = await client.database.getServer(guild.id);
     if(!server) throw new CommandError("Server is not registered yet.");
-    if(!server.settings.owners.includes(author.id)) throw new CommandError("Permission denied.");
+    if(author.id != guild.ownerId) throw new PermissionError("Permission denied.");
     await client.database.updateServer(guild.id, {
         eventChannel: channel.id, 
         eventCategory: category.id

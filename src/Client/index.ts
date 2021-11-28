@@ -1,4 +1,4 @@
-import {Client, Collection} from "discord.js";
+import {Client, Collection, Guild} from "discord.js";
 import {REST} from '@discordjs/rest';
 import path from 'path';
 import {readdirSync, readdir} from 'fs';
@@ -12,6 +12,7 @@ import { Routes } from "discord-api-types/v9";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { createOption } from "../Utils";
 import { InteractCommandOption } from "../Interfaces/Command";
+import { Settings } from "src/entities/settings";
 
 class ExtendedClient extends Client {
     public config: Config = new Config();
@@ -73,20 +74,30 @@ class ExtendedClient extends Client {
         return commands;
     }
 
-    public async registerGuildCommands(guilds: string[], clientId: string) {
+    public async registerGuildCommands(client: ExtendedClient, guilds: Collection<string, Guild>, clientId: string) {
         const rest = new REST({version: '9'}).setToken(this.config.token);
         const interactionPath = path.join(__dirname, "..", "SlashCommands/Guild");
         const commands = await this.extractCommands(interactionPath);
         const contextCommands = await this.extractContextCommands();
         await Promise.all(guilds.map(async (guild) => { 
-            await rest.put(Routes.applicationGuildCommands(clientId, guild), {
+            await rest.put(Routes.applicationGuildCommands(clientId, guild.id), {
                 body: commands.concat(contextCommands)
             }).catch(err => {
                 console.log(`Unable to register because of ${err}`);
             });
+            const server = await client.database.getServer(guild.id);
+            if(!server) {
+                console.log(`Guild ${guild} not found in database.`);
+                client.database.addServer({
+                    settings: new Settings(guild.ownerId, 2, []),
+                    events: [],
+                    guild: guild.id,
+                    description: "empty"
+                });
+            }
             console.log(`Registered at ${guild}`);
         }));
-        console.log(`Amount of guilds: ${guilds.length}`);
+        console.log(`Amount of guilds: ${guilds.size}`);
     }
 
     public async registerGlobalCommands() {
