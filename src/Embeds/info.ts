@@ -13,7 +13,7 @@ export function notification(title: string, description: string, url: string, ba
 }
 
 export const errorInformation = (error: string, message: string, stack?: string) => new MessageEmbed()
-.addField(stack ? "Unexpected Error" : error, stack ? "Congratulations, you've found a bug, please contact with support and describe the situation." : message)
+.addField(stack ? `Unexpected Error: ${error}:\n ${stack}` : error, stack ? "Congratulations, you've found a bug, please contact with support and describe the situation." : message)
 .setFooter("Use help command for detailes.")
 .setColor(errorColor);
 

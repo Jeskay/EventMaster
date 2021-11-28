@@ -15,7 +15,7 @@ function notification(title, description, url, banner) {
 }
 exports.notification = notification;
 const errorInformation = (error, message, stack) => new discord_js_1.MessageEmbed()
-    .addField(stack ? "Unexpected Error" : error, stack ? "Congratulations, you've found a bug, please contact with support and describe the situation." : message)
+    .addField(stack ? `Unexpected Error: ${error}:\n ${stack}` : error, stack ? "Congratulations, you've found a bug, please contact with support and describe the situation." : message)
     .setFooter("Use help command for detailes.")
     .setColor(_1.errorColor);
 exports.errorInformation = errorInformation;
