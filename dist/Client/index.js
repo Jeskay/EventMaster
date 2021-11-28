@@ -39,10 +39,9 @@ const util_1 = require("util");
 const typeorm_1 = require("typeorm");
 const Config_1 = require("../Config");
 const Managers_1 = require("../Managers");
-const Utils_1 = require("../Utils");
 const v9_1 = require("discord-api-types/v9");
 const builders_1 = require("@discordjs/builders");
-const Utils_2 = require("../Utils");
+const Utils_1 = require("../Utils");
 class ExtendedClient extends discord_js_1.Client {
     constructor() {
         super(...arguments);
@@ -74,7 +73,7 @@ class ExtendedClient extends discord_js_1.Client {
                             .setName(command.name)
                             .setDescription(command.description);
                         command.options.forEach(option => {
-                            subCommand = (0, Utils_2.createOption)(option, subCommand);
+                            subCommand = (0, Utils_1.createOption)(option, subCommand);
                         });
                         if (!subCommands.get(command.name))
                             subCommands.set(subCommand.name, command);
@@ -140,21 +139,7 @@ class ExtendedClient extends discord_js_1.Client {
         return __awaiter(this, void 0, void 0, function* () {
             yield (0, typeorm_1.createConnection)();
             this.database = new Managers_1.DataBaseManager();
-            const commandPath = path_1.default.join(__dirname, "..", "TextCommands");
             const file_ending = (this.config.state == "dev") ? '.ts' : '.js';
-            (0, fs_1.readdirSync)(commandPath).forEach((dir) => {
-                const commands = (0, fs_1.readdirSync)(`${commandPath}/${dir}`).filter((file) => file.endsWith(file_ending));
-                for (const file of commands) {
-                    const { command } = require(`${commandPath}/${dir}/${file}`);
-                    this.commands.set(command.name, command);
-                    if (command.aliases && command.aliases.length !== 0) {
-                        command.aliases.forEach((alias) => {
-                            this.aliases.set(alias, command);
-                        });
-                    }
-                }
-            });
-            this.lists.set('help', new Utils_1.List(60, (0, Utils_2.commandsList)(this), 10));
             const buttonPath = path_1.default.join(__dirname, "..", "Buttons");
             (0, fs_1.readdirSync)(buttonPath).forEach(dir => {
                 const buttons = (0, fs_1.readdirSync)(`${buttonPath}/${dir}`).filter(file => file.endsWith(file_ending));
