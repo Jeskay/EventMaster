@@ -32,7 +32,7 @@ export async function declareHost(client: ExtendedClient, occasion: Occasion, ca
         state: OccasionState.waiting,
         host: candidate.id
     });
-    textChannel.send({embeds: [electionFinished(candidate.user.username)]});
+    textChannel.send({embeds: [electionFinished(candidate.id)]});
 }
 /**
  * Performing vote for occasion host

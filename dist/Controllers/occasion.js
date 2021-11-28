@@ -39,7 +39,7 @@ function declareHost(client, occasion, candidate, voiceChannel, textChannel) {
             state: Controllers_1.OccasionState.waiting,
             host: candidate.id
         });
-        textChannel.send({ embeds: [(0, Embeds_1.electionFinished)(candidate.user.username)] });
+        textChannel.send({ embeds: [(0, Embeds_1.electionFinished)(candidate.id)] });
     });
 }
 exports.declareHost = declareHost;
