@@ -14,10 +14,14 @@ function notification(title, description, url, banner) {
     return embed;
 }
 exports.notification = notification;
-const errorInformation = (error, message, stack) => new discord_js_1.MessageEmbed()
-    .addField(stack ? `Unexpected Error: ${error}:\n ${stack}` : error, stack ? "Congratulations, you've found a bug, please contact with support and describe the situation." : message)
-    .setFooter("Use help command for detailes.")
-    .setColor(_1.errorColor);
+function errorInformation(error, message, stack) {
+    console.log(`${error}: ${message} \n ${stack}`);
+    const embed = new discord_js_1.MessageEmbed()
+        .addField(stack ? "Unexpected Error:" : error, stack ? "Congratulations, you've found a bug, please contact with support and describe the situation." : message)
+        .setFooter("Use help command for detailes.")
+        .setColor(_1.errorColor);
+    return embed;
+}
 exports.errorInformation = errorInformation;
 exports.startedOccasion = new discord_js_1.MessageEmbed()
     .setTitle("Event started!")

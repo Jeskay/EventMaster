@@ -84,7 +84,9 @@ class ExtendedClient extends Client {
             }).catch(err => {
                 console.log(`Unable to register because of ${err}`);
             });
+            console.log(`Registered at ${guild}`);
         }));
+        console.log(`Amount of guilds: ${guilds.length}`);
     }
 
     public async registerGlobalCommands() {

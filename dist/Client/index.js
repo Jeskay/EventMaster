@@ -120,7 +120,9 @@ class ExtendedClient extends discord_js_1.Client {
                 }).catch(err => {
                     console.log(`Unable to register because of ${err}`);
                 });
+                console.log(`Registered at ${guild}`);
             })));
+            console.log(`Amount of guilds: ${guilds.length}`);
         });
     }
     registerGlobalCommands() {
