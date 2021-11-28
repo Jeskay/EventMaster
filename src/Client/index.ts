@@ -81,6 +81,8 @@ class ExtendedClient extends Client {
         await Promise.all(guilds.map(async (guild) => { 
             await rest.put(Routes.applicationGuildCommands(clientId, guild), {
                 body: commands.concat(contextCommands)
+            }).catch(err => {
+                console.log(`Unable to register because of ${err}`);
             });
         }));
     }
