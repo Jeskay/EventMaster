@@ -10,7 +10,7 @@ import { DataBaseManager, VoteManager } from '../Managers';
 import { List } from '../Utils';
 import { Routes } from "discord-api-types/v9";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { commandsList, createOption } from "../Utils";
+import { createOption } from "../Utils";
 import { InteractCommandOption } from "../Interfaces/Command";
 
 class ExtendedClient extends Client {
@@ -101,22 +101,7 @@ class ExtendedClient extends Client {
         await createConnection();
         this.database = new DataBaseManager();
         /* commands */
-        const commandPath = path.join(__dirname, "..", "TextCommands");
         const file_ending = (this.config.state == "dev") ? '.ts' : '.js';
-        readdirSync(commandPath).forEach((dir) => {
-            const commands = readdirSync(`${commandPath}/${dir}`).filter((file) => file.endsWith(file_ending));
-            for(const file of commands) {
-                const {command} = require(`${commandPath}/${dir}/${file}`);
-                this.commands.set(command.name, command);
-
-                if(command.aliases && command.aliases.length !== 0) {
-                    command.aliases.forEach((alias: string) => {
-                        this.aliases.set(alias, command);
-                    });
-                }
-            }
-        });
-        this.lists.set('help', new List(60, commandsList(this), 10));
         /* buttons */
         const buttonPath = path.join(__dirname, "..", "Buttons");
         readdirSync(buttonPath).forEach(dir => {
