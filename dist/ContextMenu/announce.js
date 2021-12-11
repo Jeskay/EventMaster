@@ -13,7 +13,6 @@ exports.command = void 0;
 const Guild_1 = require("../Commands/Guild");
 const Error_1 = require("../Error");
 const Interfaces_1 = require("../Interfaces");
-const Embeds_1 = require("../Embeds");
 exports.command = {
     name: 'announce',
     type: Interfaces_1.ContextType.MESSAGE,
@@ -29,8 +28,7 @@ exports.command = {
             yield interaction.editReply("Announce published successfuly.");
         }
         catch (error) {
-            if (error instanceof Error)
-                interaction.editReply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message)] });
+            (0, Error_1.handleDeferedCommandError)(client, interaction, error);
         }
     })
 };

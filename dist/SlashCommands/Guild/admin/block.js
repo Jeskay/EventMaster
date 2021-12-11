@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Error_1 = require("../../../Error");
 const Setup_1 = require("../../../Commands/Setup");
-const Embeds_1 = require("../../../Embeds");
 exports.command = {
     name: 'block',
     description: 'add user to black list, so he cannot became host on this server',
@@ -27,8 +26,7 @@ exports.command = {
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {
-            if (error instanceof Error)
-                interaction.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message, error.stack)], ephemeral: true });
+            (0, Error_1.handleCommandError)(client, interaction, error);
         }
     })
 };

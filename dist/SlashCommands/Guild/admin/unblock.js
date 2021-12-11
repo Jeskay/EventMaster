@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Setup_1 = require("../../../Commands/Setup");
 const Error_1 = require("../../../Error");
-const Embeds_1 = require("../../../Embeds");
 exports.command = {
     name: 'unblock',
     description: 'removes a user from the black list',
@@ -27,8 +26,7 @@ exports.command = {
             yield interaction.reply({ embeds: [response], ephemeral: true });
         }
         catch (error) {
-            if (error instanceof Error)
-                interaction.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message, error.stack)], ephemeral: true });
+            (0, Error_1.handleCommandError)(client, interaction, error);
         }
     })
 };

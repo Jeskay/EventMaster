@@ -1,7 +1,6 @@
 import {InteractCommand} from '../../../Interfaces';
-import { CommandError } from '../../../Error';
+import { CommandError, handleCommandError } from '../../../Error';
 import { guildRating } from '../../../Commands/Guild';
-import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'guildrating',
@@ -12,8 +11,7 @@ export const command: InteractCommand = {
             if(!interaction.channel) throw new CommandError("Channel not found");
             await guildRating(client, interaction.user, interaction);
         } catch(error) {
-            if(error instanceof Error)
-                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)]});
+            handleCommandError(client, interaction, error);
         }
     }
 }; 

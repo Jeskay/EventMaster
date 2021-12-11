@@ -13,22 +13,20 @@ exports.command = void 0;
 const Guild_1 = require("../Commands/Guild");
 const Error_1 = require("../Error");
 const Interfaces_1 = require("../Interfaces");
-const Embeds_1 = require("../Embeds");
 exports.command = {
     name: 'finish message',
     type: Interfaces_1.ContextType.MESSAGE,
     run: (client, interaction) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (!interaction.guild)
-                throw new Error_1.CommandError("This is allowed only in guild channel");
+                throw new Error_1.ConditionError("This is allowed only in guild channel");
             const result = interaction.options.getMessage("message");
             if (!result)
                 throw new Error_1.CommandError("Unable to find a message.");
             yield (0, Guild_1.finish)(client, interaction.user, interaction.guild, result.content);
         }
         catch (error) {
-            if (error instanceof Error)
-                interaction.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message)], ephemeral: true });
+            (0, Error_1.handleCommandError)(client, interaction, error);
         }
     })
 };

@@ -18,7 +18,6 @@ function errorInformation(error, message, stack) {
     console.log(`${error}: ${message} \n ${stack}`);
     const embed = new discord_js_1.MessageEmbed()
         .addField(error, message)
-        .setFooter("Use help command for detailes.")
         .setColor(_1.errorColor);
     return embed;
 }

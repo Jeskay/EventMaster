@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = void 0;
 const Guild_1 = require("../../Commands/Guild");
 const Error_1 = require("../../Error");
-const Embeds_1 = require("../../Embeds");
 exports.button = {
     name: 'guildprofile',
     description: "",
@@ -27,8 +26,7 @@ exports.button = {
             yield button.update(response);
         }
         catch (error) {
-            if (error instanceof Error)
-                button.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message)], ephemeral: true });
+            (0, Error_1.handleCommandError)(client, button, error);
         }
     })
 };

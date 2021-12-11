@@ -1,6 +1,6 @@
 import { unsubscribe } from '../../../Commands/DirectMessages';
 import {InteractCommand} from '../../../Interfaces';
-import { errorInformation } from '../../../Embeds';
+import { handleCommandError } from '../../../Error';
 
 
 export const command: InteractCommand = {
@@ -13,8 +13,7 @@ export const command: InteractCommand = {
             const response = await unsubscribe(client, interaction.user, title);
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
-            if(error instanceof Error)
-                interaction.reply({embeds: [errorInformation(error.name, error.message,error.stack)]});
+            handleCommandError(client, interaction, error);
         }
     }
 }; 

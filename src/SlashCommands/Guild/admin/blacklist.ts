@@ -1,8 +1,6 @@
-import { CommandError } from '../../../Error';
+import { CommandError, handleCommandError } from '../../../Error';
 import { blackList } from '../../../Commands/Guild';
 import {InteractCommand} from '../../../Interfaces';
-import { errorInformation } from '../../../Embeds';
-
 
 export const command: InteractCommand = {
     name: 'blacklist',
@@ -13,8 +11,7 @@ export const command: InteractCommand = {
             if(!interaction.guild) throw new CommandError("Avaliable only in a guild.");
             await blackList(client, interaction, interaction.user, interaction.guild);
         } catch(error) {
-            if(error instanceof Error)
-                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)], ephemeral: true});
+            handleCommandError(client, interaction, error);
         }
     }
 };

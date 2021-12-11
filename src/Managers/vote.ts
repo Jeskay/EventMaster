@@ -1,3 +1,4 @@
+import { ConditionError } from "../Error";
 import { Election } from "../Utils";
 
 export class VoteManager {
@@ -18,7 +19,7 @@ export class VoteManager {
      * Removes candidate from elections list
     */
     public async removeCandidate(user: string, occasion: string) {
-        if(!this.elections.has(occasion)) throw Error("There is no current election in the channel.");
+        if(!this.elections.has(occasion)) throw new ConditionError("There is no current election in the channel.");
         await this.elections[occasion].remove(user);
     }
     /**
@@ -26,7 +27,7 @@ export class VoteManager {
      * @returns true if the candidate won the election otherwise returns false
      */
     public async vote(occasion: string, voter: string, candidate: string) {
-        if(this.elections[occasion] == undefined) throw Error("There is no current election in the channel.");
+        if(this.elections[occasion] == undefined) throw new ConditionError("There is no current election in the channel.");
         return await this.elections[occasion].add(voter, candidate);
     }
     

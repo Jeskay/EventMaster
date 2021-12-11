@@ -6,7 +6,7 @@ import { CommandError, DataBaseError, PermissionError } from '../../Error';
 
 export async function addOwner(client: ExtendedClient, guild: Guild, author: User, user: User) {
     const server = await client.database.getServer(guild.id);
-    if(!server) throw new CommandError("Server is not registered yet.");
+    if(!server) throw new DataBaseError("Server is not registered yet.");
     const settings = server.settings;
     if(author.id != guild.ownerId) throw new PermissionError("Permission denied.");
     if(!user) throw new CommandError("Cannot find a user.");

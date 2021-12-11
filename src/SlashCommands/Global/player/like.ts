@@ -1,7 +1,7 @@
-import { errorInformation } from '../../../Embeds';
 import { like } from '../../../Commands/DirectMessages';
 import { CommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
+import { handleCommandError } from '../../../Error';
 
 export const command: InteractCommand = {
     name: 'like',
@@ -14,8 +14,7 @@ export const command: InteractCommand = {
             const response = await like(client, interaction.user, user);
             await interaction.reply({embeds:[response], ephemeral: true});
         } catch(error) {
-            if(error instanceof Error)
-                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)]});
+            handleCommandError(client, interaction, error);
         }
     }
 }; 

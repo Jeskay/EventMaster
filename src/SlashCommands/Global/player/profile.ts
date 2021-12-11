@@ -1,6 +1,6 @@
-import { errorInformation } from '../../../Embeds';
 import { profile } from '../../../Commands/DirectMessages';
 import {InteractCommand} from '../../../Interfaces';
+import { handleCommandError } from '../../../Error';
 
 export const command: InteractCommand = {
     name: 'profile',
@@ -13,8 +13,7 @@ export const command: InteractCommand = {
             const response = await profile(client, user);
             await interaction.reply(response);
         } catch(error) {
-            if(error instanceof Error)
-                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)]});
+            handleCommandError(client, interaction, error);
         }
     }
 }; 

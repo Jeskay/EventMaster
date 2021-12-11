@@ -1,7 +1,6 @@
 import { announce } from '../Commands/Guild';
-import { CommandError } from '../Error';
+import { CommandError, handleDeferedCommandError } from '../Error';
 import {ContextCommand, ContextType} from '../Interfaces';
-import { errorInformation } from '../Embeds';
 
 export const command: ContextCommand = {
     name: 'announce',
@@ -15,8 +14,7 @@ export const command: ContextCommand = {
             await announce(client, interaction.user, interaction.guild, description.content);
             await interaction.editReply("Announce published successfuly.");
         } catch(error) {
-            if(error instanceof Error)
-                interaction.editReply({embeds: [errorInformation(error.name, error.message)]});
+            handleDeferedCommandError(client, interaction, error);
         }
     }
 };

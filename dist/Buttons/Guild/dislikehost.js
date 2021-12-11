@@ -26,8 +26,7 @@ exports.button = {
             yield button.reply({ embeds: [(0, Embeds_1.hostCommended)()], ephemeral: true });
         }
         catch (error) {
-            if (error instanceof Error)
-                button.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message)], ephemeral: true });
+            (0, Error_1.handleCommandError)(client, button, error);
         }
     })
 };

@@ -1,7 +1,6 @@
 import { guildProfile } from '../../Commands/Guild';
-import { CommandError } from '../../Error';
+import { CommandError, handleCommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
-import { errorInformation } from '../../Embeds';
 
 export const button: Button = {
     name: 'guildprofile',
@@ -14,8 +13,7 @@ export const button: Button = {
             const response = await guildProfile(client, user, button.guild);
             await button.update(response);
         } catch(error) {
-            if(error instanceof Error)
-                button.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
+            handleCommandError(client, button, error);
         }
     }
 };

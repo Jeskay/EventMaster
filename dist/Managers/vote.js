@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VoteManager = void 0;
+const Error_1 = require("../Error");
 const Utils_1 = require("../Utils");
 class VoteManager {
     constructor() {
@@ -24,14 +25,14 @@ class VoteManager {
     removeCandidate(user, occasion) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.elections.has(occasion))
-                throw Error("There is no current election in the channel.");
+                throw new Error_1.ConditionError("There is no current election in the channel.");
             yield this.elections[occasion].remove(user);
         });
     }
     vote(occasion, voter, candidate) {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.elections[occasion] == undefined)
-                throw Error("There is no current election in the channel.");
+                throw new Error_1.ConditionError("There is no current election in the channel.");
             return yield this.elections[occasion].add(voter, candidate);
         });
     }

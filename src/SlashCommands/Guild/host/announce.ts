@@ -1,7 +1,6 @@
 import { announce } from '../../../Commands/Guild';
-import { CommandError } from '../../../Error';
+import { CommandError, handleCommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
-import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'announce',
@@ -21,8 +20,7 @@ export const command: InteractCommand = {
             const response = await announce(client, interaction.user, interaction.guild, description, title, image);
             await interaction.editReply({embeds: [response]});
         } catch(error) {
-            if(error instanceof Error)
-                interaction.editReply({embeds: [errorInformation(error.name, error.message, error.stack)]});
+            handleCommandError(client, interaction, error);
         }
     }
 };

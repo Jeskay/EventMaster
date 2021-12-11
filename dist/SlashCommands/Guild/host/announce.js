@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Guild_1 = require("../../../Commands/Guild");
 const Error_1 = require("../../../Error");
-const Embeds_1 = require("../../../Embeds");
 exports.command = {
     name: 'announce',
     description: 'declare in notification channel about the event',
@@ -34,8 +33,7 @@ exports.command = {
             yield interaction.editReply({ embeds: [response] });
         }
         catch (error) {
-            if (error instanceof Error)
-                interaction.editReply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message, error.stack)] });
+            (0, Error_1.handleCommandError)(client, interaction, error);
         }
     })
 };

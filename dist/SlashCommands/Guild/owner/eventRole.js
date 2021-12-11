@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Setup_1 = require("../../../Commands/Setup");
 const Error_1 = require("../../../Error");
-const Embeds_1 = require("../../../Embeds");
 exports.command = {
     name: 'event_role',
     description: 'set up a role which will be mentioned in notifications.',
@@ -27,8 +26,7 @@ exports.command = {
             yield interaction.editReply({ embeds: [response] });
         }
         catch (error) {
-            if (error instanceof Error)
-                interaction.editReply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message, error.stack)] });
+            (0, Error_1.handleCommandError)(client, interaction, error);
         }
     })
 };

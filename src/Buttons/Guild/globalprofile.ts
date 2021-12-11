@@ -1,7 +1,6 @@
 import { profile } from '../../Commands/DirectMessages';
-import { CommandError } from '../../Error';
+import { CommandError, handleCommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
-import { errorInformation } from '../../Embeds';
 
 export const button: Button = {
     name: 'globalprofile',
@@ -13,8 +12,7 @@ export const button: Button = {
             const response = await profile(client, user, button.guild ?? undefined);
             await button.update(response);
         } catch(error) {
-            if(error instanceof Error)
-                button.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
+            handleCommandError(client, button, error);
         }
     }
 };

@@ -1,21 +1,21 @@
 import { likePlayer } from '../../Controllers';
-import { CommandError } from '../../Error';
+import { CommandError, handleCommandError } from '../../Error';
 import {Button} from '../../Interfaces/Button';
-import { errorInformation, hostCommended } from '../../Embeds';
+import { hostCommended } from '../../Embeds';
 
 export const button: Button = {
     name: 'dislikePlayer',
     description: "",
     run: async(client, button, args) => {
         try {
+            console.log(args);
             if(args.length != 1) throw new CommandError("Only one argument required.");
             const author = button.user.id;
             const player = args[0];
             await likePlayer(client, player, author);
             await button.reply({embeds: [hostCommended()], ephemeral: true});
         } catch(error) {
-            if(error instanceof Error)
-                button.reply({embeds: [errorInformation(error.name, error.message)], ephemeral: true});
+            handleCommandError(client, button, error);
         }
     }
 };

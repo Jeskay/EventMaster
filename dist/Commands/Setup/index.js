@@ -16,7 +16,7 @@ function addOwner(client, guild, author, user) {
     return __awaiter(this, void 0, void 0, function* () {
         const server = yield client.database.getServer(guild.id);
         if (!server)
-            throw new Error_1.CommandError("Server is not registered yet.");
+            throw new Error_1.DataBaseError("Server is not registered yet.");
         const settings = server.settings;
         if (author.id != guild.ownerId)
             throw new Error_1.PermissionError("Permission denied.");

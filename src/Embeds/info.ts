@@ -16,7 +16,6 @@ export function errorInformation (error: string, message: string, stack?: string
     console.log(`${error}: ${message} \n ${stack}`);
     const embed = new MessageEmbed()
     .addField(error, message)
-    .setFooter("Use help command for detailes.")
     .setColor(errorColor);
     return embed
 }

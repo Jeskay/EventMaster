@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = void 0;
-const Embeds_1 = require("../../Embeds");
 const Error_1 = require("../../Error");
 exports.button = {
     name: 'nextPage',
@@ -30,8 +29,7 @@ exports.button = {
             yield button.deferUpdate({ fetchReply: true });
         }
         catch (error) {
-            if (error instanceof Error)
-                button.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message)], ephemeral: true });
+            (0, Error_1.handleCommandError)(client, button, error);
         }
     })
 };

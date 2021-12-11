@@ -1,8 +1,7 @@
-import { CommandError } from '../../../Error';
+import { CommandError, handleCommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
 import {setOccasions} from '../../../Commands/Setup';
 import { CategoryChannel, GuildChannel, VoiceChannel } from 'discord.js';
-import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'setup',
@@ -21,8 +20,7 @@ export const command: InteractCommand = {
             const response = await setOccasions(client, interaction.guild, interaction.user, voice as VoiceChannel, category as CategoryChannel);
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
-            if(error instanceof Error)
-                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)], ephemeral: true});
+            handleCommandError(client, interaction, error);
         }
     }
 };

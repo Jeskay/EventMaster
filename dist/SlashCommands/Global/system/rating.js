@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.command = void 0;
 const Error_1 = require("../../../Error");
 const DirectMessages_1 = require("../../../Commands/DirectMessages");
-const Embeds_1 = require("../../../Embeds");
 exports.command = {
     name: 'rating',
     description: "shows player tier list",
@@ -24,8 +23,7 @@ exports.command = {
             yield (0, DirectMessages_1.playerRating)(client, interaction.user, interaction);
         }
         catch (error) {
-            if (error instanceof Error)
-                interaction.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message, error.stack)] });
+            (0, Error_1.handleCommandError)(client, interaction, error);
         }
     })
 };

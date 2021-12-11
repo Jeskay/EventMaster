@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.button = void 0;
 const DirectMessages_1 = require("../../Commands/DirectMessages");
 const Error_1 = require("../../Error");
-const Embeds_1 = require("../../Embeds");
 exports.button = {
     name: 'globalprofile',
     description: "",
@@ -26,8 +25,7 @@ exports.button = {
             yield button.update(response);
         }
         catch (error) {
-            if (error instanceof Error)
-                button.reply({ embeds: [(0, Embeds_1.errorInformation)(error.name, error.message)], ephemeral: true });
+            (0, Error_1.handleCommandError)(client, button, error);
         }
     })
 };

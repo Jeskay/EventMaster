@@ -1,7 +1,6 @@
 import { setLimit } from '../../../Commands/Setup';
-import { CommandError } from '../../../Error';
+import { CommandError, handleCommandError } from '../../../Error';
 import {InteractCommand} from '../../../Interfaces';
-import { errorInformation } from '../../../Embeds';
 
 export const command: InteractCommand = {
     name: 'limit_votes',
@@ -15,8 +14,7 @@ export const command: InteractCommand = {
             const response = await setLimit(client, interaction.guild, interaction.user, limit);
             await interaction.reply({embeds: [response], ephemeral: true});
         } catch(error) {
-            if(error instanceof Error)
-                interaction.reply({embeds: [errorInformation(error.name, error.message, error.stack)], ephemeral: true});
+            handleCommandError(client,interaction, error);
         }
     }
 };

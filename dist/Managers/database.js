@@ -74,8 +74,7 @@ class DataBaseManager {
                 .leftJoinAndSelect("server.events", "occasion")
                 .leftJoinAndSelect("server.members", "guild_member")
                 .where("server.guild = :guild", { guild: serverID })
-                .getOne()
-                .catch(err => { throw err; });
+                .getOne();
             if (!server)
                 throw new Error_1.DataBaseError("Guild with followed id is not registered.");
             return server;
@@ -88,8 +87,7 @@ class DataBaseManager {
                 .leftJoinAndSelect("player.subscriptions", "tag")
                 .where("player.id = :id", { id: userId })
                 .leftJoinAndSelect("player.membership", "guild_member")
-                .getOne()
-                .catch(err => { throw err; });
+                .getOne();
             if (!user)
                 throw new Error_1.DataBaseError("Player with followed id is not registered.");
             return user;
