@@ -14,7 +14,10 @@ export class Review{
     text: string;
 
     @Column()
-    score: number;
+    name: string;
+
+    @Column()
+    avatar: string;
 
     @CreateDateColumn()
     createdAt: Date;
