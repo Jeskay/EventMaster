@@ -17,6 +17,9 @@ export class Review{
     name: string;
 
     @Column()
+    discriminator: number;
+
+    @Column()
     avatar: string;
 
     @CreateDateColumn()

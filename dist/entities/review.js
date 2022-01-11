@@ -33,6 +33,10 @@ __decorate([
 ], Review.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Review.prototype, "discriminator", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Review.prototype, "avatar", void 0);
 __decorate([
