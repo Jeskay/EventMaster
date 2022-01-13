@@ -126,7 +126,8 @@ function calculateScore(player) {
     const dislikePlayer = commends.filter(commend => !commend.cheer && !commend.host).length;
     const hostScore = likesHost / (dislikesHost + 1) * 1.5 * player.eventsHosted;
     const playerScore = likesPlayer / (dislikePlayer + 1) * player.eventsPlayed;
-    return Math.round((hostScore + playerScore) * Math.log10(player.minutesPlayed));
+    const score = Math.round((hostScore + playerScore) * Math.log10(player.minutesPlayed));
+    return Number.isInteger(score) ? score : 0;
 }
 exports.calculateScore = calculateScore;
 function createOption(interact_option, slashCommand) {

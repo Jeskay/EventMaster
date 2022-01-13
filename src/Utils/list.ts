@@ -1,4 +1,4 @@
-import { Collection, CommandInteraction, Message, MessageActionRow, MessageEmbed, TextBasedChannels } from "discord.js";
+import { Collection, CommandInteraction, Message, MessageActionRow, MessageEmbed, TextBasedChannel } from "discord.js";
 
 export class List {
     private readonly lifetime: number;
@@ -20,7 +20,7 @@ export class List {
     /** Creates a list instance for new message.
      * Also starts a countdown until message clearing
      */
-    public async create(channel: TextBasedChannels | CommandInteraction, attachments: MessageActionRow) {
+    public async create(channel: TextBasedChannel | CommandInteraction, attachments: MessageActionRow) {
         const embed = await this.updateEmbed();
         let message: Message;
         if(channel instanceof CommandInteraction)

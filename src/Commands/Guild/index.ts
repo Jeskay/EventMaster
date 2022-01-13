@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild, GuildMember, TextBasedChannels, User } from 'discord.js';
+import { CommandInteraction, Guild, GuildMember, TextBasedChannel, User } from 'discord.js';
 import { CommandError, DataBaseError } from '../../Error';
 import { blackmembersList, List, ratingList,  } from '../../Utils';
 import * as Controller from '../../Controllers'
@@ -22,7 +22,7 @@ export async function guildProfile(client: ExtendedClient, guildUser: User | Gui
     const embed = memberProfile(member, guildUser instanceof User ? guildUser : guildUser.user);
     return {embeds: [embed], components: [row], ephemeral: true};
 }
-export async function blackList(client: ExtendedClient, channel: TextBasedChannels | CommandInteraction, author: User, guild: Guild) {
+export async function blackList(client: ExtendedClient, channel: TextBasedChannel | CommandInteraction, author: User, guild: Guild) {
     const server = await client.database.getServer(guild.id);
     if(!server) throw new DataBaseError("Server is not registered");
     const embed = blackmembersList(server.settings.black_list);

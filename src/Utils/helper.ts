@@ -1,4 +1,4 @@
-import { CategoryChannel, Channel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
+import { AnyChannel, CategoryChannel, Guild, MessageEmbed, VoiceChannel } from "discord.js";
 import {SlashCommandBuilder, SlashCommandSubcommandBuilder} from "@discordjs/builders";
 import { Tag } from "../entities/tag";
 import ExtendedClient from "../Client";
@@ -36,7 +36,7 @@ import { InteractCommandOption } from "../Interfaces/Command";
      * @param channel channel to check
      * @returns true if the channel contains given members
      */
-    export function checkChannel(member1 : string, member2: string, channel: Channel): boolean{
+    export function checkChannel(member1 : string, member2: string, channel: AnyChannel): boolean{
         if(channel.type != "GUILD_VOICE") return false;
         if(!(channel as VoiceChannel).members.has(member1)) return false;
         if(!(channel as VoiceChannel).members.has(member2)) return false;
@@ -139,7 +139,8 @@ import { InteractCommandOption } from "../Interfaces/Command";
         const dislikePlayer = commends.filter(commend => !commend.cheer && !commend.host).length;
         const hostScore = likesHost / (dislikesHost + 1) * 1.5 * player.eventsHosted;
         const playerScore = likesPlayer / (dislikePlayer + 1) * player.eventsPlayed;
-        return Math.round((hostScore + playerScore) * Math.log10(player.minutesPlayed));
+        const score = Math.round((hostScore + playerScore) * Math.log10(player.minutesPlayed));
+        return Number.isInteger(score) ? score : 0;
     }
     /**
      * Adds option to slashCommand

@@ -1,4 +1,4 @@
-import { CommandInteraction, Guild, TextBasedChannels, User, VoiceChannel } from 'discord.js';
+import { CommandInteraction, Guild, TextBasedChannel, User, VoiceChannel } from 'discord.js';
 import { List } from '../../Utils';
 import ExtendedClient from '../../Client';
 import { CommandError } from '../../Error';
@@ -16,7 +16,7 @@ export async function like(client: ExtendedClient, author: User, user: User) {
     return playerCommended(user);
 }
 
-export async function help(client: ExtendedClient, author: User, channel: TextBasedChannels) {
+export async function help(client: ExtendedClient, author: User, channel: TextBasedChannel) {
     const prevId = `previousPage.${author.id} help`;
     const nextId = `nextPage.${author.id} help`;
     const list = client.lists.get('help');
@@ -27,7 +27,7 @@ export async function help(client: ExtendedClient, author: User, channel: TextBa
 export async function profile(client: ExtendedClient, user: User, guild?: Guild) {
     const profile = await client.database.getPlayer(user.id);
     if(!profile) throw new CommandError("This user did not join events.");
-    const row = Profiles(false, user.id, guild ? guild.id : undefined);
+    const row = Profiles(guild ? true : false, user.id, guild ? guild.id : undefined);
     const embed = playerInfo(profile, user, profile.commendsAbout);
     return {embeds: [embed], components: [row], ephemeral: true};
 }
@@ -54,7 +54,7 @@ export async function unsubscribe(client: ExtendedClient, author: User, title: s
     return unsubscribed(title);
 }
 
-export async function subscriptions(client: ExtendedClient, author: User, channel: TextBasedChannels | CommandInteraction) {
+export async function subscriptions(client: ExtendedClient, author: User, channel: TextBasedChannel | CommandInteraction) {
     const profile = await client.database.getPlayer(author.id);
     if(!profile) throw new CommandError("This user did not join events.");
     const subId = `subs${author.id}`;
@@ -74,7 +74,7 @@ export async function vote(client: ExtendedClient, author: User, candidate: User
     await Controller.vote(client, voiceChannel, author.id, candidate.id);
     return voteConfimation(candidate.username);
 }
-export async function playerRating(client: ExtendedClient, author: User, channel: TextBasedChannels | CommandInteraction) {
+export async function playerRating(client: ExtendedClient, author: User, channel: TextBasedChannel | CommandInteraction) {
     const rating = await client.database.getRanking();
     const rateId = `rate${author.id}`;
     if(client.lists.get(rateId)) client.lists.delete(rateId);

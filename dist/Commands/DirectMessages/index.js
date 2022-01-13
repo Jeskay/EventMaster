@@ -64,7 +64,7 @@ function profile(client, user, guild) {
         const profile = yield client.database.getPlayer(user.id);
         if (!profile)
             throw new Error_1.CommandError("This user did not join events.");
-        const row = (0, Embeds_1.Profiles)(false, user.id, guild ? guild.id : undefined);
+        const row = (0, Embeds_1.Profiles)(guild ? true : false, user.id, guild ? guild.id : undefined);
         const embed = (0, Embeds_1.playerInfo)(profile, user, profile.commendsAbout);
         return { embeds: [embed], components: [row], ephemeral: true };
     });
