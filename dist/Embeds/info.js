@@ -24,11 +24,11 @@ function errorInformation(error, message, stack) {
 exports.errorInformation = errorInformation;
 exports.startedOccasion = new discord_js_1.MessageEmbed()
     .setTitle("Event started!")
-    .setFooter("Notification will be automatically posted to the notification channel.")
+    .setDescription("Notification will be automatically posted to the notification channel.")
     .setColor(_1.infoColor);
 exports.finishedOccasion = new discord_js_1.MessageEmbed()
     .setTitle("Event finished!")
-    .setFooter("Don't forget to commend host. The room will be deleted 5 seconds later.")
+    .setDescription("Don't forget to commend host. The room will be deleted 5 seconds later.")
     .setColor(_1.infoColor);
 const occasionStarted = (title, description, hostName, members) => new discord_js_1.MessageEmbed()
     .setTitle(`Event ${title} started`)
@@ -74,7 +74,7 @@ Event will be forced to finish if the host will stay alone in the channel for to
 exports.voting = voting;
 const voteConfimation = (candidate) => new discord_js_1.MessageEmbed()
     .addField("Information", `Vote for ${candidate} was confirmed.`)
-    .setFooter("We let you know when the election will be finished.")
+    .setDescription("We let you know when the election will be finished.")
     .setColor(_1.confirmColor);
 exports.voteConfimation = voteConfimation;
 const electionFinished = (winnerId) => new discord_js_1.MessageEmbed()
@@ -115,6 +115,6 @@ exports.greeting = greeting;
 const farawell = (guild, owner) => new discord_js_1.MessageEmbed()
     .setTitle("Information about guild will be removed from our database.")
     .addField("Information", `Dear, ${owner}, thank you for using our service in ${guild}`)
-    .setFooter("Please, send us a letter to let us know why you decided to stop using our service. We will make neccessary improvements.")
+    .setDescription("Please, send us a letter to let us know why you decided to stop using our service. We will make neccessary improvements.")
     .setColor(_1.infoColor);
 exports.farawell = farawell;

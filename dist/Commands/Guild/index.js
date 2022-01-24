@@ -66,7 +66,7 @@ function blackList(client, channel, author, guild) {
         const server = yield client.database.getServer(guild.id);
         if (!server)
             throw new Error_1.DataBaseError("Server is not registered");
-        const embed = (0, Utils_1.blackmembersList)(server.settings.black_list);
+        const embed = (0, Embeds_1.blackmembersList)(server.settings.black_list);
         const blacklistId = `blacklist${author.id}`;
         if (client.lists.get(blacklistId))
             client.lists.delete(blacklistId);
@@ -86,7 +86,7 @@ function guildRating(client, author, interaction) {
         const rateId = `guildrate${author.id}`;
         if (client.lists.get(rateId))
             client.lists.delete(rateId);
-        const list = new Utils_1.List(30, (0, Utils_1.ratingList)(rating), 10);
+        const list = new Utils_1.List(30, (0, Embeds_1.ratingList)(rating), 10);
         client.lists.set(rateId, list);
         const prevId = `previousPage.${author.id} ${rateId}`;
         const nextId = `nextPage.${author.id} ${rateId}`;

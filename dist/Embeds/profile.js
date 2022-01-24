@@ -4,14 +4,14 @@ exports.memberProfile = exports.playerInfo = void 0;
 const discord_js_1 = require("discord.js");
 const _1 = require(".");
 function playerInfo(player, user, commends) {
-    var _a;
+    var _a, _b;
     const playerLikes = commends.filter(commend => commend.cheer && !commend.host).length;
     const playerDislikes = commends.filter(commend => !commend.cheer && !commend.host).length;
     const hostLikes = commends.filter(commend => commend.cheer && commend.host).length;
     const hostDislikes = commends.filter(commend => !commend.cheer && commend.host).length;
     const embed = new discord_js_1.MessageEmbed()
-        .setAuthor(user.username)
-        .setThumbnail((_a = user.avatarURL()) !== null && _a !== void 0 ? _a : user.defaultAvatarURL)
+        .setAuthor({ name: user.username, iconURL: (_a = user.avatarURL()) !== null && _a !== void 0 ? _a : user.defaultAvatarURL })
+        .setThumbnail((_b = user.avatarURL()) !== null && _b !== void 0 ? _b : user.defaultAvatarURL)
         .addField("Events played:", player.eventsPlayed.toString(), true)
         .addField("Events hosted:", player.eventsHosted.toString(), true)
         .addField("Time spent in occasions:", `${player.minutesPlayed} minutes`)
@@ -26,10 +26,11 @@ function playerInfo(player, user, commends) {
 }
 exports.playerInfo = playerInfo;
 function memberProfile(member, user) {
-    var _a;
+    var _a, _b;
     const embed = new discord_js_1.MessageEmbed()
+        .setAuthor({ name: user.username, iconURL: (_a = user.avatarURL()) !== null && _a !== void 0 ? _a : user.defaultAvatarURL })
         .setDescription(`<@!${member.id}>`)
-        .setThumbnail((_a = user.avatarURL()) !== null && _a !== void 0 ? _a : user.defaultAvatarURL)
+        .setThumbnail((_b = user.avatarURL()) !== null && _b !== void 0 ? _b : user.defaultAvatarURL)
         .addField("Events played: ", member.eventsPlayed.toString(), true)
         .addField("Events hosted: ", member.eventsHosted.toString(), true)
         .addField("Time spent in occasions: ", `${member.minutesPlayed.toString()} minutes`)

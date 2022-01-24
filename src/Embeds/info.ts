@@ -22,12 +22,12 @@ export function errorInformation (error: string, message: string, stack?: string
 
 export const startedOccasion = new MessageEmbed()
 .setTitle("Event started!")
-.setFooter("Notification will be automatically posted to the notification channel.")
+.setDescription("Notification will be automatically posted to the notification channel.")
 .setColor(infoColor);
 
 export const finishedOccasion = new MessageEmbed()
 .setTitle("Event finished!")
-.setFooter("Don't forget to commend host. The room will be deleted 5 seconds later.")
+.setDescription("Don't forget to commend host. The room will be deleted 5 seconds later.")
 .setColor(infoColor);
 
 export const occasionStarted = (title: string, description: string, hostName: string, members: number) => new MessageEmbed()
@@ -75,7 +75,7 @@ Event will be forced to finish if the host will stay alone in the channel for to
 
 export const voteConfimation = (candidate: string) => new MessageEmbed()
 .addField("Information", `Vote for ${candidate} was confirmed.`)
-.setFooter("We let you know when the election will be finished.")
+.setDescription("We let you know when the election will be finished.")
 .setColor(confirmColor);
 
 export const electionFinished = (winnerId: string) => new MessageEmbed()
@@ -121,5 +121,5 @@ Blocked users have a special badge in profile and receive less rank points from 
 export const farawell = (guild: string, owner: string) => new MessageEmbed()
 .setTitle("Information about guild will be removed from our database.")
 .addField("Information", `Dear, ${owner}, thank you for using our service in ${guild}`)
-.setFooter("Please, send us a letter to let us know why you decided to stop using our service. We will make neccessary improvements.")
+.setDescription("Please, send us a letter to let us know why you decided to stop using our service. We will make neccessary improvements.")
 .setColor(infoColor);

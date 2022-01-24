@@ -2,9 +2,9 @@ import { CommandInteraction, Guild, TextBasedChannel, User, VoiceChannel } from 
 import { List } from '../../Utils';
 import ExtendedClient from '../../Client';
 import { CommandError } from '../../Error';
-import { checkChannel, ratingList, subscriptionList } from '../../Utils';
+import { checkChannel } from '../../Utils';
 import * as Controller from '../../Controllers';
-import { playerCommended, ListMessage, Profiles, playerInfo, subscribed, unsubscribed, voteConfimation } from '../../Embeds';
+import { playerCommended, ListMessage, Profiles, playerInfo, subscribed, unsubscribed, voteConfimation, subscriptionList, ratingList } from '../../Embeds';
 
 export async function dislike(client: ExtendedClient, author: User, user: User) {
     await Controller.dislikePlayer(client, user.id, author.id);

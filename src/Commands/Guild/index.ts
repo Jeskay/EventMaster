@@ -1,9 +1,9 @@
 import { CommandInteraction, Guild, GuildMember, TextBasedChannel, User } from 'discord.js';
 import { CommandError, DataBaseError } from '../../Error';
-import { blackmembersList, List, ratingList,  } from '../../Utils';
+import { List } from '../../Utils';
 import * as Controller from '../../Controllers'
 import ExtendedClient from '../../Client';
-import { Profiles, memberProfile, ListMessage } from '../../Embeds';
+import { Profiles, memberProfile, ListMessage, blackmembersList, ratingList } from '../../Embeds';
 
 export async function announce(client: ExtendedClient, author: User, guild: Guild, description: string, title?: string , image?: string) {
     return await Controller.announce(client, description, guild, author, title, image);

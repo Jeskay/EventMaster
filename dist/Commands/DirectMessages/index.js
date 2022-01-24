@@ -112,7 +112,7 @@ function subscriptions(client, author, channel) {
         const tags = yield profile.subscriptions;
         if (tags.length < 1)
             throw new Error_1.CommandError("You have no subscriptions.");
-        const list = new Utils_1.List(30, (0, Utils_2.subscriptionList)(tags), 5);
+        const list = new Utils_1.List(30, (0, Embeds_1.subscriptionList)(tags), 5);
         client.lists.set(subId, list);
         const prevId = `previousPage.${author.id} ${subId}`;
         const nextId = `nextPage.${author.id} ${subId}`;
@@ -138,7 +138,7 @@ function playerRating(client, author, channel) {
         const rateId = `rate${author.id}`;
         if (client.lists.get(rateId))
             client.lists.delete(rateId);
-        const list = new Utils_1.List(30, (0, Utils_2.ratingList)(rating), 5);
+        const list = new Utils_1.List(30, (0, Embeds_1.ratingList)(rating), 5);
         client.lists.set(rateId, list);
         const prevId = `previousPage.${author.id} ${rateId}`;
         const nextId = `nextPage.${author.id} ${rateId}`;

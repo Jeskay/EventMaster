@@ -11,7 +11,7 @@ export function playerInfo (player: Player, user: User, commends: Commend[]) {
     const hostDislikes = commends.filter(commend => !commend.cheer && commend.host).length;
     
     const embed =  new MessageEmbed()
-    .setAuthor(user.username)
+    .setAuthor({name: user.username, iconURL: user.avatarURL() ?? user.defaultAvatarURL})
     .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
     .addField("Events played:", player.eventsPlayed.toString(), true)
     .addField("Events hosted:", player.eventsHosted.toString(), true)
@@ -26,6 +26,7 @@ export function playerInfo (player: Player, user: User, commends: Commend[]) {
 }
 export function memberProfile(member: GuildMember, user: User ){
     const embed =  new MessageEmbed()
+    .setAuthor({name: user.username, iconURL: user.avatarURL() ?? user.defaultAvatarURL})
     .setDescription(`<@!${member.id}>`)
     .setThumbnail(user.avatarURL() ?? user.defaultAvatarURL)
     .addField("Events played: ", member.eventsPlayed.toString(), true)

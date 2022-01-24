@@ -3,12 +3,12 @@ import { confirmColor } from ".";
 
 export const playerCommended = (user: User) => new MessageEmbed()
     .setTitle(`${user.username}'s rating changed`)
-    .setFooter("Thank you for improving our community.")
+    .setDescription("Thank you for improving our community.")
     .setColor(confirmColor);
 
 export const hostCommended = () => new MessageEmbed()
     .setTitle("Host's rating changed")
-    .setFooter("Thank you for improving our community.")
+    .setDescription("Thank you for improving our community.")
     .setColor(confirmColor);
 
 export const addedToBlackList = (user: string) => new MessageEmbed()

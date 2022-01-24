@@ -5,12 +5,12 @@ const discord_js_1 = require("discord.js");
 const _1 = require(".");
 const playerCommended = (user) => new discord_js_1.MessageEmbed()
     .setTitle(`${user.username}'s rating changed`)
-    .setFooter("Thank you for improving our community.")
+    .setDescription("Thank you for improving our community.")
     .setColor(_1.confirmColor);
 exports.playerCommended = playerCommended;
 const hostCommended = () => new discord_js_1.MessageEmbed()
     .setTitle("Host's rating changed")
-    .setFooter("Thank you for improving our community.")
+    .setDescription("Thank you for improving our community.")
     .setColor(_1.confirmColor);
 exports.hostCommended = hostCommended;
 const addedToBlackList = (user) => new discord_js_1.MessageEmbed()
