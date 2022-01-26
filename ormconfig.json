@@ -1,0 +1,14 @@
+{
+    "type": "postgres",
+    "host": "HOST",
+    "port": "PORT",
+    "database": "DATABASE",
+    "username": "USERNAME",
+    "password": "PASSWORD",    
+    "logging": true,
+    "synchronize": true,
+    "ssl": {
+        "rejectUnauthorized": false
+    },
+    "entities": ["dist/entities/*.js"]
+}
