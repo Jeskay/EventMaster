@@ -1,5 +1,6 @@
 # EventMaster
-The beta version of global event bot
+The beta version of global event bot.
+
 [Invite to the server](https://discord.com/api/oauth2/authorize?client_id=488973809185980416&permissions=139645676561&scope=bot%20applications.commands)
 ### .env variables
 - TOKEN = YOUR_DISCORD_BOT_TOKEN
