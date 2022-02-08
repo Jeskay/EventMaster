@@ -16,3 +16,12 @@ The beta version of global event bot.
 - TYPEORM_LOGGING = true
 - TYPEORM_ENTITIES = dist/entities/*.js
 - TYPEORM_DRIVER_EXTRA = '{"ssl": { "rejectUnauthorized": false }}'
+### Getting started
+1. To build prod version
+``
+  yarn watch
+``
+2. To run the bot
+``
+  yarn start
+``
